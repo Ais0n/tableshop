@@ -2,28 +2,24 @@
   <div class="dataview">
     <div class="entitySubview">
       <div class="title2"> Entities </div>
-      <div class="entityList">
+      <!-- <div class="entityList"> -->
         <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)" class="attrInfoItem" @dragstart="handleDragStart(attr)" :draggable="true">
           <i v-if="attr.dataType == 'Categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
           <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
           <div class="attrInfoItemText"> {{attr.name}} </div>
         </div>
-      </div>
+      <!-- </div> -->
     </div>
     <!-- <div class="datamodelSubview">
       <div class="title2"> Data Model </div>
       <div class="datamodelList"> </div>
     </div> -->
-    <div class="graphviewSubview">
+    <!-- <div class="graphviewSubview">
       <div class="title2" style="display: inline-block"> Graph View </div>
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleSigmaDragStart">&#xe853;</i>
       <GraphView/>
-    </div>
+    </div> -->
   </div>
-
-  <!-- <div class="header-bar">
-    <div id="system-title">Tableshop</div>
-  </div> -->
 
 </template>
 
@@ -63,7 +59,7 @@ export default {
   height: calc(100% - 55px);
   width: 20%;
   position: absolute;
-  padding: 15px 15px 15px 15px;
+  padding: 15px 20px 15px 20px;
 }
 
 .entitySubview {
@@ -72,14 +68,14 @@ export default {
   margin-bottom: 15px;
 }
 
-.entityList {
+/* .entityList {
   background: white;
   width: 100%;
   height: calc(100% - 28px);
   margin-top: 5px;
   padding: 5px 10px 5px 10px;
   overflow-y: scroll;
-}
+} */
 
 .datamodelSubview {
   width: 100%;
@@ -122,7 +118,14 @@ export default {
 }
 
 .attrInfoItem {
-  border-bottom: 1px solid #dadada;
+  /* border-bottom: 1px solid #dadada; */
+  background: white;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 2px 5px;
+
 }
 
 .attrInfoItemIcon {

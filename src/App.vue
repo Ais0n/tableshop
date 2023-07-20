@@ -13,16 +13,20 @@ import TargetView from './views/TargetView.vue'
     <div id="dataview-container">
       <DataView />
     </div>
-    <div id="configview-container">
-      <ConfigView />
-    </div>
     <div id="targetview-container">
       <TargetView />
+    </div>
+    <div id="configview-container">
+      <ConfigView />
     </div>
   </div>
 </template>
 
 <style>
+html {
+  overflow: hidden;
+}
+
 #app {
   height: 100%;
 }
@@ -33,13 +37,13 @@ import TargetView from './views/TargetView.vue'
   line-height: 20px;
   display: flex;
   flex-direction: column;
-  background-color: #c3c3c3;
+  background-color: #526D82;
 }
 
 #body-container {
   overflow: hidden;
   width: 100%;
-  height: calc(100% - 55px);
+  height: calc(100% - 50px);
   /* position: relative; */
   /* padding-top: 10px; */
   /* display: flex;
@@ -54,7 +58,7 @@ import TargetView from './views/TargetView.vue'
   display: inline-block;
   width: 20%;
   height: 100%;
-  background-color: #ECECEC;
+  background-color: #9DB2BF;
   /* border: 3px solid rgba(0, 0, 0, 0.87); */
 }
 
@@ -62,15 +66,18 @@ import TargetView from './views/TargetView.vue'
   display: inline-block;
   width: 20%;
   height: 100%;
-  background-color: #F8F8F8;
-  border-left: 1px solid #B7B7B7;
-  border-right: 1px solid #B7B7B7;
+  background-color: #9DB2BF;
+  /* border-right: 1px solid #B7B7B7; */
 }
 
 #targetview-container {
   display: inline-block;
   width: 60%;
   height: 100%;
+  background-color: #ECECEC;
+  position: relative;
+  border-left: 1px solid #526D82;
+  border-right: 1px solid #526D82;
 }
 
 .title2 {
@@ -82,8 +89,8 @@ import TargetView from './views/TargetView.vue'
 
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background-color: #F9F9F9;
 }
  
@@ -100,7 +107,7 @@ import TargetView from './views/TargetView.vue'
   border-radius: 3px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #dedede;
+  background-color: #f3f3f3;
 }
 
 @font-face{

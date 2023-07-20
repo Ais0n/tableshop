@@ -130,7 +130,7 @@ export default {
   height: 100%;
   margin-top: 10px;
   margin-bottom: 10px;
-  color: black;
+  color: white;
   white-space: nowrap;
 }
 
@@ -159,7 +159,7 @@ export default {
   display: inline-block;
   margin-left: 27px;
   /* width: 57px; */
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 650;
   line-height: 1.75rem;
   letter-spacing: 0;

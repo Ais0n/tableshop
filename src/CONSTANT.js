@@ -19,7 +19,7 @@ export const Graph_Padding = {
 
 export const Graph_Block_Size = {
   width: 60,
-  height: 25,
+  height: 40,
 };
 
 export const Graph_Block_Size_Placeholder = {

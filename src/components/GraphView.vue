@@ -1,21 +1,32 @@
 <template>
-  <div id="graphView" class="graphviewList">
-    <div id="graphViewLeftTopBox" class="graphviewBox" :style="'width:'+vlineLeft+'px;height:'+hlineTop+'px;top:0px;left:0px'" @dragover="handleDragOver($event, 'LT')" @drop="handleDrop($event, 'LT')" :class="{'graphviewBoxHighlight': dropoverBox == 'LT'}" @dragleave="handleDragLeave"/>
-    <div id="graphViewLeftBottomBox" class="graphviewBox" :style="'width:'+vlineLeft+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:0px'" @dragover="handleDragOver($event, 'LB')" @drop="handleDrop($event, 'LB')" :class="{'graphviewBoxHighlight': dropoverBox == 'LB'}" @dragleave="handleDragLeave"/>
-    <div id="graphViewRightTopBox" class="graphviewBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+hlineTop+'px;top:0px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RT')" @drop="handleDrop($event, 'RT')" :class="{'graphviewBoxHighlight': dropoverBox == 'RT'}" @dragleave="handleDragLeave"/>
-    <div id="graphViewRightBottomBox" class="graphviewBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RB')" @drop="handleDrop($event, 'RB')" :class="{'graphviewBoxHighlight': dropoverBox == 'RB'}" @dragleave="handleDragLeave"/>
-
-    <div id="hline" :style="'height: 0; width: '+viewWidth+'px; top: '+hlineTop+'px;'" class="hvline"></div>
-    <div id="vline" :style="'height: '+viewHeight+'px; width: 0; left: '+vlineLeft+'px;'" class="hvline"></div>
-  </div>
-  <div
-    v-show="cmVisible"
-    :style="{ left: cmLeft + 'px', top: cmTop + 'px' }"
-    class="contextmenu"
-    id="contextmenu"
-  >
-    <div class="cmOption" @click="cmDelete">Delete</div>
-    <div class="cmOption">Edit values</div>
+  <div id="graphCanvas" class="graphCanvas" @dragover="handleDragOver($event, 'GC')" @drop="handleDrop($event, 'GC')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'GC'}">
+    <!-- <div v-for="(dom, index) in canvasDom" :key="'canvasDom' + String(index)" :class="dom.className" :style="dom.style" :data-bid="dom.dataset.bid"
+    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :draggable="dom.draggable"
+    @dragover="dom.ondragover" @dragstart="handleBlockDragstart" @dragleave="dom.ondragleave" :drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
+    >
+      {{dom.innerText}}
+    </div> -->
+    <Puzzle :domSource="canvasDom"> </Puzzle>
+    <div id="tableCanvas" class="tableCanvas">
+      <div id="graphViewLeftTopBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+hlineTop+'px;top:0px;left:0px'" @dragover="handleDragOver($event, 'LT')" @drop="handleDrop($event, 'LT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LT'}" @dragleave="handleDragLeave"/>
+      <div id="graphViewLeftBottomBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:0px'" @dragover="handleDragOver($event, 'LB')" @drop="handleDrop($event, 'LB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LB'}" @dragleave="handleDragLeave"/>
+      <div id="graphViewRightTopBox" class="tableCanvasBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+hlineTop+'px;top:0px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RT')" @drop="handleDrop($event, 'RT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'RT'}" @dragleave="handleDragLeave"/>
+      <div id="graphViewRightBottomBox" class="tableCanvasBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RB')" @drop="handleDrop($event, 'RB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'RB'}" @dragleave="handleDragLeave"/>
+      <Puzzle :domSource="rowDom"> </Puzzle>
+      <Puzzle :domSource="columnDom"> </Puzzle>
+      <Puzzle :domSource="cellDom"> </Puzzle>
+      <!-- <div id="hline" :style="'height: 0; width: '+viewWidth+'px; top: '+hlineTop+'px;'" class="hvline"></div>
+      <div id="vline" :style="'height: '+viewHeight+'px; width: 0; left: '+vlineLeft+'px;'" class="hvline"></div> -->
+    </div>
+    <div
+      v-show="cmVisible"
+      :style="{ left: cmLeft + 'px', top: cmTop + 'px' }"
+      class="contextmenu"
+      id="contextmenu"
+    >
+      <div class="cmOption" @click="cmDelete">Delete</div>
+      <div class="cmOption">Edit values</div>
+    </div>
   </div>
 </template>
 
@@ -23,6 +34,7 @@
 import { ref } from 'vue'
 import { mapState, mapMutations, mapActions } from "vuex";
 import { Graph_Padding, Graph_Block_Size, Graph_Block_Margin, Graph_Block_Ellipsis_Height, Graph_Block_Size_Placeholder} from "../CONSTANT.js";
+import Puzzle from "./Puzzle.vue";
 import {v4 as uuid} from 'uuid';
 export default {
   name: "GraphView",
@@ -31,8 +43,13 @@ export default {
       rowTree: [],
       columnTree: [],
       cell: [],
-      hlineTop: 70,
-      vlineLeft: 70,
+      canvas: [],
+      rowDom: [],
+      columnDom: [],
+      cellDom: [],
+      canvasDom: [],
+      hlineTop: 140,
+      vlineLeft: 140,
       viewHeight: 0,
       viewWidth: 0,
       dropoverBox: "",
@@ -67,8 +84,8 @@ export default {
     calcHVLine() { // 计算水平和垂直参考线的位置
       let rDepth = this.calcDepth(this.rowTree), cDepth = this.calcDepth(this.columnTree);
       console.log(rDepth, cDepth)
-      this.hlineTop = cDepth > 0 ? Graph_Padding.top + Graph_Padding.bottom + cDepth * Graph_Block_Size.height : 70;
-      this.vlineLeft = rDepth > 0 ? Graph_Padding.left + Graph_Padding.right + rDepth * Graph_Block_Size.width : 70;
+      this.hlineTop = cDepth > 0 ? Graph_Padding.top + Graph_Padding.bottom + cDepth * Graph_Block_Size.height : 140;
+      this.vlineLeft = rDepth > 0 ? Graph_Padding.left + Graph_Padding.right + rDepth * Graph_Block_Size.width : 140;
       return {rDepth, cDepth};
     },
     calcPos(tree, curHeight, curDepth, header, totalDepth) { // 计算每个块的configuration, header = 'row' or 'column'
@@ -133,7 +150,7 @@ export default {
       }
     },
     calcGraphConfig() {
-      let graphViewDom = document.getElementById("graphView");
+      let tableCanvasDom = document.getElementById("tableCanvas");
       let {rDepth, cDepth} = this.calcHVLine();
       this.calcPos(this.rowTree, 0, 0, "row", rDepth);
       this.calcPos(this.columnTree, 0, 0, "column", cDepth);
@@ -141,18 +158,39 @@ export default {
       this.calcPosForCell();
     },
     clearGraph() {
-      let graphViewDom = document.getElementById("graphView");
-      for(let i = 0; i < graphViewDom.children.length; ) {
-        let c = graphViewDom.children[i];
-        if(c.id == "hline" || c.id == "vline" || c.classList.contains('graphviewBox')) {
-          i++; 
-          continue;
-        }
-        graphViewDom.removeChild(c);
-      }
+      // let graphCanvasDom = document.getElementById("graphCanvas");
+      // let tableCanvasDom = document.getElementById("tableCanvas");
+      // for(let i = 0; i < graphCanvasDom.children.length; ) {
+      //   let c = graphCanvasDom.children[i];
+      //   if(c.id == "tableCanvas" || c.id == "contextmenu") {
+      //     i++; 
+      //     continue;
+      //   }
+      //   graphCanvasDom.removeChild(c);
+      // }
+      // for(let i = 0; i < tableCanvasDom.children.length; ) {
+      //   let c = tableCanvasDom.children[i];
+      //   if(c.classList.contains('tableCanvasBox')) {
+      //     i++; 
+      //     continue;
+      //   }
+      //   tableCanvasDom.removeChild(c);
+      // }
+      this.canvasDom = [];
+      this.rowDom = [];
+      this.columnDom = [];
+      this.cellDom = [];
     },
     deleteBlock(bid, channel) {
-      if(channel == 'cell') {
+      if(channel == 'canvas') {
+        for(let i = 0; i < this.canvas.length; i++) {
+          if(this.canvas[i].blockId == bid) {
+            let tmp = this.canvas[i];
+            this.canvas.splice(i, 1);
+            return tmp;
+          }
+        }
+      } else if(channel == 'cell') {
         for(let i = 0; i < this.cell.length; i++) {
           if(this.cell[i].blockId == bid) {
             let tmp = this.cell[i];
@@ -182,18 +220,20 @@ export default {
       }
     },
     highlightBlock(target) {
-      let graphViewDom = document.getElementById("graphView");
-      for(let i = 0; i < graphViewDom.children.length; i++) {
-        let c = graphViewDom.children[i];
+      let tableCanvasDom = document.getElementById("tableCanvas");
+      for(let i = 0; i < tableCanvasDom.children.length; i++) {
+        let c = tableCanvasDom.children[i];
         c.classList.remove('highlightedBlock');
       }
       target.classList.add('highlightedBlock');
     },
     handleBlockDragstart(e) {
+      console.log(e)
       this.$store.commit("storeDraggedItemType", 'block');
       this.$store.commit("storeDraggedBlock", e.target);
     },
     handleBlockDragover(e) {
+      e.stopPropagation();
       if(this.draggedItemType == 'block' && e.target.dataset.bid == this.draggedBlock.blockId) {
         return;
       }
@@ -222,6 +262,7 @@ export default {
       }
     },
     handleBlockDrop(e) {
+      e.stopPropagation();
       let dir = "";
       if(e.target.classList.contains('lefthover')) {
         dir = 'left';
@@ -400,6 +441,7 @@ export default {
       this.drawGraph();
     },
     handleBlockDragleave(e) {
+      e.stopPropagation();
       e.target.classList.remove('lefthover');
       e.target.classList.remove('righthover');
       e.target.classList.remove('tophover');
@@ -444,14 +486,16 @@ export default {
       }
     },
     handleCellBlockDragover(e) {
+      e.stopPropagation();
       if(this.draggedItemType == 'block' && e.target.dataset.bid == this.draggedBlock.blockId) {
         return;
       }
       e.preventDefault();
-      e.target.classList.add('graphviewBoxHighlight');
+      e.target.classList.add('tableCanvasBoxHighlight');
     },
     handleCellBlockDrop(e) {
-      e.target.classList.remove("graphviewBoxHighlight");
+      e.stopPropagation();
+      e.target.classList.remove("tableCanvasBoxHighlight");
       for(let i = 0; i < this.cell.length; i++) {
         if(this.cell[i].rowParentId == e.target.dataset.rowParentId && this.cell[i].colParentId == e.target.dataset.colParentId) {
           let rowParentId = this.cell[i].rowParentId, colParentId = this.cell[i].colParentId;
@@ -484,25 +528,34 @@ export default {
       this.drawGraph();
     },
     handleCellBlockDragleave(e) {
-      e.target.classList.remove("graphviewBoxHighlight");
+      e.stopPropagation();
+      e.target.classList.remove("tableCanvasBoxHighlight");
     },
-    drawGraphChannel(arr, channel, graphViewDom) {
+    drawGraphChannel(arr, channel, dom) {
       if(!(arr instanceof Array)) return;
       for(let i = 0; i < arr.length; i++) {
         let block = arr[i];
-        let newDom = document.createElement("div");
+        // let newDom = document.createElement("div");
+        let newDom = new Object();
         newDom.className = (arr[i].blockId == '-1') ? 'placeholderBlock' : 'block';
-        newDom.style.position = 'absolute';
-        newDom.style.top = block.top + 'px';
-        newDom.style.left = block.left + 'px';
-        newDom.style.height = block.height + 'px';
-        newDom.style.width = block.width + 'px';
-        newDom.dataset.bid = block.blockId;
-        newDom.dataset.channel = channel;
+        // newDom.style.position = 'absolute';
+        // newDom.style.top = block.top + 'px';
+        // newDom.style.left = block.left + 'px';
+        // newDom.style.height = block.height + 'px';
+        // newDom.style.width = block.width + 'px';
+        newDom.style = `position: absolute; top: ${block.top}px; left: ${block.left}px; height: ${block.height}px; width: ${block.width}px`;
+        // newDom.dataset.bid = block.blockId;
+        // newDom.dataset.channel = channel;
+        newDom.dataset = {
+          bid: block.blockId,
+          channel: channel,
+        }
         if(block.rowParentId) newDom.dataset.rowParentId = block.rowParentId;
         if(block.colParentId) newDom.dataset.colParentId = block.colParentId;
         let valueList = block.values ? block.values : block.function ? [block.function] : this.getValueList(block.attrName);
-        if(channel == 'row') {
+        if(channel == 'canvas') {
+          newDom.innerText = valueList.length > 1 ? `${valueList[0]} ... ${valueList[valueList.length-1]}` : valueList[0];
+        } else if(channel == 'row') {
           newDom.innerText = valueList.length > 1 ? `${valueList[0]}\n...\n${valueList[valueList.length-1]}` : valueList[0];
         } else if(channel == 'column') {
           newDom.innerText = valueList.length > 1 ? `${valueList[0]} ... ${valueList[valueList.length-1]}` : valueList[0];
@@ -518,17 +571,24 @@ export default {
         newDom.ondragleave = (channel == 'cell') ? this.handleCellBlockDragleave : this.handleBlockDragleave;
         newDom.oncontextmenu = this.openMenu;
         newDom.onclick = this.handleBlockClick;
-        graphViewDom.appendChild(newDom);
+        // dom.appendChild(newDom);
+        dom.push(newDom);
         if(block.children) {
-          this.drawGraphChannel(block.children, channel, graphViewDom); 
+          this.drawGraphChannel(block.children, channel, dom); 
         }
       }
     },
     drawGraph() {
-      let graphViewDom = document.getElementById("graphView");
-      this.drawGraphChannel(this.rowTree, 'row', graphViewDom);
-      this.drawGraphChannel(this.columnTree, 'column', graphViewDom);
-      this.drawGraphChannel(this.cell, 'cell', graphViewDom);
+      // let graphCanvasDom = document.getElementById("graphCanvas");
+      // let tableCanvasDom = document.getElementById("tableCanvas");
+      // this.drawGraphChannel(this.canvas, 'canvas', graphCanvasDom)
+      // this.drawGraphChannel(this.rowTree, 'row', tableCanvasDom);
+      // this.drawGraphChannel(this.columnTree, 'column', tableCanvasDom);
+      // this.drawGraphChannel(this.cell, 'cell', tableCanvasDom);
+      this.drawGraphChannel(this.canvas, 'canvas', this.canvasDom)
+      this.drawGraphChannel(this.rowTree, 'row', this.rowDom);
+      this.drawGraphChannel(this.columnTree, 'column', this.columnDom);
+      this.drawGraphChannel(this.cell, 'cell', this.cellDom);
     },
     fillCell() { // 为cell channel添加一些空白的blocks
       for(let i = 0; i < this.cell.length; ) {
@@ -606,7 +666,7 @@ export default {
 		// 	const offset_y = linelen / 2 * Math.sin(angle);
 		// 	const real_left = start_left + offset_x;
 		// 	const real_top = start_top + offset_y;
-		// 	let container = document.getElementById("graphView");
+		// 	let container = document.getElementById("tableCanvas");
 		// 	let line = document.createElement("div");
 		// 	let arrow = document.createElement("div");
 		// 	arrow.className = "arrow-right";
@@ -623,7 +683,9 @@ export default {
 		// 	container.appendChild(line);
 		// },
     addPoint(block, channel) {
-      if(channel == "LB") {
+      if(channel == "GC") { // graphcanvas
+        this.canvas.push(block);
+      } if(channel == "LB") {
         this.rowTree.push(block);
       } else if(channel == "RT") {
         this.columnTree.push(block);
@@ -638,12 +700,14 @@ export default {
       }
     },
     handleDragOver(e, pos) {
+      e.stopPropagation();
       if(pos == "LT" || pos == "RB") return;
       e.preventDefault();
       console.log("dragover, ", pos);
       this.dropoverBox = pos;
     },
     handleDrop(e, pos) {
+      e.stopPropagation();
       e.preventDefault();
       console.log("drop, ", pos);
       this.dropoverBox = "";
@@ -652,19 +716,25 @@ export default {
         let newBlock = {
           attrName: this.draggedAttr.name,
           blockId: uuid(),
+          left: e.offsetX,
+          top: e.offsetY,
         };
         this.addPoint(newBlock, pos);
       } else {
         // 首先将被拖动的块从树中删除
         let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
+        console.log(tmp)
         tmp.children = undefined;
+        tmp.left = e.offsetX;
+        tmp.top = e.offsetY;
         this.addPoint(tmp, pos);
       }
       this.calcGraphConfig();
       this.clearGraph();
       this.drawGraph();
     },
-    handleDragLeave() {
+    handleDragLeave(e) {
+      e.stopPropagation();
       this.dropoverBox = "";
     },
     updateBlock(block) {
@@ -697,36 +767,50 @@ export default {
     // 设置回调
     this.$bus.on('update', this.updateBlock);
 
-    let graphViewDom = document.getElementById("graphView");
-    this.viewHeight = graphViewDom.scrollHeight;
-    this.viewWidth = graphViewDom.scrollWidth;
+    let tableCanvasDom = document.getElementById("tableCanvas");
+    this.viewHeight = tableCanvasDom.scrollHeight;
+    this.viewWidth = tableCanvasDom.scrollWidth;
     this.calcGraphConfig();
     this.drawGraph();
   },
   updated() {
-    let graphViewDom = document.getElementById("graphView");
-    this.viewHeight = graphViewDom.scrollHeight;
-    this.viewWidth = graphViewDom.scrollWidth;
+    let tableCanvasDom = document.getElementById("tableCanvas");
+    this.viewHeight = tableCanvasDom.scrollHeight;
+    this.viewWidth = tableCanvasDom.scrollWidth;
+  },
+  components: {
+    Puzzle
   }
 }
 </script>
 
 <style>
-.graphviewList {
-  background: white;
+.graphCanvas {
   width: 100%;
-  height: calc(100% - 28px);
-  margin-top: 5px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.tableCanvas {
+  width: 50%;
+  height: 50%;
+  /* margin-top: 5px; */
+  left: 25%;
+  top: 25%;
   position: relative;
   overflow: scroll;
+  z-index: 2000;
+  /* border: 1px solid #aaaaaa; */
 }
 
-.graphviewBox {
+.tableCanvasBox {
   position: absolute;
   background: white;
+  border: 1px solid #dadada;
 }
 
-.graphviewBoxHighlight {
+.tableCanvasBoxHighlight {
   background: #cacaca !important;
 }
 
@@ -745,12 +829,14 @@ export default {
   font-family: Inter-Light-7, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  z-index: 3000;
 }
 
 .placeholderBlock {
   border: 2px dashed #dadada;
   cursor: pointer;
   text-align: center;
+  z-index: 3000;
 }
 
 .lefthover {

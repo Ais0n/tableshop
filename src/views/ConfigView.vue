@@ -189,7 +189,7 @@ export default {
   height: calc(100% - 55px);
   width: 20%;
   position: absolute;
-  padding: 15px 15px 15px 15px;
+  padding: 15px 20px 15px 20px;
 }
 
 .configAttrHeader {
