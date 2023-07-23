@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "15644329",
+      "name": "过滤",
+      "font_class": "guolv",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "36571483",
+      "name": "过滤-copy",
+      "font_class": "guolv-copy",
+      "unicode": "e854",
+      "unicode_decimal": 59476
+    },
+    {
+      "icon_id": "26393489",
+      "name": "icon_剪刀、剪切",
+      "font_class": "split",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
       "icon_id": "34198308",
       "name": "自动求和",
       "font_class": "sum",

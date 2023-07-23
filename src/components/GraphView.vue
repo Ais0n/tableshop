@@ -25,7 +25,26 @@
       id="contextmenu"
     >
       <div class="cmOption" @click="cmDelete">Delete</div>
-      <div class="cmOption">Edit values</div>
+      <div class="cmOption" @click="cmEditValues">Edit values</div>
+      <a-modal v-model:visible="modalopen" title="Edit values" @ok="()=>{}" :zIndex="6000">
+        <div v-if="cmBlockType=='Function'">
+          Function:
+          <a-select v-model:value="cmFunctionValue" style="margin-left: 15px">
+            <a-select-option value="sum">sum</a-select-option>
+            <!-- <a-select-option value="ttt">ttt</a-select-option> -->
+          </a-select> 
+        </div>
+        <!-- <div v-else class="cmBlockValueList">
+          <div v-if="cmBlockType=='Entity'" class="cmBlockValueListCell cmBlockValueListCellHeader">{{cmBlock.attrName}}</div>
+          <div v-else> Values </div>
+          <div v-for="(value, index) in cmBlockValueList" class="cmBlockValueListCell" :contenteditable="cmSelectCellIndex == index" :class="{'cellDefault': true, 'cellSelect': cmSelectCellIndex == index}" @click="handlecmSelectCell($event, index)">
+            {{ value }}
+          </div>
+        </div> -->
+        <div v-else class="cmBlockValueList">
+          <Spreadsheet :header="cmBlockType == 'Entity' ? [cmBlock.attrName] : []" :table="cmBlockValueList_t" @cell-change="handlecmBlockValueListCellChange"></Spreadsheet>
+        </div>
+      </a-modal>
     </div>
   </div>
 </template>
@@ -36,6 +55,8 @@ import { mapState, mapMutations, mapActions } from "vuex";
 import { Graph_Padding, Graph_Block_Size, Graph_Block_Margin, Graph_Block_Ellipsis_Height, Graph_Block_Size_Placeholder} from "../CONSTANT.js";
 import Puzzle from "./Puzzle.vue";
 import {v4 as uuid} from 'uuid';
+import Spreadsheet from "./Spreadsheet/Index.vue";
+import Utils from "../utils.js";
 export default {
   name: "GraphView",
   data() {
@@ -56,11 +77,21 @@ export default {
       cmLeft: 0,
       cmTop: 0,
       cmVisible: false,
-      cmAttr: undefined,
+      cmBlockDom: undefined,
+      cmBlock: undefined,
+      cmBlockOriginalValueList: [],
+      cmBlockValueList: [],
+      cmBlockType: "",
+      cmFunctionValue: "",
+      // cmSelectCellIndex: -1,
+      modalopen: false,
     });
   },
   computed: {
-    ...mapState(["attrInfo", "draggedAttr", "draggedItemType", "draggedBlock"])
+    ...mapState(["attrInfo", "draggedAttr", "draggedItemType", "draggedBlock"]),
+    cmBlockValueList_t() {
+      return Utils.transposeTable([this.cmBlockValueList]);
+    }
   },
   watch: {
     cmVisible(value) {
@@ -84,8 +115,8 @@ export default {
     calcHVLine() { // 计算水平和垂直参考线的位置
       let rDepth = this.calcDepth(this.rowTree), cDepth = this.calcDepth(this.columnTree);
       console.log(rDepth, cDepth)
-      this.hlineTop = cDepth > 0 ? Graph_Padding.top + Graph_Padding.bottom + cDepth * Graph_Block_Size.height : 140;
-      this.vlineLeft = rDepth > 0 ? Graph_Padding.left + Graph_Padding.right + rDepth * Graph_Block_Size.width : 140;
+      this.hlineTop = cDepth > 0 ? Graph_Padding.top + cDepth * Graph_Block_Size.height : 140;
+      this.vlineLeft = rDepth > 0 ? Graph_Padding.left + rDepth * Graph_Block_Size.width : 140;
       return {rDepth, cDepth};
     },
     calcPos(tree, curHeight, curDepth, header, totalDepth) { // 计算每个块的configuration, header = 'row' or 'column'
@@ -97,7 +128,7 @@ export default {
             tree[i].top = tree[i].children[0].top;
             let height = 0;
             for(let j = 0; j < tree[i].children.length; j++) {
-              height += tree[i].children[j].height + (j ? Graph_Block_Margin : 0);
+              height += tree[i].children[j].height;
             }
             tree[i].height = height;
             tree[i].left = Graph_Padding.left + curDepth * Graph_Block_Size.width;
@@ -106,7 +137,7 @@ export default {
             tree[i].left = tree[i].children[0].left;
             let width = 0;
             for(let j = 0; j < tree[i].children.length; j++) {
-              width += tree[i].children[j].width + (j ? Graph_Block_Margin : 0);
+              width += tree[i].children[j].width;
             }
             tree[i].width = width;
             tree[i].top = Graph_Padding.top + curDepth * Graph_Block_Size.height;
@@ -114,19 +145,19 @@ export default {
           }
         } else {
           if(header == "row") {
-            tree[i].top = curHeight + this.hlineTop + Graph_Padding.top;
-            let valueList = tree[i].values ? tree[i].values : tree[i].function ? [tree[i].function] : this.getValueList(tree[i].attrName);
-            tree[i].height = valueList.length > 1 ? 2 * Graph_Block_Size.height + Graph_Block_Ellipsis_Height : Graph_Block_Size.height;
+            tree[i].top = curHeight + this.hlineTop;
+            // let valueList = tree[i].values ? tree[i].values : tree[i].function ? [tree[i].function] : this.getValueList(tree[i].attrName);
+            tree[i].height = Graph_Block_Size.height;
             tree[i].left = Graph_Padding.left + curDepth * Graph_Block_Size.width;
             tree[i].width = Graph_Block_Size.width * (totalDepth - curDepth);
-            curHeight += tree[i].height + Graph_Block_Margin;
+            curHeight += tree[i].height;
           } else {
-            tree[i].left = curHeight + this.vlineLeft + Graph_Padding.left;
-            let valueList = tree[i].values ? tree[i].values : tree[i].function ? [tree[i].function] : this.getValueList(tree[i].attrName);
-            tree[i].width = valueList.length > 1 ? 2 * Graph_Block_Size.width + Graph_Block_Ellipsis_Height : Graph_Block_Size.width;
+            tree[i].left = curHeight + this.vlineLeft;
+            // let valueList = tree[i].values ? tree[i].values : tree[i].function ? [tree[i].function] : this.getValueList(tree[i].attrName);
+            tree[i].width = Graph_Block_Size.width;
             tree[i].top = Graph_Padding.top + curDepth * Graph_Block_Size.height;
             tree[i].height = Graph_Block_Size.height * (totalDepth - curDepth);
-            curHeight += tree[i].width + Graph_Block_Margin;
+            curHeight += tree[i].width;
           }
         }
       }
@@ -143,8 +174,8 @@ export default {
           cBlock = this.findBlock(this.columnTree, this.cell[i].colParentId);
           cBlock = cBlock.arr[cBlock.index];
         }
-        this.cell[i].left = cBlock ? cBlock.left : this.vlineLeft + Graph_Block_Margin;
-        this.cell[i].top = rBlock ? rBlock.top : this.hlineTop + Graph_Block_Margin;
+        this.cell[i].left = cBlock ? cBlock.left : this.vlineLeft;
+        this.cell[i].top = rBlock ? rBlock.top : this.hlineTop;
         this.cell[i].height = rBlock ? rBlock.height : Graph_Block_Size_Placeholder.height;
         this.cell[i].width = cBlock ? cBlock.width : Graph_Block_Size_Placeholder.width;
       }
@@ -224,8 +255,22 @@ export default {
       for(let i = 0; i < tableCanvasDom.children.length; i++) {
         let c = tableCanvasDom.children[i];
         c.classList.remove('highlightedBlock');
+        for(let j = 0; j < c.children.length; j++) {
+          c.children[j].classList.remove('highlightedBlock');
+        }
       }
+      // let tmp = document.getElementsByClassName("highlightedBlock");
+      // console.log(tmp)
+      // for(let i = 0; i < tmp.length; i++) {
+      //   tmp[i].classList.remove('highlightedBlock');
+      // }
       target.classList.add('highlightedBlock');
+      for(let i = 0; i < target.children.length; i++) {
+        let c = target.children[i];
+        if(c.dataset && (c.dataset.dir == 'left' || c.dataset.dir == 'bottom')) {
+          c.classList.add('highlightedBlock');
+        }
+      }
     },
     handleBlockDragstart(e) {
       console.log(e)
@@ -457,7 +502,7 @@ export default {
     openMenu(e) {
       e.preventDefault();
       let source = (e.target.dataset.channel == 'row') ? this.rowTree : (e.target.dataset.channel == 'column') ? this.columnTree : this.cell;
-      this.cmAttr = e.target;
+      this.cmBlockDom = e.target;
       this.cmVisible = true;
       this.cmLeft = e.clientX;
       this.cmTop = e.clientY;
@@ -512,7 +557,7 @@ export default {
             if(tmp.blockId == rowParentId) {
               tmp.colParentId = colParentId;
             } else if(tmp.blockId == colParentId) {
-              tmo.colParentId = tmp.rowParentId;
+              tmp.colParentId = tmp.rowParentId;
               tmp.rowParentId = rowParentId;
             } else {
               tmp.rowParentId = rowParentId;
@@ -538,12 +583,19 @@ export default {
         // let newDom = document.createElement("div");
         let newDom = new Object();
         newDom.className = (arr[i].blockId == '-1') ? 'placeholderBlock' : 'block';
+        newDom.style = {
+          position: 'absolute',
+          top: block.top,
+          left: block.left,
+          height: block.height,
+          width: block.width,
+        };
         // newDom.style.position = 'absolute';
         // newDom.style.top = block.top + 'px';
         // newDom.style.left = block.left + 'px';
         // newDom.style.height = block.height + 'px';
         // newDom.style.width = block.width + 'px';
-        newDom.style = `position: absolute; top: ${block.top}px; left: ${block.left}px; height: ${block.height}px; width: ${block.width}px`;
+        // newDom.style = `position: absolute; top: ${block.top}px; left: ${block.left}px; height: ${block.height}px; width: ${block.width}px`;
         // newDom.dataset.bid = block.blockId;
         // newDom.dataset.channel = channel;
         newDom.dataset = {
@@ -556,7 +608,7 @@ export default {
         if(channel == 'canvas') {
           newDom.innerText = valueList.length > 1 ? `${valueList[0]} ... ${valueList[valueList.length-1]}` : valueList[0];
         } else if(channel == 'row') {
-          newDom.innerText = valueList.length > 1 ? `${valueList[0]}\n...\n${valueList[valueList.length-1]}` : valueList[0];
+          newDom.innerText = valueList.length > 1 ? `${valueList[0]} \n ... \n${valueList[valueList.length-1]}` : valueList[0];
         } else if(channel == 'column') {
           newDom.innerText = valueList.length > 1 ? `${valueList[0]} ... ${valueList[valueList.length-1]}` : valueList[0];
         } else {
@@ -655,33 +707,6 @@ export default {
         }
       }
     },
-    // drawLine(conf) {
-		// 	const {start_left, start_top, end_left, end_top, type} = conf;
-		// 	const delta_x = end_left - start_left;
-		// 	const delta_y = end_top - start_top;
-		// 	const linelen = Math.sqrt(delta_x * delta_x + delta_y * delta_y);
-		// 	const angle = Math.atan2(delta_y, delta_x); // unit: rad
-		// 	//because the rotation center is the center of the line, need a offset to adjust
-		// 	const offset_x =  linelen / 2 * (Math.cos(angle) - 1);
-		// 	const offset_y = linelen / 2 * Math.sin(angle);
-		// 	const real_left = start_left + offset_x;
-		// 	const real_top = start_top + offset_y;
-		// 	let container = document.getElementById("tableCanvas");
-		// 	let line = document.createElement("div");
-		// 	let arrow = document.createElement("div");
-		// 	arrow.className = "arrow-right";
-		// 	arrow.style.borderLeft = type === "solid" ? 
-		// 			"10px solid rgba(180, 179, 179, 1)" : "10px solid rgba(180, 179, 179, 0.3)";
-		// 	line.appendChild(arrow);
-		// 	line.className = "linediv";
-		// 	line.style.left = String(real_left) + "px";
-		// 	line.style.top = String(real_top) + "px";
-		// 	line.style.width = String(linelen-5) + "px";
-		// 	line.style.borderTopStyle = type;
-		// 	line.style.borderTopWidth = type === "solid" ? "2px" : "1px";
-		// 	line.style.transform = "rotateZ(" + String(angle / Math.PI * 180) + "deg)";
-		// 	container.appendChild(line);
-		// },
     addPoint(block, channel) {
       if(channel == "GC") { // graphcanvas
         this.canvas.push(block);
@@ -718,6 +743,14 @@ export default {
           blockId: uuid(),
           left: e.offsetX,
           top: e.offsetY,
+          width: Graph_Block_Size.width,
+          height: Graph_Block_Size.height,
+        };
+        this.addPoint(newBlock, pos);
+      } else if (this.draggedItemType == 'function') {
+        let newBlock = {
+          function: 'sum',
+          blockId: uuid()
         };
         this.addPoint(newBlock, pos);
       } else {
@@ -727,6 +760,8 @@ export default {
         tmp.children = undefined;
         tmp.left = e.offsetX;
         tmp.top = e.offsetY;
+        tmp.width = Graph_Block_Size.width;
+        tmp.height = Graph_Block_Size.height;
         this.addPoint(tmp, pos);
       }
       this.calcGraphConfig();
@@ -757,10 +792,32 @@ export default {
     },
     cmDelete(e) {
       this.cmVisible = false;
-      this.deleteBlock(this.cmAttr.dataset.bid, this.cmAttr.dataset.channel);
+      this.deleteBlock(this.cmBlockDom.dataset.bid, this.cmBlockDom.dataset.channel);
       this.calcGraphConfig();
       this.clearGraph();
       this.drawGraph();
+    },
+    cmEditValues(e) {
+      this.cmVisible = false;
+      console.log(this.cmBlockDom);
+      let channel = this.cmBlockDom.dataset.channel;
+      let source = (channel == 'row') ? this.rowTree : (channel == 'column') ? this.columnTree : (channel == 'cell') ? this.cell : this.canvas;
+      let block = this.findBlock(source, this.cmBlockDom.dataset.bid);
+      if(!block) return;
+      block = block.arr[block.index];
+      console.log(block);
+      let valueList = block.values ? block.values : block.function ? [block.function] : this.getValueList(block.attrName);
+      let blockType = block.values ? 'Values' : block.function ? 'Function' : 'Entity';
+      this.cmBlock = block;
+      this.cmBlockOriginalValueList = valueList;
+      this.cmBlockValueList = valueList;
+      this.cmBlockType = blockType;
+      this.cmFunctionValue = block.function;
+      this.modalopen = true;
+    },
+    handlecmBlockValueListCellChange(value) {
+      console.log(value);
+      this.cmBlockValueList = Utils.transposeTable(value)[0];
     }
   },
   mounted() {
@@ -779,7 +836,8 @@ export default {
     this.viewWidth = tableCanvasDom.scrollWidth;
   },
   components: {
-    Puzzle
+    Puzzle,
+    Spreadsheet
   }
 }
 </script>
@@ -801,13 +859,14 @@ export default {
   position: relative;
   overflow: scroll;
   z-index: 2000;
-  /* border: 1px solid #aaaaaa; */
+  /* border: 1px solid #526D82; */
 }
 
 .tableCanvasBox {
   position: absolute;
   background: white;
-  border: 1px solid #dadada;
+  /* border: 1px solid #dadada; */
+  box-shadow: 0 0 0 1px #dadada;
 }
 
 .tableCanvasBoxHighlight {
@@ -823,20 +882,26 @@ export default {
 }
 
 .block {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   cursor: pointer;
   text-align: center;
   font-family: Inter-Light-7, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   z-index: 3000;
+  box-shadow: 0 0 0 1px black;
+  background-color: white;
+  /* border-collapse: collapse; */
 }
 
 .placeholderBlock {
-  border: 2px dashed #dadada;
+  /* border: 2px dashed #dadada; */
   cursor: pointer;
   text-align: center;
-  z-index: 3000;
+  z-index: 2500;
+  box-shadow: 0 0 0 1px #dadada;
+  background-color: white;
+  /* border-collapse: collapse; */
 }
 
 .lefthover {
@@ -879,7 +944,17 @@ export default {
 }
 
 .highlightedBlock {
-  border: 2px solid black;
+  /* border: 2px solid black; */
+  /* box-shadow: 0 0 0 1px black; */
+  background-color: #dddddd !important;
+}
+
+.highlightedBlock .verticalSemiCircle {
+  border-right: 1px solid #dddddd !important;
+}
+
+.highlightedBlock .horizontalSemiCircle {
+  border-top: 1px solid #dddddd !important;
 }
 
 .cmOption {
@@ -892,5 +967,37 @@ export default {
 
 .cmOption:hover {
   background-color: #eaeaea;
+}
+
+.cmBlockValueList {
+  width: 150px;
+}
+
+.cmBlockValueListCell {
+  border: 1px solid #bbb;
+  min-height: 20px;
+  line-height: 20px;
+  vertical-align: center;
+  padding: 5px 5px 5px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  cursor: pointer;
+}
+
+.cmBlockValueListCellHeader {
+  font-family: Inter-Bold-4, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.cellDefault {
+  /* pointer-events: none; */
+}
+
+.cellSelect {
+  border: 2px solid;
 }
 </style>

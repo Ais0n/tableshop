@@ -2,6 +2,7 @@
   <div class="targetview">
     <div class="toolbar">
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleSigmaDragStart">&#xe853;</i>
+      <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleCutDragStart">&#xe650;</i>
     </div>
     <div class="graphviewSubview">
       <GraphView/>
@@ -28,6 +29,9 @@ export default {
       console.log("drag")
       this.$store.commit("storeDraggedItemType", 'function');
     },
+    handleCutDragStart() {
+      
+    }
   },
   components: {
     GraphView,

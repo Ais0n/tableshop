@@ -110,6 +110,14 @@ html {
   background-color: #f3f3f3;
 }
 
+.ant-select-dropdown{
+ z-index: 9999 !important;
+}
+
+.ant-popover {
+  z-index: 9999 !important;
+}
+
 @font-face{
   font-family: 'Inter-Black-3';
   src: url("./assets/fonts/Inter-Black-3.otf");

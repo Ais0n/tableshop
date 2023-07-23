@@ -11,15 +11,15 @@ export const EXAMPLE_DATA = [
 ]
 
 export const Graph_Padding = {
-  top: 5,
-  bottom: 5,
-  left: 5,
-  right: 5,
+  top: 1,
+  bottom: 1,
+  left: 10,
+  right: 10,
 };
 
 export const Graph_Block_Size = {
-  width: 60,
-  height: 40,
+  width: 140,
+  height: 60,
 };
 
 export const Graph_Block_Size_Placeholder = {
@@ -29,6 +29,8 @@ export const Graph_Block_Size_Placeholder = {
 
 export const Graph_Block_Ellipsis_Height = 20;
 export const Graph_Block_Margin = 5;
+
+export const Puzzle_Radius = 10;
 
 
 // export const EXAMPLE_DATA = [
