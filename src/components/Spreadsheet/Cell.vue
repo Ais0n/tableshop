@@ -7,7 +7,8 @@
     @blur="handleChange"
     @click="handleClick"
   >
-    {{realValue}}    
+    {{realValue}}
+    <slot title="toolbar"></slot>
   </div>
 </template>
 

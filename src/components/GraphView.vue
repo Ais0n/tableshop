@@ -24,8 +24,12 @@
       class="contextmenu"
       id="contextmenu"
     >
+      <!-- Options -->
       <div class="cmOption" @click="cmDelete">Delete</div>
+      <div class="cmOption" @click="cmExpand">Expand</div>
       <div class="cmOption" @click="cmEditValues">Edit values</div>
+      <div class="cmOption" @click="cmSeparate">Separate</div>
+      <!-- Modal For EditValues -->
       <a-modal v-model:visible="modalopen" title="Edit values" @ok="()=>{}" :zIndex="6000">
         <div v-if="cmBlockType=='Function'">
           Function:
@@ -34,15 +38,22 @@
             <!-- <a-select-option value="ttt">ttt</a-select-option> -->
           </a-select> 
         </div>
-        <!-- <div v-else class="cmBlockValueList">
-          <div v-if="cmBlockType=='Entity'" class="cmBlockValueListCell cmBlockValueListCellHeader">{{cmBlock.attrName}}</div>
-          <div v-else> Values </div>
-          <div v-for="(value, index) in cmBlockValueList" class="cmBlockValueListCell" :contenteditable="cmSelectCellIndex == index" :class="{'cellDefault': true, 'cellSelect': cmSelectCellIndex == index}" @click="handlecmSelectCell($event, index)">
-            {{ value }}
-          </div>
-        </div> -->
         <div v-else class="cmBlockValueList">
-          <Spreadsheet :header="cmBlockType == 'Entity' ? [cmBlock.attrName] : []" :table="cmBlockValueList_t" @cell-change="handlecmBlockValueListCellChange"></Spreadsheet>
+          <Spreadsheet v-for="(table, index) in cmBlockValueLists_t" :key="`cmBlockValueList_${JSON.stringify(table)}`" :header="cmBlockType == 'Entity' ? [cmBlock.attrName] : []" :table="table" 
+          @cell-change="handlecmBlockValueListCellChange(index, $event)" :qsep="cmSeparateMode == 'quickSeparate'" @cell-separate="handlecmQsep(index, $event)" style="display: inline-block; margin-left: 15px">
+            <a-popover trigger="click" placement="right">
+              <template #content>
+                <p> test </p>
+              </template>
+              <i class="iconfont iconFilter"> &#xe6bf; </i>
+            </a-popover>
+          </Spreadsheet>
+          <div class="separateButtonMenu" style="padding-left: calc(50% - 110px)">
+            <a-button class="separateButton"> Separate </a-button>
+            <a-radio-group button-style="solid" :value="cmSeparateMode">
+              <a-radio-button class="separateButton"  @click="setQuickSeparate" value="quickSeparate"> Quick separate </a-radio-button>
+            </a-radio-group>
+          </div>
         </div>
       </a-modal>
     </div>
@@ -80,17 +91,23 @@ export default {
       cmBlockDom: undefined,
       cmBlock: undefined,
       cmBlockOriginalValueList: [],
-      cmBlockValueList: [],
+      cmBlockValueLists: [],
       cmBlockType: "",
       cmFunctionValue: "",
+      cmSeparateMode: "separate",
       // cmSelectCellIndex: -1,
       modalopen: false,
     });
   },
   computed: {
     ...mapState(["attrInfo", "draggedAttr", "draggedItemType", "draggedBlock"]),
-    cmBlockValueList_t() {
-      return Utils.transposeTable([this.cmBlockValueList]);
+    cmBlockValueLists_t() {
+      let res = [];
+      for(let i = 0; i < this.cmBlockValueLists.length; i++) {
+        res.push(Utils.transposeTable([this.cmBlockValueLists[i]]))
+      }
+      console.log(res);
+      return res;
     }
   },
   watch: {
@@ -810,14 +827,49 @@ export default {
       let blockType = block.values ? 'Values' : block.function ? 'Function' : 'Entity';
       this.cmBlock = block;
       this.cmBlockOriginalValueList = valueList;
-      this.cmBlockValueList = valueList;
+      this.cmBlockValueLists = [valueList];
       this.cmBlockType = blockType;
       this.cmFunctionValue = block.function;
       this.modalopen = true;
     },
-    handlecmBlockValueListCellChange(value) {
+    handlecmBlockValueListCellChange(index, value) {
       console.log(value);
-      this.cmBlockValueList = Utils.transposeTable(value)[0];
+      this.cmBlockValueList[index] = Utils.transposeTable(value)[0];
+    },
+    cmSeparate() {
+      
+    },
+    cmExpand() {
+      
+    },
+    handlecmQsep(index, info) {
+      let separated_indexes = new Set();
+      for(let i = info.row + 1; i < this.cmBlockValueLists[index].length; i++) {
+        separated_indexes.add(i);
+      }
+      this.handleSeparate(index, separated_indexes);
+      this.setQuickSeparate();
+    },
+    handleSeparate(index, separated_indexes) {
+      console.log(index, separated_indexes)
+      let res1 = [], res2 = [];
+      for(let i = 0; i < this.cmBlockValueLists[index].length; i++) {
+        if(separated_indexes.has(i)) {
+          res2.push(this.cmBlockValueLists[index][i]);
+        } else {
+          res1.push(this.cmBlockValueLists[index][i]);
+        }
+      }
+      // this.cmBlockValueLists.splice(index, 1, res1, res2);
+      // this.$forceUpdate()
+      this.cmBlockValueLists = [res1, res2]
+    },
+    setQuickSeparate() {
+      if(this.cmSeparateMode != 'separate') {
+        this.cmSeparateMode = 'separate';
+      } else {
+        this.cmSeparateMode = 'quickSeparate';
+      }
     }
   },
   mounted() {
@@ -970,34 +1022,25 @@ export default {
 }
 
 .cmBlockValueList {
-  width: 150px;
+  /* width: 150px; */
 }
 
-.cmBlockValueListCell {
-  border: 1px solid #bbb;
-  min-height: 20px;
-  line-height: 20px;
-  vertical-align: center;
-  padding: 5px 5px 5px 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  cursor: pointer;
+.iconFilter {
+  /* position: absolute;
+  right: 5px;
+  padding: 7px 5px 1px 5px; */
+  float: right;
 }
 
-.cmBlockValueListCellHeader {
-  font-family: Inter-Bold-4, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+.separateButtonMenu {
+  margin-top: 25px;
+}
+.separateButton {
+  margin-right: 5px;
+  display: inline-block;
 }
 
-.cellDefault {
-  /* pointer-events: none; */
-}
-
-.cellSelect {
-  border: 2px solid;
+.qsep:hover {
+  border-bottom: 2px solid red !important;
 }
 </style>

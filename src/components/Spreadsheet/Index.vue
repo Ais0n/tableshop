@@ -10,14 +10,9 @@
           :cellValue="headerValue"
           :givenId="`${name}_header_${j}`"
           :cellBold="true"
-        />
-        <a-popover trigger="click"
-         placement="right">
-          <template #content>
-            <p> test </p>
-          </template>
-          <i class="iconfont iconFilter"> &#xe6bf; </i>
-        </a-popover>
+        >
+          <slot title="toolbar"></slot>
+        </cell>
       </div>
     </div>
     <div class="row" v-for="(row, i) in Table" :key="`${name}_row_${i}`">
@@ -27,6 +22,7 @@
         :key="`${name}_cell_${i}_${j}`"
       >
         <cell
+          :class="{'qsep': qsep && i != Table.length - 1}"
           :cellValue="rowValue"
           :givenId="`${name}_cell_${i}_${j}`"
           :editable="highlightedId == `${name}_cell_${i}_${j}`"
@@ -81,6 +77,10 @@ export default {
       type: Number,
       default: 0,
     },
+    qsep: { // 用于quick separate
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -176,7 +176,15 @@ export default {
       this.$emit("cell-change", this.Table);
     },
     handleCellClick(name, row, col, id, value) {
-      this.highlightedId = id;
+      if(this.qsep) {
+        this.$emit("cell-separate", {
+          name,
+          row,
+          col
+        })
+      } else {
+        this.highlightedId = id;
+      }
     },
   },
   components: {
@@ -246,12 +254,6 @@ export default {
   display: inline-block;
   float: right;
   cursor: pointer;
-}
-
-.iconFilter {
-  position: absolute;
-  right: 5px;
-  padding: 7px 5px 1px 5px;
 }
 
 /* .row:first-child .cell-container {
