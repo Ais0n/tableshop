@@ -4,18 +4,19 @@
     @dragover="dom.ondragover" @dragstart="dom.ondragstart" @dragleave="dom.ondragleave" @drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
     <pre class="puzzleText">{{dom.innerText}}</pre>
+    <div class="childborder"></div>
     <!-- top -->
-    <div v-if="puzzleType == 'horizontal'" class="horizontalSemiCircle upSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: ${-puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='top'/>
-    <div v-else class="horizontalSemiCircle downSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: -1px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='top'/>
+    <!-- <div v-if="puzzleType == 'horizontal'" class="horizontalSemiCircle upSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: ${-puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='top'/>
+    <div v-else class="horizontalSemiCircle downSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: -1px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='top'/> -->
     <!-- bottom -->
-    <div v-if="puzzleType == 'horizontal'" class="horizontalSemiCircle upSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: ${dom.style.height-puzzle_radius+1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='bottom'/>
-    <div v-else class="horizontalSemiCircle downSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: ${dom.style.height-1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='bottom'/>
+    <!-- <div v-if="puzzleType == 'horizontal'" class="horizontalSemiCircle upSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: ${dom.style.height-puzzle_radius+1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='bottom'/>
+    <div v-else class="horizontalSemiCircle downSemiCircle" :style="`left: ${dom.style.width /2 - puzzle_radius}px; top: ${dom.style.height-1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='bottom'/> -->
     <!-- left  -->
-    <div v-if="puzzleType == 'horizontal'" class="verticalSemiCircle rightSemiCircle" :style="`left: -1px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='left'/>
-    <div v-else class="verticalSemiCircle leftSemiCircle" :style="`left: ${-puzzle_radius}px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='left'/>
+    <!-- <div v-if="puzzleType == 'horizontal'" class="verticalSemiCircle rightSemiCircle" :style="`left: -1px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='left'/>
+    <div v-else class="verticalSemiCircle leftSemiCircle" :style="`left: ${-puzzle_radius}px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='left'/> -->
     <!-- right -->
-    <div v-if="puzzleType == 'horizontal'" class="verticalSemiCircle rightSemiCircle" :style="`left: ${dom.style.width - 1}px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='right'/>
-    <div v-else class="verticalSemiCircle leftSemiCircle" :style="`left: ${dom.style.width-puzzle_radius+1}px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='right'/>
+    <!-- <div v-if="puzzleType == 'horizontal'" class="verticalSemiCircle rightSemiCircle" :style="`left: ${dom.style.width - 1}px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='right'/>
+    <div v-else class="verticalSemiCircle leftSemiCircle" :style="`left: ${dom.style.width-puzzle_radius+1}px; top: ${dom.style.height / 2 - puzzle_radius}px;`" :class="{'phBorder': dom.className == 'placeholderBlock'}" data-dir='right'/> -->
   </div>
 </template>
 
@@ -121,5 +122,23 @@ export default {
 
 .phBorder {
   border-color: #dadada;
+}
+
+.rightchildhover .childborder {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 50px;
+  width: 0;
+  border: 1px solid red;
+}
+
+.bottomchildhover .childborder {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 110px;
+  height: 0;
+  border: 1px solid red;
 }
 </style>

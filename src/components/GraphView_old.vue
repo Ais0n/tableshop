@@ -12,9 +12,9 @@
       <div id="graphViewLeftBottomBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:0px'" @dragover="handleDragOver($event, 'LB')" @drop="handleDrop($event, 'LB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LB'}" @dragleave="handleDragLeave"/>
       <div id="graphViewRightTopBox" class="tableCanvasBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+hlineTop+'px;top:0px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RT')" @drop="handleDrop($event, 'RT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'RT'}" @dragleave="handleDragLeave"/>
       <div id="graphViewRightBottomBox" class="tableCanvasBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RB')" @drop="handleDrop($event, 'RB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'RB'}" @dragleave="handleDragLeave"/>
-      <Puzzle :domSource="rowDom"> </Puzzle>
+      <!-- <Puzzle :domSource="rowDom"> </Puzzle>
       <Puzzle :domSource="columnDom"> </Puzzle>
-      <Puzzle :domSource="cellDom"> </Puzzle>
+      <Puzzle :domSource="cellDom"> </Puzzle> -->
       <!-- <div id="hline" :style="'height: 0; width: '+viewWidth+'px; top: '+hlineTop+'px;'" class="hvline"></div>
       <div id="vline" :style="'height: '+viewHeight+'px; width: 0; left: '+vlineLeft+'px;'" class="hvline"></div> -->
     </div>
@@ -308,29 +308,19 @@ export default {
         e.target.classList.remove('righthover');
         e.target.classList.remove('tophover');
         e.target.classList.remove('bottomhover');
-        e.target.classList.remove("rightchildhover");
-        e.target.classList.remove("bottomchildhover");
       }
       if (x < box.left + 20) {
         clearClass(e);
         e.target.classList.add('lefthover');
       } else if (x > box.right - 20) {
         clearClass(e);
-        if(e.target.dataset.channel == 'column' && y > box.top + 30) {
-          e.target.classList.add('rightchildhover');
-        } else {
-          e.target.classList.add('righthover');
-        }
+        e.target.classList.add('righthover');
       } else if (y < box.top + box.height / 2) {
         clearClass(e);
         e.target.classList.add('tophover');
       } else {
         clearClass(e);
-        if(e.target.dataset.channel == 'row' && x > box.left + 30) {
-          e.target.classList.add("bottomchildhover");
-        } else {
-          e.target.classList.add('bottomhover');
-        }
+        e.target.classList.add('bottomhover');
       }
     },
     handleBlockDrop(e) {
@@ -344,17 +334,11 @@ export default {
         dir = 'top';
       } else if(e.target.classList.contains('bottomhover')) {
         dir = 'bottom';
-      } else if(e.target.classList.contains('rightchildhover')) {
-        dir = 'rightchild';
-      } else if(e.target.classList.contains('bottomchildhover')) {
-        dir = 'bottomchild';
       }
       e.target.classList.remove('lefthover');
       e.target.classList.remove('righthover');
       e.target.classList.remove('tophover');
       e.target.classList.remove('bottomhover');
-      e.target.classList.remove("rightchildhover");
-      e.target.classList.remove("bottomchildhover");
       if (dir != "") e.preventDefault(); else return;
       console.log(dir);
       console.log(e.target);
@@ -381,15 +365,11 @@ export default {
             tmp.children = [targetBlock.arr[targetBlock.index]];
             targetBlock.arr[targetBlock.index] = tmp;
           }
-        } else if(dir == 'right' || dir == 'bottomchild') {
+        } else if(dir == 'right') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
-            if(dir == 'bottomchild' && !this.checkInsertValid(parentBlock)) {
-              throw new Error("Invalid insert");
-              return;
-            }
             if(!parentBlock.children) parentBlock.children = [];
             parentBlock.children.push(this.draggedItemType == 'function' ? {
               function: 'sum',
@@ -397,7 +377,6 @@ export default {
             } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
-              entityMerge: true,
             })
           } else {
             // 首先将被拖动的块从树中删除
@@ -405,9 +384,7 @@ export default {
             // 然后将被拖动的块加入新的子树
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
-            tmp.entityMerge = (dir == 'bottomchild');
-            // tmp.children = targetBlock.arr[targetBlock.index].children;
-            tmp.children = [];
+            tmp.children = targetBlock.arr[targetBlock.index].children;
             if(!(tmp.children instanceof Array) || tmp.children.length == 0) {
               for(let i = 0; i < this.cell.length; i++) {
                 if(this.cell[i].blockId != -1) {
@@ -420,11 +397,9 @@ export default {
                 }
               }
             }
-            if(!targetBlock.arr[targetBlock.index].children) targetBlock.arr[targetBlock.index].children = [];
-            targetBlock.arr[targetBlock.index].children.splice(0, 0, tmp);
-            // targetBlock.arr[targetBlock.index].children = [tmp];
+            targetBlock.arr[targetBlock.index].children = [tmp];
           }
-        } else { // top || bottom
+        } else {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
@@ -435,7 +410,7 @@ export default {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
             })
-          } else { // block
+          } else {
             // 首先将被拖动的块从树中删除
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
@@ -467,15 +442,11 @@ export default {
             tmp.children = [targetBlock.arr[targetBlock.index]];
             targetBlock.arr[targetBlock.index] = tmp;
           }
-        } else if(dir == 'bottom' || dir == 'rightchild') {
+        } else if(dir == 'bottom') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
-            if(dir == 'rightchild' && !this.checkInsertValid(parentBlock)) {
-              throw new Error("Invalid insert");
-              return;
-            }
             if(!parentBlock.children) parentBlock.children = [];
             parentBlock.children.push(this.draggedItemType == 'function' ? {
               function: 'sum',
@@ -483,7 +454,6 @@ export default {
             } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
-              entityMerge: true,
             })
           } else {
             // 首先将被拖动的块从树中删除
@@ -491,8 +461,7 @@ export default {
             // 然后将被拖动的块加入新的子树
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
-            // tmp.children = targetBlock.arr[targetBlock.index].children;
-            tmp.children = [];
+            tmp.children = targetBlock.arr[targetBlock.index].children;
             if(!(tmp.children instanceof Array) || tmp.children.length == 0) {
               for(let i = 0; i < this.cell.length; i++) {
                 if(this.cell[i].blockId != -1) {
@@ -505,11 +474,9 @@ export default {
                 }
               }
             }
-            if(!targetBlock.arr[targetBlock.index].children) targetBlock.arr[targetBlock.index].children = [];
-            targetBlock.arr[targetBlock.index].children.splice(0, 0, tmp);
-            // targetBlock.arr[targetBlock.index].children = [tmp];
+            targetBlock.arr[targetBlock.index].children = [tmp];
           }
-        } else { // 'left' || 'right'
+        } else {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
@@ -541,17 +508,6 @@ export default {
       e.target.classList.remove('righthover');
       e.target.classList.remove('tophover');
       e.target.classList.remove('bottomhover');
-      e.target.classList.remove('rightchildhover');
-      e.target.classList.remove('bottomchildhover');
-    },
-    checkInsertValid(parentBlock) {
-      if(!parentBlock.children || !(parentBlock.children instanceof Array)) return true;
-      for(let i = 0; i < parentBlock.children.length; i++) {
-        if(typeof(parentBlock.children[i].entityMerge) == 'undefined' || parentBlock.children[i].entityMerge == false) {
-          return false;
-        }
-      }
-      return true;
     },
     handleBlockClick(e) {
       let source = (e.target.dataset.channel == 'row') ? this.rowTree : (e.target.dataset.channel == 'column') ? this.columnTree : this.cell;
@@ -797,7 +753,6 @@ export default {
       e.preventDefault();
       console.log("drop, ", pos);
       this.dropoverBox = "";
-      let channel = (pos == 'LB') ? 'row' : (pos == 'RT') ? 'column' : (pos == 'RB') ? 'cell' : 'canvas';
 
       if(this.draggedItemType == 'attr') {
         let newBlock = {
@@ -807,14 +762,12 @@ export default {
           top: e.offsetY,
           width: Graph_Block_Size.width,
           height: Graph_Block_Size.height,
-          channel,
         };
         this.addPoint(newBlock, pos);
       } else if (this.draggedItemType == 'function') {
         let newBlock = {
           function: 'sum',
-          blockId: uuid(),
-          channel,
+          blockId: uuid()
         };
         this.addPoint(newBlock, pos);
       } else {
@@ -887,7 +840,7 @@ export default {
       
     },
     cmExpand() {
-      
+
     },
     handlecmQsep(index, info) {
       let separated_indexes = new Set();
