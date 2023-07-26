@@ -124,7 +124,7 @@ export default {
       if(!(tree instanceof Array) || tree.length == 0) return 0;
       let depth = 0;
       for(let i = 0; i < tree.length; i++) {
-        let d = this.calcDepth(tree[i].children) + 1;
+        let d = this.calcDepth(tree[i].children) + this.checkInsertValid(tree[i], false) ? 0 : 1;
         depth = depth > d ? depth: d;
       }
       return depth;
@@ -140,8 +140,10 @@ export default {
       if(!(tree instanceof Array) || tree.length == 0) return 0;
       for(let i = 0; i < tree.length; i++) {
         if((tree[i].children instanceof Array) && tree[i].children.length > 0) {
-          curHeight = this.calcPos(tree[i].children, curHeight, curDepth + 1, header, totalDepth);
+          let entityMerge = this.checkInsertValid(tree[i], false);
+          curHeight = this.calcPos(tree[i].children, curHeight, curDepth + (entityMerge ? 0 : 1), header, totalDepth);
           if(header == "row") {
+            if(this.chec)
             tree[i].top = tree[i].children[0].top;
             let height = 0;
             for(let j = 0; j < tree[i].children.length; j++) {
@@ -162,6 +164,8 @@ export default {
           }
         } else {
           if(header == "row") {
+            tree[i].rowspan = 1;
+            tree[i].colspan = totalDepth - curDepth;
             tree[i].top = curHeight + this.hlineTop;
             // let valueList = tree[i].values ? tree[i].values : tree[i].function ? [tree[i].function] : this.getValueList(tree[i].attrName);
             tree[i].height = Graph_Block_Size.height;
@@ -364,6 +368,11 @@ export default {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             targetBlock.arr[targetBlock.index] = this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: uuid()
@@ -378,6 +387,11 @@ export default {
             // 然后将被拖动的块加入新的子树
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             tmp.children = [targetBlock.arr[targetBlock.index]];
             targetBlock.arr[targetBlock.index] = tmp;
           }
@@ -386,7 +400,8 @@ export default {
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
-            if(dir == 'bottomchild' && !this.checkInsertValid(parentBlock)) {
+            // 检查插入是否合法
+            if(!this.checkInsertValid(parentBlock, dir == 'rightchild' || dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -405,6 +420,11 @@ export default {
             // 然后将被拖动的块加入新的子树
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             tmp.entityMerge = (dir == 'bottomchild');
             // tmp.children = targetBlock.arr[targetBlock.index].children;
             tmp.children = [];
@@ -428,6 +448,11 @@ export default {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             targetBlock.arr.splice(targetBlock.index + (dir == 'bottom' ? 1 : 0), 0,  this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: uuid(),
@@ -442,6 +467,11 @@ export default {
             tmp.children = undefined;
             let targetBlock = this.findBlock(this.rowTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             targetBlock.arr.splice(targetBlock.index + (dir == 'bottom' ? 1 : 0), 0, tmp);
           }
         }
@@ -450,6 +480,11 @@ export default {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             targetBlock.arr[targetBlock.index] = this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: uuid(),
@@ -463,7 +498,12 @@ export default {
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
             let targetBlock = this.findBlock(this.columnTree, bid);
-            if(!targetBlock) return;
+            if(!targetBlock) return
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            };
             tmp.children = [targetBlock.arr[targetBlock.index]];
             targetBlock.arr[targetBlock.index] = tmp;
           }
@@ -472,7 +512,8 @@ export default {
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
-            if(dir == 'rightchild' && !this.checkInsertValid(parentBlock)) {
+            // 检查插入是否合法
+            if(!this.checkInsertValid(parentBlock, dir == 'rightchild' || dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -489,8 +530,13 @@ export default {
             // 首先将被拖动的块从树中删除
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             // tmp.children = targetBlock.arr[targetBlock.index].children;
             tmp.children = [];
             if(!(tmp.children instanceof Array) || tmp.children.length == 0) {
@@ -513,6 +559,11 @@ export default {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: uuid(),
@@ -527,6 +578,11 @@ export default {
             tmp.children = undefined;
             let targetBlock = this.findBlock(this.columnTree, bid);
             if(!targetBlock) return;
+            // 检查插入是否合法
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+              throw new Error("Invalid insert");
+              return;
+            }
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, tmp);
           }
         }
@@ -544,12 +600,17 @@ export default {
       e.target.classList.remove('rightchildhover');
       e.target.classList.remove('bottomchildhover');
     },
-    checkInsertValid(parentBlock) {
-      if(!parentBlock.children || !(parentBlock.children instanceof Array)) return true;
+    checkInsertValid(parentBlock, isInsertEntityMerge) {
+      if(!parentBlock.children || !(parentBlock.children instanceof Array) || parentBlock.children.length == 0) return true;
+      let entityMerge = -1; // 1: true, 0: false, -1: any
       for(let i = 0; i < parentBlock.children.length; i++) {
-        if(typeof(parentBlock.children[i].entityMerge) == 'undefined' || parentBlock.children[i].entityMerge == false) {
-          return false;
+        let cur = (parentBlock.children[i].entityMerge == true);
+        if(i == 0) {
+          cur = entityMerge;
+        } else if(cur != entityMerge) {
+          throw new Error("Illegal table!");
         }
+        if(entityMerge != isInsertEntityMerge) return false;
       }
       return true;
     },
