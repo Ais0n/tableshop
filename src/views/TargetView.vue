@@ -4,8 +4,12 @@
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleSigmaDragStart">&#xe853;</i>
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleCutDragStart">&#xe650;</i>
     </div>
+    <div class="showCompleteTable">
+      Show complete table: 
+      <a-switch v-model:checked="showCompleteTable" style="display: inline-block; margin-left: 10px;"/>
+    </div>
     <div class="graphviewSubview">
-      <GraphView/>
+      <GraphView :showCompleteTable="showCompleteTable"/>
     </div>
   </div>
 
@@ -18,7 +22,7 @@ import GraphView from '../components/GraphView.vue';
 export default {
   data() {
     return ({
-      
+      showCompleteTable: false,
     });
   },
   computed: {
@@ -58,7 +62,7 @@ export default {
   display: inline-block;
   cursor: pointer;
   font-size: 20px;
-  margin-left: 15px;
+  margin: 4px 0px 4px 15px;
   width: 32px;
   text-align: center;
   /* background-color: #9DB2BF; */
@@ -82,5 +86,12 @@ export default {
   z-index: 3000;
   padding-left: 30px;
   padding-right: 30px;
+}
+
+.showCompleteTable {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  z-index: 3000;
 }
 </style>

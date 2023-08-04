@@ -17,7 +17,7 @@ import Utils from "../../utils.js";
 export default {
   name: "SpreadsheetCell",
   props: {
-    cellValue: [String, Object],
+    cellValue: [String, Object, Number],
     cellBold: {
       type: Boolean,
       default: false,

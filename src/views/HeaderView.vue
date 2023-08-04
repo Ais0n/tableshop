@@ -85,7 +85,7 @@ export default {
             valueList.push(data.values[i][attr])
           }
           valueList = Array.from(new Set(valueList));
-          let dataType = typeof(valueList[0]) == "string" ? "Categorical" : "Numerical";
+          let dataType = typeof(valueList[0]) == "string" ? "categorical" : "numerical";
           attrInfo.push({
             "name": attr,
             "values": valueList,
@@ -142,7 +142,7 @@ export default {
   text-align: center;
   padding: 0px 9px 0px 9px;
   border-radius: 5px;
-  font-family: Inter-ExtraLight-6, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }

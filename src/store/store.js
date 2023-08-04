@@ -37,6 +37,7 @@ export const store = createStore({
       draggedBlock: undefined,
       
       selectedBlock: undefined,
+      configEg: undefined,
     }
   },
   mutations: {
@@ -60,6 +61,9 @@ export const store = createStore({
     },
     storeSelectedBlock (state, selectedBlock) {
       state.selectedBlock = selectedBlock;
+    },
+    storeConfigEg (state, configEg) {
+      state.configEg = configEg;
     }
   }
 })

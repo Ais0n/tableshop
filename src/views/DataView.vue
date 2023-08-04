@@ -4,7 +4,7 @@
       <div class="title2"> Entities </div>
       <!-- <div class="entityList"> -->
         <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)" class="attrInfoItem" @dragstart="handleDragStart(attr)" :draggable="true">
-          <i v-if="attr.dataType == 'Categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
+          <i v-if="attr.dataType == 'categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
           <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
           <div class="attrInfoItemText"> {{attr.name}} </div>
         </div>
@@ -122,7 +122,7 @@ export default {
   background: white;
   border: 1px solid #aaaaaa;
   border-radius: 5px;
-  margin-top: 5px;
+  margin-top: 7px;
   margin-bottom: 5px;
   padding: 2px 5px;
 

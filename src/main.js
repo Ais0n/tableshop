@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 // import './style.css'
 import App from './App.vue'
-import {Select, Input, Button, message, Card, AutoComplete, Empty, Modal, Radio, Progress, Tag, Spin, Popover, Tooltip, List, Avatar} from "ant-design-vue";
-import "ant-design-vue/dist/antd.css";
+import {Select, Input, Button, message, Card, AutoComplete, Empty, Modal, Radio, Progress, Tag, Spin, Popover, Tooltip, List, Avatar, Switch, Segmented, InputNumber, Checkbox} from "ant-design-vue";
+import "ant-design-vue/dist/reset.css";
 import './assets/icons/iconfont.css';
 import { store } from "./store/store.js"
 import mitt from 'mitt'
@@ -13,9 +13,12 @@ app.config.globalProperties.$bus = bus
 app.use(Select);
 app.use(Input);
 app.use(Button);
-// app.use(Tabs);
+app.use(Segmented);
+app.use(Checkbox);
 // app.use(Icon);
 app.use(Card);
+app.use(Switch);
+app.use(InputNumber);
 app.use(AutoComplete);
 app.use(Empty);
 app.use(Modal);
