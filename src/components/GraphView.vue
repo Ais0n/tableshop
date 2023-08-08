@@ -1184,7 +1184,7 @@ export default {
           };
           let properties = ["background-color", "border", "border-top", "border-bottom", "border-left", "border-right", "font", "font-size", "font-family", "font-weight", "color"];
           properties.forEach(prop => {
-            if(typeof(cell.style[prop]) != 'undefined') {
+            if(cell.style && typeof(cell.style[prop]) != 'undefined') {
               newDom.style.computed += `${prop}: ${cell.style[prop]}; `;
             }
           })
