@@ -1180,7 +1180,17 @@ export default {
             left: cell.left,
             height: cell.height,
             width: cell.width,
+            computed: "",
           };
+          let properties = ["background-color", "border", "border-top", "border-bottom", "border-left", "border-right", "font", "font-size", "font-family", "font-weight", "color"];
+          console.log(i, j, "style: ", cell.style)
+          properties.forEach(prop => {
+            console.log(prop, cell.style[prop])
+            if(typeof(cell.style[prop]) != 'undefined') {
+              newDom.style.computed += `${prop}: ${cell.style[prop]}; `;
+            }
+          })
+            
           // newDom.style.position = 'absolute';
           // newDom.style.top = block.top + 'px';
           // newDom.style.left = block.left + 'px';

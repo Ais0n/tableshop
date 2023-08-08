@@ -998,15 +998,15 @@ export default {
 .highlightedBlock {
   /* border: 2px solid black; */
   /* box-shadow: 0 0 0 1px black; */
-  background-color: #dddddd !important;
+  background-color: #dddddd;
 }
 
 .highlightedBlock .verticalSemiCircle {
-  border-right: 1px solid #dddddd !important;
+  border-right: 1px solid #dddddd;
 }
 
 .highlightedBlock .horizontalSemiCircle {
-  border-top: 1px solid #dddddd !important;
+  border-top: 1px solid #dddddd;
 }
 
 .cmOption {

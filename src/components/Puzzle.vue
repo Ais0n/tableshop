@@ -1,5 +1,5 @@
 <template>
-  <div v-for="(dom, index) in domSource" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px;`" :data-bid="dom.dataset.bid"
+  <div v-for="(dom, index) in domSource" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
     :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :draggable="dom.draggable"
     @dragover="dom.ondragover" @dragstart="dom.ondragstart" @dragleave="dom.ondragleave" @drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
@@ -99,15 +99,17 @@ export default {
 .highlightedBlock {
   /* border: 2px solid black; */
   /* box-shadow: 0 0 0 1px black; */
-  background-color: #dddddd !important;
+  background-color: #dddddd;
 }
 
 .highlightedBlock .verticalSemiCircle {
-  border-right: 1px solid #dddddd !important;
+  border-right: 1px solid #dddddd;
+  background-color: #dddddd;
 }
 
 .highlightedBlock .horizontalSemiCircle {
-  border-top: 1px solid #dddddd !important;
+  border-top: 1px solid #dddddd;
+  background-color: #dddddd;
 }
 
 .puzzleText {
