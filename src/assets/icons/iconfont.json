@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "10594742",
+      "name": "表-表格_jurassic",
+      "font_class": "jurassic_table",
+      "unicode": "e6ac",
+      "unicode_decimal": 59052
+    },
+    {
+      "icon_id": "3427887",
+      "name": "数据报告",
+      "font_class": "datareport",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
       "icon_id": "4290009",
       "name": "合并班群",
       "font_class": "hebingbanqun",

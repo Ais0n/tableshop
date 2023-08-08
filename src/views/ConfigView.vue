@@ -2,13 +2,17 @@
   <div class="configview">
     <div v-if="this.selectedBlock">
       <div class="configAttrHeader">
-        <i v-if="this.dataType == 'categorical'" class="iconfont configAttrHeaderIcon">&#xe624;</i>
-        <i v-else class="iconfont configAttrHeaderIcon">&#xe6da;</i> 
-        <div class="configAttrHeaderText"> {{this.selectedBlock.attrName}} </div>
-        <i class="iconfont configAttrHeaderIcon">&#xe624;</i>
-        <div class="configAttrHeaderText"> Table </div>
+        <div :class="tab != 'table' ? 'configTabSelected' : 'configTabUnselected'" @click="tab = 'attr'">
+          <i v-if="this.dataType == 'categorical'" class="iconfont configAttrHeaderIcon">&#xe624;</i>
+          <i v-else class="iconfont configAttrHeaderIcon">&#xe6da;</i>
+          <div class="configAttrHeaderText"> {{this.selectedBlock.attrName}} </div>
+        </div>
+        <div :class="tab == 'table' ? 'configTabSelected' : 'configTabUnselected'" @click="tab = 'table'">
+          <i class="iconfont configAttrHeaderIcon">&#xe62f;</i>
+          <div class="configAttrHeaderText"> Table </div>
+        </div>
       </div>
-      <div class="configAttrPanel">
+      <div v-if="tab != 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Structure </div>
         <div v-if="configEg && configEg.son1" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Hierarchical Merge </div> 
@@ -290,7 +294,7 @@
           </div>
         </div>
       </div>
-      <div class="configAttrPanel">
+      <div v-if="tab != 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Style </div>
         <div v-if="background" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Background </div> 
@@ -331,7 +335,7 @@
           </div>
         </div>
       </div>
-      <div class="configAttrPanel">
+      <div v-if="tab == 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Templates </div>
       </div>
     </div>
@@ -353,6 +357,7 @@ export default {
       border: undefined,
       background: undefined,
       font: undefined, 
+      tab: "attr",
     });
   },
   computed: {
@@ -509,13 +514,43 @@ export default {
   overflow-y: scroll;
 }
 
+.configTabSelected {
+  display: inline-block;
+  border-bottom: 2px solid #526D82;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-family: Inter-Medium-8, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  width: 50%;
+  text-align: center;
+  font-size: 17px;
+}
+
+.configTabUnselected {
+  display: inline-block;
+  border-bottom: 1px solid rgba(82, 110, 130, 0.5);
+  padding-left: 5px;
+  padding-right: 5px;
+  font-family: Inter-Regular-9;
+  width: 50%;
+  text-align: center;
+  color: #526D82;
+}
+
+.configTabUnselected:hover {
+  color: #333333;
+  border-bottom: 1.25px solid rgba(82, 110, 130, 0.5);
+}
+
 .configview::-webkit-scrollbar {
   display: none;
 }
 
 .configAttrHeader {
   /* height: 50px; */
-  border-bottom: 1px solid #526D82;
+  /* border-bottom: 1px solid #526D82; */
+  margin-bottom: 5px;
 }
 
 .configAttrHeaderIcon {
@@ -526,10 +561,6 @@ export default {
 
 .configAttrHeaderText {
   display: inline-block;
-  font-size: 17px;
-  font-family: Inter-Medium-8, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* cursor: pointer; */
 }
 
