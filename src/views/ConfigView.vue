@@ -5,6 +5,8 @@
         <i v-if="this.dataType == 'categorical'" class="iconfont configAttrHeaderIcon">&#xe624;</i>
         <i v-else class="iconfont configAttrHeaderIcon">&#xe6da;</i> 
         <div class="configAttrHeaderText"> {{this.selectedBlock.attrName}} </div>
+        <i class="iconfont configAttrHeaderIcon">&#xe624;</i>
+        <div class="configAttrHeaderText"> Table </div>
       </div>
       <div class="configAttrPanel">
         <div class="configAttrPanelTitle"> Structure </div>
@@ -290,16 +292,42 @@
       </div>
       <div class="configAttrPanel">
         <div class="configAttrPanelTitle"> Style </div>
-        <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Border </div> 
-          <div class="wrapper"> 
-            <input type="color" :value="border.color" style="width: 25px" @input="e => (border.color = e.target.value)"/>
+        <div v-if="background" class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Background </div> 
+          <div class="wrapper">
+            <!-- <div class="iconfont iconpaint"> &#xeb6e;</div>  -->
+            <input type="color" :value="background.color" style="width: 25px; border: none; background-color: transparent;" @input="e => {background.color = e.target.value; applyChangesToStyle('background', 'color', e.target.value)}"/>
+            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px; width: 70px;"> {{background.color}} </div>
           </div>
         </div>
-        <div class="configAttrSubpanel">
+        <div v-if="font" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Font </div> 
           <div class="wrapper"> 
-            <input type="color" :value="border.color" style="width: 25px" @input="e => (border.color = e.target.value)"/>
+            <input type="color" :value="font.color" style="width: 25px; border: none; background-color: transparent;" @input="e => {font.color = e.target.value; applyChangesToStyle('font', 'color', e.target.value)}"/>
+            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px; width: 70px;"> {{font.color}} </div>
+            <a-input-number v-model:value="font.size" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('font', 'size', value)"/> 
+            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
+            <a-select v-model:value="font.weight" style="width: 100px; margin-left: 30px" size="small" @change="(value) => {applyChangesToStyle('font', 'weight', value)}">
+              <a-select-option value="Bold"> Bold </a-select-option>
+              <a-select-option value="Semi Bold"> Semi Bold </a-select-option>
+              <a-select-option value="Regular"> Regular </a-select-option>
+            </a-select>
+          </div>
+        </div>
+        <div v-if="border" class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Border </div> 
+          <div class="wrapper"> 
+            <input type="color" :value="border.color" style="width: 25px; border: none; background-color: transparent;" @input="e => { border.color = e.target.value; applyChangesToStyle('border', 'color', e.target.value);}"/>
+            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px; width: 70px;"> {{border.color}} </div>
+            <a-input-number v-model:value="border.width" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('border', 'width', value)"/> 
+            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
+            <a-select v-model:value="border.position" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyChangesToStyle('border', 'position', value)">
+              <a-select-option value="All"> All </a-select-option>
+              <a-select-option value="Top"> Top </a-select-option>
+              <a-select-option value="Bottom"> Bottom </a-select-option>
+              <a-select-option value="Left"> Left </a-select-option>
+              <a-select-option value="Right"> Right </a-select-option>
+            </a-select>
           </div>
         </div>
       </div>
@@ -322,9 +350,9 @@ export default {
       facet: 1,
       key: undefined,
       blankLine: false,
-      border: {
-        color: '#000000',
-      },
+      border: undefined,
+      background: undefined,
+      font: undefined, 
     });
   },
   computed: {
@@ -398,6 +426,20 @@ export default {
         this.$bus.emit("update", block);
       }
     },
+    applyChangesToStyle(key1, key2, value) {
+      console.log("style changes: ", key1, key2, value);
+      let oldValue = this.key1 ? this[key1][key2] : undefined;
+      if(oldValue == value) return;
+      if(!this[key1]) this[key1] = {};
+      this[key1][key2] = value;
+      let block = this.selectedBlock;
+      if(!block.style || typeof(block.style) != 'object') block.style = {};
+      if(!block.style[key1]) block.style[key1] = {};
+      block.style[key1][key2] = value;
+      this.storeSelectedBlock(block);
+      // 更新tree
+      this.$bus.emit("update", block);
+    },
     changeKey(checked) {
       let block = this.selectedBlock;
       if(checked) {
@@ -429,6 +471,19 @@ export default {
         this.facet = (typeof(val.facet) != 'undefined') ? val.facet : 1;
         this.key = val.key;
         this.blankLine = (typeof(val.blankLine) != 'undefined') ? val.blankLine : false;
+        this.border = (val.style && val.style.border) ? val.style.border : {
+          color: '#000000',
+          width: 1,
+          position: "all",
+        };
+        this.background = (val.style && val.style.background) ? val.style.background : {
+          color: '#ffffff',
+        };
+        this.font = (val.style && val.style.font) ? val.style.font : {
+          color: '#000000',
+          size: 12,
+          weight: 'Regular'
+        };
       }
     },
     // entityMerge(val, oldval) {
@@ -460,7 +515,7 @@ export default {
 
 .configAttrHeader {
   /* height: 50px; */
-  border-bottom: 1px solid #bbbbbb;
+  border-bottom: 1px solid #526D82;
 }
 
 .configAttrHeaderIcon {
@@ -480,7 +535,7 @@ export default {
 
 .configAttrPanel {
   /* margin-top: 10px; */
-  border-bottom: 1px solid #bbbbbb;
+  border-bottom: 1px solid #526D82;
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -511,6 +566,15 @@ export default {
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   margin-bottom: 5px;
+}
+
+.configAttrPanelText {
+  display: inline-block;
+  font-size: 15px;
+  font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* margin-bottom: 5px; */
 }
 
 .wrapper {
@@ -906,5 +970,12 @@ export default {
 
 .cPosGlyphOption .entityMergeText {
   width: 70px;
+}
+
+.iconpaint {
+  font-size: 22px;
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: 5px;
 }
 </style>

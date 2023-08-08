@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4290009",
+      "name": "合并班群",
+      "font_class": "hebingbanqun",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "5387843",
+      "name": "主题_调色盘_o",
+      "font_class": "zhuti_tiaosepan_o",
+      "unicode": "eb6e",
+      "unicode_decimal": 60270
+    },
+    {
+      "icon_id": "6184959",
+      "name": "旋转",
+      "font_class": "xuanzhuan",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "16241069",
+      "name": "长度、宽度",
+      "font_class": "changdukuandu",
+      "unicode": "eb75",
+      "unicode_decimal": 60277
+    },
+    {
+      "icon_id": "20846028",
+      "name": "分界线_dividing-line",
+      "font_class": "fenjiexian_dividing-line",
+      "unicode": "e6fb",
+      "unicode_decimal": 59131
+    },
+    {
       "icon_id": "15644329",
       "name": "过滤",
       "font_class": "guolv",

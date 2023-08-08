@@ -1,10 +1,14 @@
 <template>
   <div v-for="(dom, index) in domSource" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px;`" :data-bid="dom.dataset.bid"
-    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :draggable="dom.draggable"
+    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :draggable="dom.draggable"
     @dragover="dom.ondragover" @dragstart="dom.ondragstart" @dragleave="dom.ondragleave" @drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
     <pre class="puzzleText">{{dom.innerText}}</pre>
-    <div class="childborder"></div>
+    <div class="childborder" :style="`height: ${dom.style.height - 30}px; width: ${dom.style.width - 30}px;`"></div>
+    <div class="trborder1"></div>
+    <div class="trborder2"></div>
+    <div class="blborder1"></div>
+    <div class="blborder2"></div>
     <a-button v-if="!showCompleteTable && !isCanvas && dom.dataset.unfoldbutton" type="text" size="small" class="unfoldButton" :class="dom.dataset.channel == 'row' ? 'rowUnfoldButton' : 'colUnfoldButton'" @click="handleUnfold(dom)"> ... </a-button>
     <!-- top (canvas only) -->
     <div v-if="isCanvas">
@@ -167,22 +171,89 @@ export default {
   border-color: #dadada;
 }
 
+.childborder {
+  display: none;
+}
+
 .rightchildhover .childborder {
+  display: block !important;
   position: absolute;
   right: 0;
   bottom: 0;
-  height: 50px;
-  width: 0;
-  border: 1px solid red;
+  /* height: 30px; */
+  width: 0 !important;
+  border-right: 3px solid red;
+  z-index: 6000;
 }
 
 .bottomchildhover .childborder {
+  display: block !important;
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 110px;
+  /* width: 110px; */
+  height: 0 !important;
+  border-bottom: 3px solid red;
+}
+
+.trborder1 {
+  display: none;
+}
+
+.toprighthover .trborder1 {
+  display: block !important;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 30px;
+  width: 0;
+  border-right: 3px solid red;
+  z-index: 6000;
+}
+
+.trborder2 {
+  display: none;
+}
+
+.toprighthover .trborder2 {
+  display: block !important;
+  position: absolute;
+  right: 0;
+  top: 0;
   height: 0;
-  border: 1px solid red;
+  width: 30px;
+  border-bottom: 3px solid red;
+  z-index: 6000;
+}
+
+.blborder1 {
+  display: none;
+}
+
+.bottomlefthover .blborder1 {
+  display: block !important;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 30px;
+  width: 0;
+  border-left: 3px solid red;
+  z-index: 6000;
+}
+
+.blborder2 {
+  display: none;
+}
+
+.bottomlefthover .blborder2 {
+  display: block !important;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 0;
+  width: 30px;
+  border-bottom: 3px solid red;
+  z-index: 6000;
 }
 
 .unfoldButton {

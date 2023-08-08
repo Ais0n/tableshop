@@ -6,16 +6,14 @@
     >
       {{dom.innerText}}
     </div> -->
-    <Puzzle :domSource="canvasDom" :isCanvas="true" :highlightedBlockId="selectedBlockId"> </Puzzle>
-    <div id="tableCanvas" class="tableCanvas">
+    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" @cell-unfold="handleUnfold($event)" :showCompleteTable="showCompleteTable"> </Puzzle>
+    <div id="tableCanvas" class="tableCanvas" v-show="false">
       <div id="graphViewLeftTopBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+hlineTop+'px;top:0px;left:0px'" @dragover="handleDragOver($event, 'LT')" @drop="handleDrop($event, 'LT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LT'}" @dragleave="handleDragLeave"/>
       <div id="graphViewLeftBottomBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:0px'" @dragover="handleDragOver($event, 'LB')" @drop="handleDrop($event, 'LB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LB'}" @dragleave="handleDragLeave"/>
       <div id="graphViewRightTopBox" class="tableCanvasBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+hlineTop+'px;top:0px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RT')" @drop="handleDrop($event, 'RT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'RT'}" @dragleave="handleDragLeave"/>
       <div id="graphViewRightBottomBox" class="tableCanvasBox" :style="'width:'+(viewWidth-vlineLeft)+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:'+vlineLeft+'px'" @dragover="handleDragOver($event, 'RB')" @drop="handleDrop($event, 'RB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'RB'}" @dragleave="handleDragLeave"/>
-      <!-- <Puzzle :domSource="rowDom"> </Puzzle>
-      <Puzzle :domSource="columnDom"> </Puzzle>
-      <Puzzle :domSource="cellDom"> </Puzzle> -->
-      <Puzzle :domSource="tableDom" @cell-unfold="handleUnfold($event)" :showCompleteTable="showCompleteTable" :highlightedBlockId="selectedBlockId"> </Puzzle>
+      
+      <!-- <Puzzle :domSource="tableDom" @cell-unfold="handleUnfold($event)" :showCompleteTable="showCompleteTable" :highlightedBlockId="selectedBlockId"> </Puzzle> -->
       <!-- <div id="hline" :style="'height: 0; width: '+viewWidth+'px; top: '+hlineTop+'px;'" class="hvline"></div>
       <div id="vline" :style="'height: '+viewHeight+'px; width: 0; left: '+vlineLeft+'px;'" class="hvline"></div> -->
     </div>
@@ -83,18 +81,18 @@ export default {
   },
   data() {
     return ({
-      rowTree: [],
-      columnTree: [],
-      cell: [],
-      fcell: [], //用于填充cell channel用的空格
+      // rowTree: [],
+      // columnTree: [],
+      // cell: [],
+      // fcell: [], //用于填充cell channel用的空格
       canvas: [],
-      rowDom: [],
-      columnDom: [],
-      cellDom: [],
-      canvasDom: [],
+      // rowDom: [],
+      // columnDom: [],
+      // cellDom: [],
+      // canvasDom: [],
       tableDom: [],
-      fullTable: [],
-      foldedTable: [],
+      fullTables: [],
+      foldedTables: [],
       tableDim: {rdim: 0, cdim: 0},
       hlineTop: 140,
       vlineLeft: 140,
@@ -171,11 +169,11 @@ export default {
       for(let i = 0; i < this.fcell.length; i++) {
         let rBlock, cBlock;
         if(this.fcell[i].rowParentId) {
-          rBlock = this.findBlock(this.rowTree, this.fcell[i].rowParentId);
+          rBlock = this.findBlock(this.fcell[i].rowParentId);
           rBlock = rBlock.arr[rBlock.index];
         }
         if(this.fcell[i].colParentId) {
-          cBlock = this.findBlock(this.columnTree, this.fcell[i].colParentId);
+          cBlock = this.findBlock(this.fcell[i].colParentId);
           cBlock = cBlock.arr[cBlock.index];
         }
         this.fcell[i].left = cBlock ? cBlock.left : this.vlineLeft;
@@ -184,8 +182,9 @@ export default {
         this.fcell[i].width = cBlock ? cBlock.width : Graph_Block_Size_Placeholder.width;
       }
     },
-    calcPos(table, rdim, cdim) {
+    calcPos(table, dim, vlineLeft, hlineTop) {
       let spanList = [];
+      let {rdim, cdim} = dim;
       const getNextIndex = (index) => {
         if(spanList.length == 0) return index;
         for(let i = 0; i < spanList.length; i++) {
@@ -228,8 +227,8 @@ export default {
           curColIndex = getNextIndex(curColIndex);
           table[i][j].width = Graph_Block_Size.width * table[i][j].colSpan;
           table[i][j].height = Graph_Block_Size.height * table[i][j].rowSpan;
-          table[i][j].left = Graph_Block_Size.width * curColIndex + (this.tableDim.rdim == 0 ? this.vlineLeft : Graph_Padding.left);
-          table[i][j].top = Graph_Block_Size.height * i + (this.tableDim.cdim == 0 ? this.hlineTop : Graph_Padding.top);
+          table[i][j].left = Graph_Block_Size.width * curColIndex + vlineLeft;
+          table[i][j].top = Graph_Block_Size.height * i + hlineTop;
           if(i >= cdim && curColIndex < rdim) {
             table[i][j].channel = 'row';
             table[i][j].width -= table[i][j].indent;
@@ -253,10 +252,12 @@ export default {
         }
       }
     },
-    calcGraphConfig(table) {
-      let tableCanvasDom = document.getElementById("tableCanvas");
-      let {rdim, cdim} = this.calcHVLine(table);
-      this.calcPos(table, rdim, cdim);
+    calcGraphConfig(spec) {
+      // let tableCanvasDom = document.getElementById("tableCanvas");
+      // let {rdim, cdim} = this.calcHVLine(table);
+      console.log(spec)
+      let {dim, table, left, top} = spec;
+      this.calcPos(table, dim, left, top);
       // this.calcPos(this.rowTree, 0, 0, "row", rDepth);
       // this.calcPos(this.columnTree, 0, 0, "column", cDepth);
       // this.fillCell();
@@ -282,50 +283,38 @@ export default {
       //   }
       //   tableCanvasDom.removeChild(c);
       // }
-      this.canvasDom = [];
-      this.rowDom = [];
-      this.columnDom = [];
-      this.cellDom = [];
+      // this.canvasDom = [];
+      // this.rowDom = [];
+      // this.columnDom = [];
+      // this.cellDom = [];
       this.tableDom = [];
     },
-    deleteBlock(bid, channel) {
-      console.log("deleteBlock: ", bid, channel)
-      if(channel == 'canvas') {
-        for(let i = 0; i < this.canvas.length; i++) {
-          if(this.canvas[i].blockId == bid) {
-            let tmp = this.canvas[i];
-            this.canvas.splice(i, 1);
-            return tmp;
-          }
-        }
-      } else if(channel == 'cell') {
-        for(let i = 0; i < this.cell.length; i++) {
-          if(this.cell[i].blockId == bid) {
-            let tmp = this.cell[i];
-            this.cell.splice(i, 1);
-            return tmp;
-          }
-        }
+    deleteBlock(bid) {
+      console.log("deleteBlock: ", bid)
+      let deletedBlock = this.findBlock(bid);
+      console.log(deletedBlock);
+      if(!deletedBlock) return;
+      let tmp = deletedBlock.arr[deletedBlock.index];
+      if(tmp.children instanceof Array && tmp.children.length > 0) {
+        deletedBlock.arr.splice(deletedBlock.index, 1, ...(tmp.children))
       } else {
-        let deletedBlock = this.findBlock(channel == 'row' ? this.rowTree : this.columnTree, bid);
-        if(!deletedBlock) return;
-        let tmp = deletedBlock.arr[deletedBlock.index];
-        if(tmp.children instanceof Array && tmp.children.length > 0) {
-          deletedBlock.arr.splice(deletedBlock.index, 1, ...(tmp.children))
-        } else {
-          deletedBlock.arr.splice(deletedBlock.index, 1);
-        }
-        for(let i = 0; i < this.cell.length; i++) {
-          if(this.cell[i].rowParentId == tmp.blockId) {
-            this.cell[i].rowParentId = deletedBlock.parentBid;
-          }
-          if(this.cell[i].colParentId == tmp.blockId) {
-            this.cell[i].colParentId = deletedBlock.parentBid;
-          }
-        }
-        tmp.rowParentId = deletedBlock.parentBid; // corner case
-        return tmp;
+        deletedBlock.arr.splice(deletedBlock.index, 1);
       }
+      for(let i = 0; i < this.canvas.length; i++) {
+        if(this.canvas[i].cell) {
+          for(let j = 0; j < this.canvas[i].cell.length; j++) {
+            let cell = this.canvas[i].cell[j];
+            if(cell.rowParentId == tmp.blockId) {
+              cell.rowParentId = deletedBlock.parentBid;
+            }
+            if(cell.colwParentId == tmp.blockId) {
+              cell.colParentId = deletedBlock.parentBid;
+            }
+          }
+        }
+      }
+      tmp.rowParentId = deletedBlock.parentBid; // corner case
+      return tmp;
     },
     // highlightBlock(target) {
     //   let tableCanvasDom = document.getElementById("tableCanvas");
@@ -356,6 +345,7 @@ export default {
     },
     handleBlockDragover(e) {
       e.stopPropagation();
+      this.dropoverBox = "";
       // if(this.draggedItemType == 'block' && e.target.dataset.bid == this.draggedBlock.blockId) {
       //   return;
       // }
@@ -371,13 +361,21 @@ export default {
         e.target.classList.remove('bottomhover');
         e.target.classList.remove("rightchildhover");
         e.target.classList.remove("bottomchildhover");
+        e.target.classList.remove("toprighthover");
+        e.target.classList.remove("bottomlefthover");
       }
       if (x < box.left + 20) {
         clearClass(e);
-        e.target.classList.add('lefthover');
+        if(e.target.dataset.channel == 'column' && y > box.bottom - 20) {
+          e.target.classList.add('bottomlefthover');
+        } else {
+          e.target.classList.add('lefthover');
+        }
       } else if (x > box.right - 20) {
         clearClass(e);
-        if(e.target.dataset.channel == 'column' && y > box.top + 30) {
+        if(e.target.dataset.channel == 'row' && y < box.top + 10) {
+          e.target.classList.add('toprighthover');
+        } else if(y > box.top + 30) {
           e.target.classList.add('rightchildhover');
         } else {
           e.target.classList.add('righthover');
@@ -387,7 +385,7 @@ export default {
         e.target.classList.add('tophover');
       } else {
         clearClass(e);
-        if(e.target.dataset.channel == 'row' && x > box.left + 30) {
+        if(x > box.left + 80) {
           e.target.classList.add("bottomchildhover");
         } else {
           e.target.classList.add('bottomhover');
@@ -396,6 +394,7 @@ export default {
     },
     handleBlockDrop(e) {
       e.stopPropagation();
+      this.dropoverBox = "";
       let dir = "";
       if(e.target.classList.contains('lefthover')) {
         dir = 'left';
@@ -409,6 +408,10 @@ export default {
         dir = 'rightchild';
       } else if(e.target.classList.contains('bottomchildhover')) {
         dir = 'bottomchild';
+      } else if(e.target.classList.contains('toprighthover')) {
+        dir = 'topright';
+      } else if(e.target.classList.contains('bottomlefthover')) {
+        dir = 'bottomleft';
       }
       e.target.classList.remove('lefthover');
       e.target.classList.remove('righthover');
@@ -416,6 +419,8 @@ export default {
       e.target.classList.remove('bottomhover');
       e.target.classList.remove("rightchildhover");
       e.target.classList.remove("bottomchildhover");
+      e.target.classList.remove("toprighthover");
+      e.target.classList.remove("bottomlefthover");
       if (dir != "") e.preventDefault(); else return;
       console.log(dir);
       console.log(e.target);
@@ -423,10 +428,10 @@ export default {
       if(channel == 'row') {
         if(dir == 'left') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
-            let targetBlock = this.findBlock(this.rowTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -444,10 +449,10 @@ export default {
             // 首先将被拖动的块从树中删除
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
-            let targetBlock = this.findBlock(this.rowTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -455,17 +460,17 @@ export default {
             tmp.channel = channel;
             targetBlock.arr[targetBlock.index] = tmp;
           }
-        } else if(dir == 'right' || dir == 'bottomchild') {
+        } else if(dir == 'rightchild' || dir == 'bottomchild') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
-            let targetBlock = this.findBlock(this.rowTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
-            if(!this.checkInsertValid(parentBlock, dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(parentBlock, dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
-            parentBlock.entityMerge = (dir == 'rightchild' || dir == 'bottomchild');
+            parentBlock.entityMerge = (dir == 'bottomchild');
             if(!parentBlock.children) parentBlock.children = [];
             let newBlockId = uuid();
             parentBlock.children.push(this.draggedItemType == 'function' ? {
@@ -479,19 +484,21 @@ export default {
               channel,
             })
             // 更新cell的rpid, cpid
-            for(let i = 0; i < this.cell.length; i++) {
-              if(this.cell[i].rowParentId == parentBlock.blockId) {
-                this.cell[i].rowParentId = newBlockId;
+            let cell = this.canvas[targetBlock.tableId].cell;
+            for(let i = 0; i < cell.length; i++) {
+              if(cell[i].rowParentId == parentBlock.blockId) {
+                cell[i].rowParentId = newBlockId;
               }
             }
           } else {
             // 首先将被拖动的块从树中删除
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
-            let targetBlock = this.findBlock(this.rowTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
+            let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(parentBlock, dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -500,27 +507,29 @@ export default {
             tmp.children = [];
             tmp.channel = channel;
             
-            for(let i = 0; i < this.cell.length; i++) {
-              if(this.cell[i].blockId != -1) {
-                if(this.cell[i].rowParentId == targetBlock.arr[targetBlock.index].blockId) {
-                  this.cell[i].rowParentId = tmp.blockId;
+            let cell = this.canvas[targetBlock.tableId].cell;
+            for(let i = 0; i < cell.length; i++) {
+              if(cell[i].blockId != -1) {
+                if(cell[i].rowParentId == targetBlock.arr[targetBlock.index].blockId) {
+                  cell[i].rowParentId = tmp.blockId;
                 }
-                if(this.cell[i].colParentId == targetBlock.arr[targetBlock.index].blockId) {
-                  this.cell[i].colParentId = tmp.blockId;
+                if(cell[i].colParentId == targetBlock.arr[targetBlock.index].blockId) {
+                  cell[i].colParentId = tmp.blockId;
                 }
               }
             }
             
-            if(!targetBlock.arr[targetBlock.index].children) targetBlock.arr[targetBlock.index].children = [];
-            targetBlock.arr[targetBlock.index].children.splice(0, 0, tmp);
+            parentBlock.entityMerge = (dir == 'bottomchild');
+            if(!parentBlock.children) parentBlock.children = [];
+            parentBlock.children.splice(0, 0, tmp);
             // targetBlock.arr[targetBlock.index].children = [tmp];
           }
-        } else { // top || bottom
+        } else if(dir == 'top' || dir == 'bottom') { // top || bottom
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
-            let targetBlock = this.findBlock(this.rowTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -537,23 +546,105 @@ export default {
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
             tmp.children = undefined;
-            let targetBlock = this.findBlock(this.rowTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
               throw new Error("Invalid insert");
               return;
             }
             targetBlock.arr.splice(targetBlock.index + (dir == 'bottom' ? 1 : 0), 0, tmp);
           }
+        } else if(dir == 'right') { // right, + cell
+          if(this.draggedItemType == 'function') {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          let targetBlock = this.findBlock(bid);
+          if(!targetBlock) return;
+          let sourceTables = this.showCompleteTable ? this.fullTables : this.foldedTables;
+          let {table, dim} = sourceTables[targetBlock.tableId], block = targetBlock.arr[targetBlock.index];
+          if(block.children instanceof Array && block.children.length > 0) {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          let rowParentId = block.blockId, colParentId = undefined;
+          for(let i = 0; i < dim.cdim; i++) {
+            for(let j = 0; j < table[i].length; j++) {
+              if(table[i][j].col == dim.rdim) {
+                colParentId = table[i][j].sourceBlockId;
+              }
+            }
+          }
+
+          let newBlock;
+          if(this.draggedItemType == 'attr') {
+            newBlock = {
+              attrName: this.draggedAttr.name,
+              blockId: uuid(),
+              channel: 'cell',
+              rowParentId,
+              colParentId,
+            };
+          } else { // block
+            // 首先将被拖动的块从树中删除
+            let tmp = this.deleteBlock(this.draggedBlock.dataset.bid);
+            tmp.children = undefined;
+            newBlock = tmp;
+            newBlock.channel = 'cell';
+            newBlock.rowParentId = rowParentId;
+            newBlock.colParentId = colParentId;
+          }
+          let _found = false, cell = this.canvas[targetBlock.tableId].cell;
+          for(let i = 0; i < cell.length; i++) {
+            if(cell[i].rowParentId == rowParentId && cell[i].colParentId == colParentId) {
+              cell[i] = newBlock;
+              _found = true;
+              break;
+            }
+          }
+          if(!_found) {
+            cell.push(newBlock);
+          }
+        } else if(dir == 'topright') {
+          if(this.draggedItemType == 'function') {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          let targetBlock = this.findBlock(bid);
+          if(!targetBlock) return;
+          let block_r = this.canvas[targetBlock.tableId];
+          if(!(block_r.columnHeader instanceof Array && block_r.columnHeader.length == 0)) {
+            this.$message.error("Please rotate the dropped block(s) first.");
+            return;
+          }
+          if(this.draggedItemType == 'attr') {
+            block_r.columnHeader.push({
+              attrName: this.draggedAttr.name,
+              blockId: uuid(),
+              children: [],
+              channel: 'column',
+            });
+          } else {
+            let sourceBlock = this.findBlock(this.draggedBlock.dataset.bid);
+            if(!sourceBlock) return;
+            let block_c = this.canvas[sourceBlock.tableId];
+            
+            if(!(block_c.rowHeader instanceof Array && block_c.rowHeader.length == 0)) {
+              this.$message.error("Please rotate the dragged block(s) first.");
+              return;
+            }
+            block_r.columnHeader = block_c.columnHeader;
+            this.canvas.splice(sourceBlock.tableId, 1);
+          }
         }
       } else if(channel == 'column') {
         if(dir == 'top') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -571,10 +662,10 @@ export default {
             // 首先将被拖动的块从树中删除
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
               throw new Error("Invalid insert");
               return;
             };
@@ -582,17 +673,17 @@ export default {
             tmp.channel = channel;
             targetBlock.arr[targetBlock.index] = tmp;
           }
-        } else if(dir == 'bottom' || dir == 'rightchild') {
+        } else if(dir == 'bottomchild' || dir == 'rightchild') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
-            if(!this.checkInsertValid(parentBlock, dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(parentBlock, dir == 'rightchild')) {
               throw new Error("Invalid insert");
               return;
             }
-            parentBlock.entityMerge = (dir == 'rightchild' || dir == 'bottomchild');
+            parentBlock.entityMerge = (dir == 'rightchild');
             if(!parentBlock.children) parentBlock.children = [];
             let newBlockId = uuid();
             parentBlock.children.push(this.draggedItemType == 'function' ? {
@@ -606,46 +697,51 @@ export default {
               channel,
             })
             // 更新cell的rpid, cpid
-            for(let i = 0; i < this.cell.length; i++) {
-              if(this.cell[i].colParentId == parentBlock.blockId) {
-                this.cell[i].colParentId = newBlockId;
+            let cell = this.canvas[targetBlock.tableId].cell;
+            for(let i = 0; i < cell.length; i++) {
+              if(cell[i].colParentId == parentBlock.blockId) {
+                cell[i].colParentId = newBlockId;
               }
             }
           } else {
             // 首先将被拖动的块从树中删除
             let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
             // 然后将被拖动的块加入新的子树
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
+            let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(parentBlock, dir == 'rightchild')) {
               throw new Error("Invalid insert");
               return;
             }
             // tmp.children = targetBlock.arr[targetBlock.index].children;
+            
             tmp.children = [];
             tmp.channel = channel;
 
-            for(let i = 0; i < this.cell.length; i++) {
-              if(this.cell[i].blockId != -1) {
-                if(this.cell[i].rowParentId == targetBlock.arr[targetBlock.index].blockId) {
-                  this.cell[i].rowParentId = tmp.blockId;
+            let cell = this.canvas[targetBlock.tableId].cell;
+            for(let i = 0; i < cell.length; i++) {
+              if(cell[i].blockId != -1) {
+                if(cell[i].rowParentId == targetBlock.arr[targetBlock.index].blockId) {
+                  cell[i].rowParentId = tmp.blockId;
                 }
-                if(this.cell[i].colParentId == targetBlock.arr[targetBlock.index].blockId) {
-                  this.cell[i].colParentId = tmp.blockId;
+                if(cell[i].colParentId == targetBlock.arr[targetBlock.index].blockId) {
+                  cell[i].colParentId = tmp.blockId;
                 }
               }
             }
-            if(!targetBlock.arr[targetBlock.index].children) targetBlock.arr[targetBlock.index].children = [];
-            targetBlock.arr[targetBlock.index].children.splice(0, 0, tmp);
+            parentBlock.entityMerge = (dir == 'rightchild');
+            if(!parentBlock.children) parentBlock.children = [];
+            parentBlock.children.splice(0, 0, tmp);
             // targetBlock.arr[targetBlock.index].children = [tmp];
           }
-        } else { // 'left' || 'right'
+        } else if(dir == 'left' || dir == 'right') { // 'left' || 'right'
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
               throw new Error("Invalid insert");
               return;
             }
@@ -664,15 +760,99 @@ export default {
             // 然后将被拖动的块加入新的子树
             tmp.children = undefined;
             tmp.channel = channel;
-            let targetBlock = this.findBlock(this.columnTree, bid);
+            let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild' || dir == 'bottomchild')) {
+            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
               throw new Error("Invalid insert");
               return;
             }
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, tmp);
           }
+        } else if(dir == 'bottom') { // bottom, + cell
+          if(this.draggedItemType == 'function') {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          let targetBlock = this.findBlock(bid);
+          if(!targetBlock) return;
+          let sourceTables = this.showCompleteTable ? this.fullTables : this.foldedTables;
+          let {table, dim} = sourceTables[targetBlock.tableId], block = targetBlock.arr[targetBlock.index];
+          if(block.children instanceof Array && block.children.length > 0) {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          let rowParentId = undefined, colParentId = block.blockId;
+          if(dim.rdim > 0) {
+            for(let j = 0; j < table[dim.cdim].length; j++) {
+              if(table[dim.cdim][j].col < tabledim.rdim) {
+                rowParentId = table[dim.cdim][j].sourceBlockId;
+              } else {
+                break;
+              }
+            }
+          }
+          
+          let newBlock;
+          if(this.draggedItemType == 'attr') {
+            newBlock = {
+              attrName: this.draggedAttr.name,
+              blockId: uuid(),
+              channel: 'cell',
+              rowParentId,
+              colParentId,
+            };
+          } else { // block
+            // 首先将被拖动的块从树中删除
+            let tmp = this.deleteBlock(this.draggedBlock.dataset.bid);
+            tmp.children = undefined;
+            newBlock = tmp;
+            newBlock.channel = 'cell';
+            newBlock.rowParentId = rowParentId;
+            newBlock.colParentId = colParentId;
+          }
+          let _found = false, cell = this.canvas[targetBlock.tableId].cell;
+          for(let i = 0; i < cell.length; i++) {
+            if(cell[i].rowParentId == rowParentId && cell[i].colParentId == colParentId) {
+              cell[i] = newBlock;
+              _found = true;
+              break;
+            }
+          }
+          if(!_found) {
+            cell.push(newBlock);
+          }
+        } else if(dir == 'bottomleft') {
+          if(this.draggedItemType == 'function') {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          let targetBlock = this.findBlock(bid);
+          if(!targetBlock) return;
+          let block_c = this.canvas[targetBlock.tableId];
+          if(!(block_c.rowHeader instanceof Array && block_c.rowHeader.length == 0)) {
+            this.$message.error("Please rotate the dropped block(s) first.");
+            return;
+          }
+          if(this.draggedItemType == 'attr') {
+            block_c.rowHeader.push({
+              attrName: this.draggedAttr.name,
+              blockId: uuid(),
+              children: [],
+              channel: 'row',
+            })
+          } else {
+            let sourceBlock = this.findBlock(this.draggedBlock.dataset.bid);
+            if(!sourceBlock) return;
+            let block_r = this.canvas[sourceBlock.tableId];
+            if(!(block_r.columnHeader instanceof Array && block_r.columnHeader.length == 0)) {
+              this.$message.error("Please rotate the dragged block(s) first.");
+              return;
+            }
+            block_c.rowHeader = block_r.rowHeader;
+            this.canvas.splice(sourceBlock.tableId, 1);
+          }
+          
         }
       }
       this.updateTable();
@@ -685,6 +865,8 @@ export default {
       e.target.classList.remove('bottomhover');
       e.target.classList.remove('rightchildhover');
       e.target.classList.remove('bottomchildhover');
+      e.target.classList.remove("toprighthover");
+      e.target.classList.remove('bottomlefthover');
     },
     checkInsertValid(parentBlock, isInsertEntityMerge) {
       if(!parentBlock.children || !(parentBlock.children instanceof Array) || parentBlock.children.length == 0) return true;
@@ -702,8 +884,7 @@ export default {
     },
     handleBlockClick(e) {
       console.log(e)
-      let source = (e.target.dataset.channel == 'row') ? this.rowTree : (e.target.dataset.channel == 'column') ? this.columnTree : this.cell;
-      let block = this.findBlock(source, e.target.dataset.bid);
+      let block = this.findBlock(e.target.dataset.bid);
       console.log(block)
       if(!block) return;
       block = block.arr[block.index];
@@ -724,7 +905,6 @@ export default {
     },
     openMenu(e) {
       e.preventDefault();
-      let source = (e.target.dataset.channel == 'row') ? this.rowTree : (e.target.dataset.channel == 'column') ? this.columnTree : this.cell;
       this.cmBlockDom = e.target;
       this.cmVisible = true;
       this.cmLeft = e.clientX;
@@ -743,86 +923,206 @@ export default {
         this.cmVisible = false;
       }
     },
-    findBlock(arr, bid, parentBid) { // 在arr中寻找blockId=bid的块; parentBid是父亲的blockId; 返回父亲块的blockId, children 及目标块在 children 中的Index
+    _findBlock(arr, bid, parentBid, tableId) { // 在arr中寻找blockId=bid的块; parentBid是父亲的blockId; 返回父亲块的blockId, children 及目标块在 children 中的Index, 该block在canvas中的index
       if(!(arr instanceof Array) || arr.length == 0) return;
       for(let i = 0; i < arr.length; i++) {
-        if(arr[i].blockId == bid) return {arr, index: i, parentBid};
+        if(arr[i].blockId == bid) return {arr, index: i, parentBid, tableId};
         if(arr[i].children) {
-          let d = this.findBlock(arr[i].children, bid, arr[i].blockId);
+          let d = this._findBlock(arr[i].children, bid, arr[i].blockId, tableId);
           if(d) return d;
+        }
+      }
+    },
+    findBlock(bid) {
+      let source = ['rowHeader', 'columnHeader', 'cell'];
+      for(let i = 0; i < this.canvas.length; i++) {
+        for(let j = 0; j < source.length; j++) {
+          let channel = source[j];
+          let tmp = this._findBlock(this.canvas[i][channel], bid, undefined, i);
+          if(tmp) return tmp;
         }
       }
     },
     handleCellBlockDragover(e) {
       e.stopPropagation();
+      this.dropoverBox = "";
       if(this.draggedItemType == 'block' && e.target.dataset.bid == this.draggedBlock.blockId) {
         return;
       }
-      if(this.rowTree.length == 0 && this.columnTree.length == 0) {
-        return;
-      }
       e.preventDefault();
-      e.target.classList.add('tableCanvasBoxHighlight');
+      let x = e.clientX, y = e.clientY;
+      let box = e.target.getBoundingClientRect();
+      // e.target.classList.add('tableCanvasBoxHighlight');
+      let clearClass = (e) => {
+        e.target.classList.remove('lefthover');
+        e.target.classList.remove('righthover');
+        e.target.classList.remove('tophover');
+        e.target.classList.remove('bottomhover');
+        e.target.classList.remove("rightchildhover");
+        e.target.classList.remove("bottomchildhover");
+        e.target.classList.remove("toprighthover");
+        e.target.classList.remove("bottomlefthover");
+        e.target.classList.remove("tableCanvasBoxHighlight");
+      }
+      if(!e.target.dataset.bid) {
+        clearClass(e);
+        e.target.classList.add('tableCanvasBoxHighlight');
+        return;
+      } else {
+        let block = this.findBlock(e.target.dataset.bid);
+        if(!block) return; 
+        let tableId = block.tableId;
+        let isRowEmpty = !(this.canvas[tableId].rowHeader instanceof Array && this.canvas[tableId].rowHeader.length > 0);
+        let isColEmpty = !(this.canvas[tableId].columnHeader instanceof Array && this.canvas[tableId].columnHeader.length > 0);
+        clearClass(e);
+        // console.log(isRowEmpty, isColEmpty)
+        if(isColEmpty && y < box.top + 20) {
+          e.target.classList.add('tophover');
+        } else if(isRowEmpty && x < box.left + 20) {
+          e.target.classList.add('lefthover');
+        } else {
+          e.target.classList.add('tableCanvasBoxHighlight');
+        }
+      }
     },
     handleCellBlockDrop(e) {
       e.stopPropagation();
-      e.target.classList.remove("tableCanvasBoxHighlight");
-      let rowParentId, colParentId;
-      if(!e.target.dataset.bid) { // 拖入空白块
-        let row = e.target.dataset.row, col = e.target.dataset.col;
-        let table = this.showCompleteTable ? this.fullTable : this.foldedTable;
-        let tabledim = this.tableDim;
-        for(let j = 0; j < table[row].length; j++) {
-          if(table[row][j].col < tabledim.rdim) {
-            rowParentId = table[row][j].sourceBlockId;
-          } else {
-            break;
-          }
-        }
-        for(let i = 0; i < tabledim.cdim; i++) {
-          for(let j = 0; j < table[i].length; j++) {
-            if(table[i][j].col == col) {
-              colParentId = table[i][j].sourceBlockId;
+      this.dropoverBox = "";
+      if(e.target.classList.contains("tableCanvasBoxHighlight")) {
+        e.target.classList.remove("tableCanvasBoxHighlight");
+        let rowParentId, colParentId;
+        if(!e.target.dataset.bid) { // 拖入空白块
+          let row = e.target.dataset.row, col = e.target.dataset.col;
+          let sourceTables = this.showCompleteTable ? this.fullTables : this.foldedTables;
+          let {table, dim} = sourceTables[e.target.dataset.tableId];
+          for(let j = 0; j < table[row].length; j++) {
+            if(table[row][j].col < dim.rdim) {
+              rowParentId = table[row][j].sourceBlockId;
+            } else {
+              break;
             }
           }
+          for(let i = 0; i < dim.cdim; i++) {
+            for(let j = 0; j < table[i].length; j++) {
+              if(table[i][j].col == col) {
+                colParentId = table[i][j].sourceBlockId;
+              }
+            }
+          }
+          console.log(rowParentId, colParentId)
+        } else { // 拖入现有块
+          rowParentId = e.target.dataset.rowParentId;
+          colParentId = e.target.dataset.colParentId;
         }
-        console.log(rowParentId, colParentId)
-      } else { // 拖入现有块
-        rowParentId = e.target.dataset.rowParentId;
-        colParentId = e.target.dataset.colParentId;
-      }
-      if(this.draggedItemType == 'attr') {
-        this.cell.push({
-          attrName: this.draggedAttr.name,
-          blockId: uuid(),
-          rowParentId: rowParentId,
-          colParentId: colParentId,
-        })
-      } else if(this.draggedItemType == 'block') {
-        // 首先将被拖动的块从树中删除
-        let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
-        if(tmp.blockId == rowParentId) {
-          tmp.colParentId = colParentId;
-        } else if(tmp.blockId == colParentId) {
-          tmp.colParentId = tmp.rowParentId;
-          tmp.rowParentId = rowParentId;
-        } else {
-          tmp.rowParentId = rowParentId;
-          tmp.colParentId = colParentId;
-        }
-        tmp.blockId = uuid();
-        for(let i = 0; i < this.cell.length; i++) {
-          if(this.cell[i].rowParentId == rowParentId && this.cell[i].colParentId == colParentId) {
-            this.cell.splice(i, 1, tmp);
-            break;
+        if(this.draggedItemType == 'attr') {
+          if(e.target.dataset.bid) { // 替换现有块
+            let cell = this.canvas[e.target.dataset.tableId];
+            for(let i = 0; i < cell.length; i++) {
+              if(cell[i].rowParentId == rowParentId && cell[i].colParentId == colParentId) {
+                cell[i] = {
+                  attrName: this.draggedAttr.name,
+                  blockId: uuid(),
+                  rowParentId: rowParentId,
+                  colParentId: colParentId,
+                  channel: 'cell',
+                }
+              }
+            }
+          } else {
+            this.canvas[e.target.dataset.tableId].cell.push({
+              attrName: this.draggedAttr.name,
+              blockId: uuid(),
+              rowParentId: rowParentId,
+              colParentId: colParentId,
+              channel: 'cell',
+            })
+          }
+        } else if(this.draggedItemType == 'block') {
+          // 首先将被拖动的块从树中删除
+          let tmp = this.deleteBlock(this.draggedBlock.dataset.bid);
+          if(tmp.blockId == rowParentId) {
+            tmp.colParentId = colParentId;
+          } else if(tmp.blockId == colParentId) {
+            tmp.colParentId = tmp.rowParentId;
+            tmp.rowParentId = rowParentId;
+          } else {
+            tmp.rowParentId = rowParentId;
+            tmp.colParentId = colParentId;
+          }
+          tmp.blockId = uuid();
+          tmp.channel = 'cell';
+          let cell = this.canvas[e.target.dataset.tableId].cell;
+          if(e.target.dataset.bid) { // 替换现有块
+            for(let i = 0; i < cell.length; i++) {
+              if(cell[i].rowParentId == rowParentId && cell[i].colParentId == colParentId) {
+                cell[i] = tmp;
+              }
+            }
+          } else {
+            cell.push(tmp);
           }
         }
+      } else if(e.target.classList.contains("tophover")) {
+        e.target.classList.remove("tophover");
+        let block = this.findBlock(e.target.dataset.bid);
+        if(!block) return;
+        let tableId = block.tableId;
+        let columnHeader = this.canvas[tableId].columnHeader;
+        if(this.draggedItemType == 'function') {
+          this.$message.error("Illegal dragging!");
+          return;
+        } else if(this.draggedItemType == 'attr') {
+          let bid = uuid();
+          columnHeader.push({
+            attrName: this.draggedAttr.name,
+            blockId: bid,
+            children: [],
+            channel: 'column',
+          })
+          block.arr[block.index].colParentId = bid;
+        } else {
+          let sourceBlock = this.deleteBlock(this.draggedBlock.dataset.bid);
+          if(!sourceBlock) return;
+          sourceBlock.children = [];
+          sourceBlock.channel = 'column';
+          columnHeader.push(sourceBlock);
+          block.arr[block.index].colParentId = sourceBlock.blockId;
+        }
+      } else {
+        e.target.classList.remove("lefthover");
+        let block = this.findBlock(e.target.dataset.bid);
+        if(!block) return;
+        let tableId = block.tableId;
+        let rowHeader = this.canvas[tableId].rowHeader;
+        if(this.draggedItemType == 'function') {
+          this.$message.error("Illegal dragging!");
+          return;
+        } else if(this.draggedItemType == 'attr') {
+          let bid = uuid();
+          rowHeader.push({
+            attrName: this.draggedAttr.name,
+            blockId: bid,
+            children: [],
+            channel: 'row',
+          })
+          block.arr[block.index].colParentId = bid;
+        } else {
+          let sourceBlock = this.deleteBlock(this.draggedBlock.dataset.bid);
+          if(!sourceBlock) return;
+          sourceBlock.children = [];
+          sourceBlock.channel = 'row';
+          rowHeader.push(sourceBlock);
+          block.arr[block.index].rowParentId = sourceBlock.blockId;
+        }
       }
+      
       this.updateTable();
     },
     handleCellBlockDragleave(e) {
       e.stopPropagation();
       e.target.classList.remove("tableCanvasBoxHighlight");
+      e.target.classList.remove("tophover");
+      e.target.classList.remove("lefthover");
     },
     drawGraphCanvas(arr, dom) {
       if(!(arr instanceof Array)) return;
@@ -867,7 +1167,7 @@ export default {
         dom.push(newDom);
       }
     },
-    drawTable(table, dom) {
+    drawTable(table, tableId, dom) {
       for(let i = table.length - 1; i >= 0; i--) {
         for(let j = 0; j < table[i].length; j++) {
           let cell = table[i][j];
@@ -897,9 +1197,16 @@ export default {
             colSpan: cell.colSpan,
             row: cell.row,
             col: cell.col,
+            tableId,
           }
-          // if(block.rowParentId) newDom.dataset.rowParentId = block.rowParentId;
-          // if(block.colParentId) newDom.dataset.colParentId = block.colParentId;
+          if(cell.channel == 'cell' && cell.sourceBlockId) {
+            let block = this.findBlock(cell.sourceBlockId);
+            if(!block) return;
+            block = block.arr[block.index];
+            if(block.rowParentId) newDom.dataset.rowParentId = block.rowParentId;
+            if(block.colParentId) newDom.dataset.colParentId = block.colParentId;
+          }
+          
 
           // let valueList = block.values ? block.values : block.function ? [block.function] : this.searchValueList(block.attrName);
           // if(channel == 'canvas') {
@@ -932,64 +1239,66 @@ export default {
       })
     },
     drawGraph() {
-      let table = this.showCompleteTable ? this.fullTable : this.foldedTable;
-      this.calcGraphConfig(table);
+      let tables = this.showCompleteTable ? this.fullTables : this.foldedTables;
       this.clearGraph();
-      this.drawGraphCanvas(this.canvas, this.canvasDom);
-      this.drawTable(table, this.tableDom);
+      // this.drawGraphCanvas(this.canvas, this.canvasDom);
+      for(let i = 0; i < tables.length; i++) {
+        this.calcGraphConfig(tables[i]);
+        this.drawTable(tables[i].table, i, this.tableDom);
+      }
       // this.drawGraphCanvas(this.fcell, this.tableDom);
     },
-    fillCell() { // 为cell channel添加一些空白的blocks
-      this.fcell = [];
-      let rLeaves = this.getLeaves(this.rowTree), cLeaves = this.getLeaves(this.columnTree);
-      let dict = new Set();
-      for(let i = 0; i < this.cell.length; i++) {
-        let key = (this.cell[i].rowParentId ? this.cell[i].rowParentId : "") + (this.cell[i].colParentId ? this.cell[i].colParentId : "");
-        dict.add(key);
-      }
-      if(rLeaves.length == 0 && cLeaves.length != 0) { // 列表
-        for(let i = 0; i < cLeaves.length; i++) {
-          if(dict.has(cLeaves[i])) continue;
-          this.fcell.push({
-            blockId: -1, // -1 表示这实际上是个空白块
-            colParentId: cLeaves[i]
-          });
-        }
-      } else if(rLeaves.length != 0 && cLeaves.length == 0) { // 行表 
-        for(let i = 0; i < rLeaves.length; i++) {
-          if(dict.has(rLeaves[i])) continue;
-          this.fcell.push({
-            blockId: -1,
-            rowParentId: rLeaves[i]
-          });
-        }
-      } else if(rLeaves.length != 0 && cLeaves.length != 0) { // 交叉表
-        for(let i = 0; i < rLeaves.length; i++) {
-          for(let j = 0; j < cLeaves.length; j++) {
-            let key = rLeaves[i] + cLeaves[j];
-            if(dict.has(key)) continue;
-            this.fcell.push({
-              blockId: -1,
-              rowParentId: rLeaves[i],
-              colParentId: cLeaves[j],
-            })
-          }
-        }
-      }
-    },
-    getLeaves(tree) { // 获取row/column header的叶子节点
-      if(!(tree instanceof Array) || tree.length == 0) return [];
-      let res = [];
-      for(let i = 0; i < tree.length; i++) {
-        if(tree[i].children instanceof Array && tree[i].children.length > 0) {
-          let d = this.getLeaves(tree[i].children);
-          res = [...res, ...d];
-        } else {
-          res = [...res, tree[i].blockId];
-        }
-      }
-      return res;
-    },
+    // fillCell() { // 为cell channel添加一些空白的blocks
+    //   this.fcell = [];
+    //   let rLeaves = this.getLeaves(this.rowTree), cLeaves = this.getLeaves(this.columnTree);
+    //   let dict = new Set();
+    //   for(let i = 0; i < this.cell.length; i++) {
+    //     let key = (this.cell[i].rowParentId ? this.cell[i].rowParentId : "") + (this.cell[i].colParentId ? this.cell[i].colParentId : "");
+    //     dict.add(key);
+    //   }
+    //   if(rLeaves.length == 0 && cLeaves.length != 0) { // 列表
+    //     for(let i = 0; i < cLeaves.length; i++) {
+    //       if(dict.has(cLeaves[i])) continue;
+    //       this.fcell.push({
+    //         blockId: -1, // -1 表示这实际上是个空白块
+    //         colParentId: cLeaves[i]
+    //       });
+    //     }
+    //   } else if(rLeaves.length != 0 && cLeaves.length == 0) { // 行表 
+    //     for(let i = 0; i < rLeaves.length; i++) {
+    //       if(dict.has(rLeaves[i])) continue;
+    //       this.fcell.push({
+    //         blockId: -1,
+    //         rowParentId: rLeaves[i]
+    //       });
+    //     }
+    //   } else if(rLeaves.length != 0 && cLeaves.length != 0) { // 交叉表
+    //     for(let i = 0; i < rLeaves.length; i++) {
+    //       for(let j = 0; j < cLeaves.length; j++) {
+    //         let key = rLeaves[i] + cLeaves[j];
+    //         if(dict.has(key)) continue;
+    //         this.fcell.push({
+    //           blockId: -1,
+    //           rowParentId: rLeaves[i],
+    //           colParentId: cLeaves[j],
+    //         })
+    //       }
+    //     }
+    //   }
+    // },
+    // getLeaves(tree) { // 获取row/column header的叶子节点
+    //   if(!(tree instanceof Array) || tree.length == 0) return [];
+    //   let res = [];
+    //   for(let i = 0; i < tree.length; i++) {
+    //     if(tree[i].children instanceof Array && tree[i].children.length > 0) {
+    //       let d = this.getLeaves(tree[i].children);
+    //       res = [...res, ...d];
+    //     } else {
+    //       res = [...res, tree[i].blockId];
+    //     }
+    //   }
+    //   return res;
+    // },
     searchValueList(attrName) {
       if(!attrName) return [];
       for(let i = 0; i < this.attrInfo.length; i++) {
@@ -1001,23 +1310,23 @@ export default {
     getValueList(block) {
       return block.values ? block.values : block.function ? [block.function] : this.searchValueList(block.attrName);
     },
-    addPoint(block, channel) {
-      if(channel == "GC") { // graphcanvas
-        this.canvas.push(block);
-      } if(channel == "LB") {
-        this.rowTree.push(block);
-      } else if(channel == "RT") {
-        this.columnTree.push(block);
-      }
-      for(let i = 0; i < this.cell.length; i++) {
-        if(channel == "LB" && !this.cell[i].rowParentId) {
-          this.cell[i].rowParentId = block.blockId;
-        }
-        if(channel == "RT" && !this.cell[i].colParentId) {
-          this.cell[i].colParentId = block.blockId;
-        }
-      }
-    },
+    // addPoint(block, channel) {
+    //   if(channel == "GC") { // graphcanvas
+    //     this.canvas.push(block);
+    //   } if(channel == "LB") {
+    //     this.rowTree.push(block);
+    //   } else if(channel == "RT") {
+    //     this.columnTree.push(block);
+    //   }
+    //   for(let i = 0; i < this.cell.length; i++) {
+    //     if(channel == "LB" && !this.cell[i].rowParentId) {
+    //       this.cell[i].rowParentId = block.blockId;
+    //     }
+    //     if(channel == "RT" && !this.cell[i].colParentId) {
+    //       this.cell[i].colParentId = block.blockId;
+    //     }
+    //   }
+    // },
     handleDragOver(e, pos) {
       e.stopPropagation();
       if(pos == "LT" || pos == "RB") return;
@@ -1028,39 +1337,62 @@ export default {
     handleDrop(e, pos) {
       e.stopPropagation();
       e.preventDefault();
-      console.log("drop, ", pos);
+      // console.log("drop, ", pos);
       this.dropoverBox = "";
-      let channel = (pos == 'LB') ? 'row' : (pos == 'RT') ? 'column' : (pos == 'RB') ? 'cell' : 'canvas';
+      // let channel = (pos == 'LB') ? 'row' : (pos == 'RT') ? 'column' : (pos == 'RB') ? 'cell' : 'canvas';
+      let channel = 'row';
 
       if(this.draggedItemType == 'attr') {
         let newBlock = {
           attrName: this.draggedAttr.name,
           blockId: uuid(),
-          left: e.offsetX,
-          top: e.offsetY,
-          width: Graph_Block_Size.width,
-          height: Graph_Block_Size.height,
           channel,
         };
-        this.addPoint(newBlock, pos);
+        let table = {
+          type: 'block',
+          rowHeader: [newBlock],
+          columnHeader: [],
+          cell: [],
+          attrInfo: this.attrInfo,
+          left: e.offsetX,
+          top: e.offsetY,
+        };
+        // this.addPoint(newBlock, pos);
+        this.canvas.push(table);
       } else if (this.draggedItemType == 'function') {
         let newBlock = {
           function: 'sum',
           blockId: uuid(),
           channel,
         };
-        this.addPoint(newBlock, pos);
+        let table = {
+          type: 'block',
+          rowHeader: [newBlock],
+          columnHeader: [],
+          cell: [],
+          attrInfo: this.attrInfo,
+          left: e.offsetX,
+          top: e.offsetY,
+        };
+        // this.addPoint(newBlock, pos);
+        this.canvas.push(table);
       } else {
         // 首先将被拖动的块从树中删除
-        let tmp = this.deleteBlock(this.draggedBlock.dataset.bid, this.draggedBlock.dataset.channel);
+        let tmp = this.deleteBlock(this.draggedBlock.dataset.bid);
         console.log(tmp)
         tmp.children = undefined;
-        tmp.left = e.offsetX;
-        tmp.top = e.offsetY;
-        tmp.width = Graph_Block_Size.width;
-        tmp.height = Graph_Block_Size.height;
-        tmp.channel = channel;
-        this.addPoint(tmp, pos);
+        if(tmp.channel == 'cell') tmp.channel = 'row';
+        let table = {
+          type: 'block',
+          rowHeader: tmp.channel == 'row' ? [tmp] : [],
+          columnHeader: tmp.channel == 'column' ? [tmp] : [],
+          cell: [],
+          attrInfo: this.attrInfo,
+          left: e.offsetX,
+          top: e.offsetY,
+        };
+        // this.addPoint(newBlock, pos);
+        this.canvas.push(table);
       }
       this.updateTable();
     },
@@ -1070,14 +1402,13 @@ export default {
     },
     updateBlock(block) {
       if(block.channel) {
-        let source = (block.channel == 'row') ? this.rowTree : (block.channel == 'column') ? this.columnTree : (block.channel == 'cell') ? this.cell : this.canvas;
-        let targetBlock = this.findBlock(this.rowTree, block.blockId);
+        let targetBlock = this.findBlock(block.blockId);
         if(targetBlock) targetBlock.arr[targetBlock.index] = block;
       } else {
         let source = ['rowTree', 'columnTree', 'cell', 'canvas'];
         source.forEach(item => {
           let targetBlock;
-          targetBlock = this.findBlock(this[item], block.blockId);
+          targetBlock = this.findBlock(block.blockId);
           if(targetBlock) {
             targetBlock.arr[targetBlock.index] = block;
             return;
@@ -1088,15 +1419,14 @@ export default {
     },
     cmDelete(e) {
       this.cmVisible = false;
-      this.deleteBlock(this.cmBlockDom.dataset.bid, this.cmBlockDom.dataset.channel);
+      this.deleteBlock(this.cmBlockDom.dataset.bid);
       this.updateTable();
     },
     cmEditValues(e) {
       this.cmVisible = false;
       console.log(this.cmBlockDom);
       let channel = this.cmBlockDom.dataset.channel;
-      let source = (channel == 'row') ? this.rowTree : (channel == 'column') ? this.columnTree : (channel == 'cell') ? this.cell : this.canvas;
-      let block = this.findBlock(source, this.cmBlockDom.dataset.bid);
+      let block = this.findBlock(this.cmBlockDom.dataset.bid);
       if(!block) return;
       block = block.arr[block.index];
       console.log(block);
@@ -1154,30 +1484,11 @@ export default {
           rdim: table[0][0].colSpan,
         });
       }
-      // let cellIdList = new Set();
-      // if(spec.cell instanceof Array) {
-      //   for(let i = 0; i < spec.cell.length; i++) {
-      //     cellIdList.add(spec.cell[i].blockId)
-      //   } 
-      // }
-      // for(let i = 0; i < table.length; i++) {
-      //   let colSpan = 0;
-      //   for(let j = 0; j < table[i].length; j++) {
-      //     if(cellIdList.has(table[i][j].sourceBlockId)) {
-      //       return {
-      //         cdim: i,
-      //         rdim: colSpan,
-      //       }
-      //     } else {
-      //       colSpan += table[i][j].colSpan;
-      //     }
-      //   }
-      // }
       const getDepth = (spec_channel) => {
         let res = 0;
         if(!(spec_channel instanceof Array)) return res;
         for(let i = 0; i < spec_channel.length; i++) {
-          let tmp = getDepth(spec_channel[i].children) + 1;
+          let tmp = getDepth(spec_channel[i].children) + ((spec_channel[i].entityMerge == true && spec_channel[i].children instanceof Array && spec_channel[i].children.length > 0) ? 0 : 1);
           if(spec_channel[i].key && typeof(spec_channel[i].key.position) != 'undefined' && spec_channel[i].key.position != 'embedded') tmp++;
           if(tmp > res) res = tmp;
         } 
@@ -1189,7 +1500,7 @@ export default {
         cdim: getDepth(spec.columnHeader),
       }
     },
-    foldTable(data, spec, fullTable) {
+    foldTable(dim, fullTable) {
       if(!fullTable || !(fullTable instanceof Array) || fullTable.length == 0) return fullTable;
       const clearProperties = (fullTable) => {
         for(let i = 0; i < fullTable.length; i++) {
@@ -1201,7 +1512,7 @@ export default {
       }
       clearProperties(fullTable);
       let rSet = new Set(), cSet = new Set();
-      let {rdim, cdim} = this.tableDim;
+      let {rdim, cdim} = dim;
       let stack = [], index = -1; // 用栈维护当前遍历信息
       const max_visible_values = 2; // 折叠时，每个block最多3个值
       const isStackNotEmpty = () => {
@@ -1243,7 +1554,7 @@ export default {
           if(fullTable[i][j].col >= rdim) break;
           let curId = fullTable[i][j].sourceBlockId;
           if(!curId || curId == '@KEY') continue;
-          let curBlock = this.findBlock(this.rowTree, curId);
+          let curBlock = this.findBlock(curId);
           if(!curBlock) throw new Error("Unable to find block, id=" + String(curId));
           curBlock = curBlock.arr[curBlock.index];
           // let valueList = curBlock.values ? curBlock.values : curBlock.function ? [curBlock.function] : this.searchValueList(curBlock.attrName);
@@ -1337,7 +1648,7 @@ export default {
         // if(isStackNotEmpty() && stack[0].count > max_visible_values) break;
         let curId = searchList[i].sourceBlockId;
         if(!curId || curId == '@KEY') continue;
-        let curBlock = this.findBlock(this.columnTree, curId);
+        let curBlock = this.findBlock(curId);
         if(!curBlock) throw new Error("Unable to find block, id=" + String(curId));
         curBlock = curBlock.arr[curBlock.index];
         // let valueList = curBlock.values ? curBlock.values : curBlock.function ? [curBlock.function] : this.searchValueList(curBlock.attrName);
@@ -1482,50 +1793,89 @@ export default {
     },
     handleUnfold(dataset) {
       console.log(dataset);
-      let source = (dataset.channel == 'row') ? this.rowTree : (dataset.channel == 'column') ? this.columnTree : this.cell;
-      let block = this.findBlock(source, dataset.bid);
+      let block = this.findBlock(dataset.bid);
       if(block.arr[block.index].unfolded == true) {
         block.arr[block.index].unfolded = false;
       } else {
         block.arr[block.index].unfolded = true;
       }
-      let newSpec = {
-        rowHeader: this.rowTree,
-        columnHeader: this.columnTree,
-        cell: this.cell,
-        attrInfo: this.attrInfo,
-      }
-      this.foldedTable = this.foldTable(this.data, newSpec, this.fullTable);
+      let id = block.tableId;
+      let newTable = this.foldTable(this.fullTables[id].dim, this.fullTables[id].table);
+      this.foldedTables[id].table = newTable;
       this.drawGraph();
     },
     updateTable() {
-      let spec = {
-        data: this.data,
-        spec: {
-          rowHeader: this.rowTree,
-          columnHeader: this.columnTree,
-          cell: this.cell,
-          attrInfo: this.attrInfo,
+      this.fullTables = [];
+      this.foldedTables = [];
+      for(let i = 0; i < this.canvas.length; i++) {
+        let spec = this.canvas[i];
+        if(spec.rowHeader.length == 0 && spec.columnHeader.length == 0) {
+          this.canvas.splice(i, 1);
+          i--;
+          continue;
         }
-      };
-      let spec2 = Utils.deepClone(spec.spec);
-      console.log(spec2);
-      this.fullTable = tableShop.default.utils.transform(spec);
-      console.log("Full table: ", this.fullTable);
-      this.tableDim = this.getTabledim(spec.spec, this.fullTable);
-      this.addIndex(this.fullTable);
-      console.log(this.fullTable)
-      this.foldedTable = this.foldTable(this.data, spec.spec, this.fullTable);
+        let tableSpec = {
+          data: this.data,
+          spec
+        };
+        let spec2 = Utils.deepClone(spec);
+        console.log("Processing spec: ", spec2);
+        let res = tableShop.default.utils.transform(tableSpec);
+        console.log("Get full table: ", res);
+        this.addIndex(res);
+        let dim = this.getTabledim(spec, res);
+        this.fullTables.push({
+          dim,
+          table: res,
+          left: spec.left,
+          top: spec.top,
+        });
+        let folded_res = this.foldTable(dim, res);
+        this.foldedTables.push({
+          dim, 
+          table: folded_res,
+          left: spec.left,
+          top: spec.top,
+        });
+      }
       this.drawGraph();
+    },
+    rotateTable(table) {
+      const changeChannel = (arr) => {
+        for(let i = 0; i < arr.length; i++) {
+          if(arr[i].channel == 'row') arr[i].channel = 'column';
+          else if(arr[i].channel == 'column') arr[i].channel = 'row';
+          if(arr[i].children && arr[i].children instanceof Array) changeChannel(arr[i].children);
+        }
+      }
+      changeChannel(table.rowHeader);
+      changeChannel(table.columnHeader);
+      let tmp = Utils.deepClone(table.columnHeader);
+      table.columnHeader = table.rowHeader;
+      table.rowHeader = tmp;
+    },
+    handleRotate() {
+      if(!this.selectedBlock) {
+        this.$message.warning("Please select a puzzle first.");
+        return;
+      }
+      console.log(this.selectedBlock);
+      let block = this.findBlock(this.selectedBlock.blockId);
+      console.log(block);
+      let tableId = block.tableId;
+      this.rotateTable(this.canvas[tableId]);
+      this.updateTable();
     }
   },
   mounted() {
     // 设置回调
     this.$bus.on('update', this.updateBlock);
+    this.$bus.on('rotate', this.handleRotate);
 
-    let tableCanvasDom = document.getElementById("tableCanvas");
-    this.viewHeight = tableCanvasDom.scrollHeight;
-    this.viewWidth = tableCanvasDom.scrollWidth;
+    // let tableCanvasDom = document.getElementById("tableCanvas");
+    // this.viewHeight = tableCanvasDom.scrollHeight;
+    // this.viewWidth = tableCanvasDom.scrollWidth;
+
     // this.updateTable();
     // this.rowTree = EXAMPLE_SPEC.rowHeader;
     // this.columnTree = EXAMPLE_SPEC.columnHeader;
@@ -1539,9 +1889,9 @@ export default {
 
   },
   updated() {
-    let tableCanvasDom = document.getElementById("tableCanvas");
-    this.viewHeight = tableCanvasDom.scrollHeight;
-    this.viewWidth = tableCanvasDom.scrollWidth;
+    // let tableCanvasDom = document.getElementById("tableCanvas");
+    // this.viewHeight = tableCanvasDom.scrollHeight;
+    // this.viewWidth = tableCanvasDom.scrollWidth;
   },
   components: {
     Puzzle,
@@ -1555,7 +1905,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .tableCanvas {
@@ -1616,19 +1966,19 @@ export default {
 }
 
 .lefthover {
-  border-left: 2px solid red;
+  border-left: 3px solid red;
 }
 
 .righthover {
-  border-right: 2px solid red;
+  border-right: 3px solid red;
 }
 
 .tophover {
-  border-top: 2px solid red;
+  border-top: 3px solid red;
 }
 
 .bottomhover{
-  border-bottom: 2px solid red;
+  border-bottom: 3px solid red;
 }
 
 .hvline {
