@@ -1,35 +1,10 @@
 import { createStore } from 'vuex'
-let testSpec = {
-  rowHeader: [{
-    attr: {
-      name: "state",
-      type: "categorical",
-      values: ["Alabama", "Alaska"]
-    },
-    children: [{
-      attr: {
-        name: "year",
-        type: "categorical",
-        values: [2004, 2005]
-      }
-    }]
-  }],
-	// columnHeader: [...],
-	cell: [{
-    name: "crime",
-    type: "numerical",
-    values: [4029.3, 3900, 3370.9, 3615],
-  }],
-	// attrInfo: [...],
-	// styles: [{"class1": {...}, "class2": {...}, ...}] // 样式声明部分
-}
 
 export const store = createStore({
   state () {
     return {
       data: undefined,
       attrInfo: [],
-      specification: testSpec,
 
       //temporary variables
       draggedItemType: "",
@@ -37,6 +12,7 @@ export const store = createStore({
       draggedBlock: undefined,
       
       selectedBlock: undefined,
+      selectedTable: undefined,
       configEg: undefined,
     }
   },
@@ -46,9 +22,6 @@ export const store = createStore({
     },
     storeAttrInfo (state, attrInfo) {
       state.attrInfo = attrInfo;
-    },
-    storeSpecification (state, specification) {
-      state.specification = specification;
     },
     storeDraggedItemType (state, draggedItemType) {
       state.draggedItemType = draggedItemType;
@@ -61,6 +34,9 @@ export const store = createStore({
     },
     storeSelectedBlock (state, selectedBlock) {
       state.selectedBlock = selectedBlock;
+    },
+    storeSelectedTable (state, selectedTable) {
+      state.selectedTable = selectedTable;
     },
     storeConfigEg (state, configEg) {
       state.configEg = configEg;

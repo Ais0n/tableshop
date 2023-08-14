@@ -9,20 +9,33 @@
     <div class="trborder2"></div>
     <div class="blborder1"></div>
     <div class="blborder2"></div>
-    <a-button v-if="!showCompleteTable && !isCanvas && dom.dataset.unfoldbutton" type="text" size="small" class="unfoldButton" :class="dom.dataset.channel == 'row' ? 'rowUnfoldButton' : 'colUnfoldButton'" @click="handleUnfold(dom)"> ... </a-button>
+    <a-button v-if="!showCompleteTable && !isCanvas && dom.dataset.unfoldbutton" type="text" size="small" class="unfoldButton" :class="dom.dataset.channel == 'row' ? 'rowUnfoldButton' : 'colUnfoldButton'" @click="handleUnfold(dom)"> 
+      <template #icon> 
+        <i class="iconfont"> {{dom.dataset.channel == 'row' ? "&#xeb10;" : "&#xeb11;"}}</i> 
+      </template> 
+    </a-button>
+    <a-button v-if="!showCompleteTable && !isCanvas" type="text" size="small" class="unfoldButton" style="top: 0; right: 0; position: absolute" @click="handleRotate(dom)"> 
+      <template #icon> 
+        <i class="iconfont"> &#xe607; </i> 
+      </template> 
+    </a-button>
     <!-- top (canvas only) -->
-    <div v-if="isCanvas">
+    <div v-if="!showCompleteTable && isCanvas">
       <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle upSemiCircle canvasSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: ${-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='top' style="border-top: 1px solid #DDE6ED"/>
       <div v-else v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle downSemiCircle canvasSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: -1px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='top' style="border-top: 1px solid #DDE6ED"/>
     </div>
     <!-- bottom -->
-    <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle upSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: ${dom.style.height-pr+1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='bottom'/>
-    <div v-else v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle downSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: ${dom.style.height-1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='bottom'/>
+    <div v-if="!showCompleteTable">
+      <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle upSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: ${dom.style.height-pr+1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='bottom'/>
+      <div v-else v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle downSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: ${dom.style.height-1}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='bottom'/>
+    </div>
     <!-- left  -->
-    <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.rowSpan" class="verticalSemiCircle rightSemiCircle" :style="`left: -1px; bottom: ${i*bh-bh/2-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='left'/>
-    <div v-else v-for="i in dom.dataset.rowSpan" class="verticalSemiCircle leftSemiCircle" :style="`left: ${-pr}px; bottom: ${i*bh-bh/2-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='left'/>
+    <div v-if="!showCompleteTable">
+      <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.rowSpan" class="verticalSemiCircle rightSemiCircle" :style="`left: -1px; bottom: ${i*bh-bh/2-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='left'/>
+      <div v-else v-for="i in dom.dataset.rowSpan" class="verticalSemiCircle leftSemiCircle" :style="`left: ${-pr}px; bottom: ${i*bh-bh/2-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='left'/>
+    </div>
     <!-- right (canvas only) -->
-    <div v-if="isCanvas">
+    <div v-if="!showCompleteTable && isCanvas">
       <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.rowSpan" class="verticalSemiCircle rightSemiCircle canvasSemiCircle" :style="`left: ${dom.style.width - 1}px; bottom: ${i*bh-bh/2-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='right' style="border-right: 1px solid #DDE6ED"/>
       <div v-else v-for="i in dom.dataset.rowSpan" class="verticalSemiCircle leftSemiCircle canvasSemiCircle" :style="`left: ${dom.style.width-pr+1}px; bottom: ${i*bh-bh/2-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='right' style="border-right: 1px solid #DDE6ED"/>
     </div>
@@ -35,7 +48,7 @@ import { mapState, mapMutations, mapActions } from "vuex";
 import { Puzzle_Radius, Graph_Block_Size } from "../CONSTANT.js";
 export default {
   name: "Puzzle",
-  emits: ['cell-unfold'],
+  emits: ['cell-unfold', 'cell-rotate'],
   props: {
     domSource: {
       type: Object,
@@ -82,6 +95,9 @@ export default {
     handleUnfold(dom) {
       dom.dataset.unfoldbutton = dom.dataset.unfoldbutton ? false : true;
       this.$emit('cell-unfold', dom.dataset);
+    },
+    handleRotate(dom) {
+      this.$emit('cell-rotate', dom.dataset);
     }
   },
   watch: {
@@ -262,6 +278,7 @@ export default {
   position: absolute;
   background-color: #eeeeee;
   border: none;
+  color: #aaaaaa;
 }
 
 .unfoldButton:hover {
@@ -276,7 +293,7 @@ export default {
 
 .colUnfoldButton {
   right: 0px;
-  top: 0px;
+  bottom: 0px;
 }
 
 .canvasSemiCircle {

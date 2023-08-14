@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5387602",
+      "name": "末端展开",
+      "font_class": "moduanzhankai",
+      "unicode": "eb10",
+      "unicode_decimal": 60176
+    },
+    {
+      "icon_id": "5387603",
+      "name": "末端左右展开",
+      "font_class": "moduanzuoyouzhankai",
+      "unicode": "eb11",
+      "unicode_decimal": 60177
+    },
+    {
       "icon_id": "10594742",
       "name": "表-表格_jurassic",
       "font_class": "jurassic_table",

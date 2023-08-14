@@ -6,7 +6,7 @@
     >
       {{dom.innerText}}
     </div> -->
-    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" @cell-unfold="handleUnfold($event)" :showCompleteTable="showCompleteTable"> </Puzzle>
+    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" @cell-unfold="handleUnfold($event)" @cell-rotate="handleRotate($event)" :showCompleteTable="showCompleteTable"> </Puzzle>
     <div id="tableCanvas" class="tableCanvas" v-show="false">
       <div id="graphViewLeftTopBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+hlineTop+'px;top:0px;left:0px'" @dragover="handleDragOver($event, 'LT')" @drop="handleDrop($event, 'LT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LT'}" @dragleave="handleDragLeave"/>
       <div id="graphViewLeftBottomBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:0px'" @dragover="handleDragOver($event, 'LB')" @drop="handleDrop($event, 'LB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LB'}" @dragleave="handleDragLeave"/>
@@ -346,9 +346,9 @@ export default {
     handleBlockDragover(e) {
       e.stopPropagation();
       this.dropoverBox = "";
-      // if(this.draggedItemType == 'block' && e.target.dataset.bid == this.draggedBlock.blockId) {
-      //   return;
-      // }
+      if(this.draggedItemType == 'block' && e.target == this.draggedBlock) {
+        return;
+      }
       if(e.target.dataset.bid == '@KEY') return;
       e.preventDefault();
       let x = e.clientX, y = e.clientY;
@@ -887,6 +887,7 @@ export default {
       let block = this.findBlock(e.target.dataset.bid);
       console.log(block)
       if(!block) return;
+      this.$store.commit("storeSelectedTable", this.canvas[block.tableId].styles);
       block = block.arr[block.index];
       this.$store.commit("storeSelectedBlock", block);
       // this.highlightBlock(e.target);
@@ -946,7 +947,7 @@ export default {
     handleCellBlockDragover(e) {
       e.stopPropagation();
       this.dropoverBox = "";
-      if(this.draggedItemType == 'block' && e.target.dataset.bid == this.draggedBlock.blockId) {
+      if(this.draggedItemType == 'block' && e.target == this.draggedBlock) {
         return;
       }
       e.preventDefault();
@@ -1425,6 +1426,15 @@ export default {
       }
       this.updateTable();
     },
+    updateGlobal(styles) {
+      console.log(JSON.parse(JSON.stringify(styles)))
+      let block = this.selectedBlock;
+      let source = this.findBlock(block.blockId);
+      if(!source) return;
+      let table = this.canvas[source.tableId];
+      table.styles = styles;
+      this.updateTable();
+    },
     cmDelete(e) {
       this.cmVisible = false;
       this.deleteBlock(this.cmBlockDom.dataset.bid);
@@ -1862,13 +1872,13 @@ export default {
       table.columnHeader = table.rowHeader;
       table.rowHeader = tmp;
     },
-    handleRotate() {
-      if(!this.selectedBlock) {
-        this.$message.warning("Please select a puzzle first.");
-        return;
-      }
-      console.log(this.selectedBlock);
-      let block = this.findBlock(this.selectedBlock.blockId);
+    handleRotate(dataset) {
+      // if(!this.selectedBlock) {
+      //   this.$message.warning("Please select a puzzle first.");
+      //   return;
+      // }
+      // console.log(this.selectedBlock);
+      let block = this.findBlock(dataset.bid);
       console.log(block);
       let tableId = block.tableId;
       this.rotateTable(this.canvas[tableId]);
@@ -1879,6 +1889,7 @@ export default {
     // 设置回调
     this.$bus.on('update', this.updateBlock);
     this.$bus.on('rotate', this.handleRotate);
+    this.$bus.on('updateglobal', this.updateGlobal);
 
     // let tableCanvasDom = document.getElementById("tableCanvas");
     // this.viewHeight = tableCanvasDom.scrollHeight;

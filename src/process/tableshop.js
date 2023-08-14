@@ -90,6 +90,28 @@ var CROSS_TABLE = "cross table";
 var ROW_TABLE = "row table";
 var COLUM_TABLE = "column table";
 
+var SelectorType;
+(function (SelectorType) {
+    // block level selector
+    SelectorType["TABLE"] = ".table";
+    SelectorType["HEADER"] = ".header";
+    SelectorType["ROW_HEADER"] = ".rowHeader";
+    SelectorType["COL_HEADER"] = ".columnHeader";
+    SelectorType["CELL"] = ".cell";
+    SelectorType["ROW_H_LEVEL"] = ".rl";
+    SelectorType["COL_H_LEVEL"] = ".cl";
+    // line level selector
+    SelectorType["ROW_ODD"] = ".oddRows";
+    SelectorType["COL_ODD"] = ".oddCols";
+    SelectorType["ROW_EVEN"] = ".evenRows";
+    SelectorType["COL_EVEN"] = ".evenCols";
+    SelectorType["ROW_LEVEL"] = ".r";
+    SelectorType["COL_LEVEL"] = ".c";
+    // function selector
+    SelectorType["SUM_TITLE"] = ".sumTitle";
+    SelectorType["SUM_CELL"] = ".sumCell";
+})(SelectorType || (SelectorType = {}));
+
 var deepAssign = function (target, source) {
     for (var key in source) {
         if (typeof source[key] !== "object") {
@@ -109,6 +131,90 @@ var deepAssign = function (target, source) {
     return target;
 };
 
+// init style selector
+var style_selector_fill = function (bId, loc, styles, idDict) {
+    if (!bId)
+        bId = "undefined";
+    var res = {};
+    for (var sel in styles) {
+        if (sel === SelectorType.TABLE) {
+            res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.HEADER) {
+            if (idDict.rowDict[bId] || idDict.colDict[bId])
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.ROW_HEADER) {
+            if (idDict.rowDict[bId])
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.COL_HEADER) {
+            if (idDict.colDict[bId])
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.CELL) {
+            if (idDict.cellDict[bId])
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel.startsWith(SelectorType.ROW_H_LEVEL)) {
+            var depth = parseInt(sel.slice(3)) - 1;
+            if (idDict.rowDict[bId] && idDict.rowDict[bId].depth === depth)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel.startsWith(SelectorType.COL_H_LEVEL)) {
+            var depth = parseInt(sel.slice(3)) - 1;
+            if (idDict.colDict[bId] && idDict.colDict[bId].depth === depth)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.SUM_TITLE) {
+            if (idDict.rowDict[bId] || idDict.colDict[bId]) {
+                if (idDict.rowDict[bId].function === FUNC_SUM)
+                    res = deepAssign(res, styles[sel]);
+                else if (idDict.colDict[bId].function === FUNC_SUM)
+                    res = deepAssign(res, styles[sel]);
+            }
+        }
+        else if (sel === SelectorType.SUM_CELL) {
+            if (idDict.cellDict[bId]) {
+                var rowPId = idDict.cellDict[bId].rowPId, colPId = idDict.cellDict[bId].colPId;
+                var isSet = false;
+                if (rowPId && idDict.rowDict[rowPId] && idDict.rowDict[rowPId].function === FUNC_SUM)
+                    isSet = true;
+                else if (colPId && idDict.colDict[colPId] && idDict.colDict[colPId].function === FUNC_SUM)
+                    isSet = true;
+                if (isSet)
+                    res = deepAssign(res, styles[sel]);
+            }
+        }
+        else if (sel === SelectorType.ROW_ODD) {
+            if (loc.x % 2 !== 0)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.COL_ODD) {
+            if (loc.y % 2 !== 0)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.ROW_EVEN) {
+            if (loc.x % 2 === 0)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel === SelectorType.COL_EVEN) {
+            if (loc.y % 2 === 0)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel.startsWith(SelectorType.ROW_LEVEL)) {
+            var level = parseInt(sel.slice(2));
+            if (loc.x === level)
+                res = deepAssign(res, styles[sel]);
+        }
+        else if (sel.startsWith(SelectorType.COL_LEVEL)) {
+            var level = parseInt(sel.slice(2));
+            if (loc.y === level)
+                res = deepAssign(res, styles[sel]);
+        }
+    }
+    return res;
+};
 // init header info
 var header_fill = function (attrInfo, styles, header) {
     var _a, _b, _c, _d, _e;
@@ -347,6 +453,44 @@ var get_header_is_facet = function (channel) {
     }
     return false;
 };
+// get all header blockId and blankLine info
+var get_header_id_dict = function (channel, depth) {
+    if (depth === void 0) { depth = 0; }
+    if (!channel || channel.length == 0)
+        return {};
+    var res = {};
+    for (var _i = 0, channel_10 = channel; _i < channel_10.length; _i++) {
+        var hb = channel_10[_i];
+        var info = get_header_id_dict(hb.children, depth + 1);
+        info[hb.blockId] = {
+            hasBlank: hb.blankLine,
+            gridMerge: hb.gridMerge,
+            locList: new Array(),
+            depth: depth,
+            function: hb.function,
+            className: hb.className,
+            style: hb.style
+        };
+        res = deepAssign(res, info);
+    }
+    return res;
+};
+// get all cell blockId
+var get_cell_id_dict = function (channel) {
+    if (!channel || channel.length == 0)
+        return {};
+    var res = {};
+    for (var _i = 0, channel_11 = channel; _i < channel_11.length; _i++) {
+        var c = channel_11[_i];
+        res[c.blockId] = {
+            rowPId: c.rowParentId,
+            colPId: c.columnParentId,
+            className: c.className,
+            style: c.style
+        };
+    }
+    return res;
+};
 var get_cell_val = function (preVal, data, key) {
     var res = new Array();
     for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
@@ -437,7 +581,8 @@ var gen_inter_row_table = function (interRowTable, rowHeader, extra, width, dept
         var isLeaf = (rh.children && rh.children.length) ? false : true;
         var sourceBlockId = rh.blockId, source = (_a = rh.attrName) !== null && _a !== void 0 ? _a : rh.function;
         var headerDepth = depth + keyBias + leftBias, keyDepth = headerDepth;
-        var headerStyle = style_process(rh.style);
+        // let headerStyle = style_process(rh.style)
+        var headerStyle = rh.style;
         var isKeyEmbedded = false;
         if (rh.key && rh.key.position === Position.LEFT)
             keyDepth = headerDepth - 1;
@@ -483,24 +628,24 @@ var gen_inter_row_table = function (interRowTable, rowHeader, extra, width, dept
                     isKey: false,
                     style: headerStyle
                 };
-                // process cells unmerged-first
-            }
-            else if (rh.gridMerge === GridMerge.UnmergedFirst) {
-                interRowTable[innerX + outerX + bias][keyDepth] = keyData;
-                interRowTable[innerX + outerX + bias][headerDepth] = {
-                    value: headValue,
-                    source: source,
-                    sourceBlockId: sourceBlockId,
-                    rowSpan: 1, colSpan: span,
-                    isUsed: false,
-                    isLeaf: isLeaf,
-                    isKey: false,
-                    style: headerStyle
-                };
-                // process cells merged and unmerged-all
+                // // process cells unmerged-first
+                // } else if(rh.gridMerge === GridMerge.UnmergedFirst) {
+                //   interRowTable[innerX+outerX+bias][keyDepth] = keyData
+                //   interRowTable[innerX+outerX+bias][headerDepth] = {
+                //     value: headValue,
+                //     source,
+                //     sourceBlockId,
+                //     rowSpan: 1, colSpan: span,
+                //     isUsed: false,
+                //     isLeaf,
+                //     isKey: false,
+                //     style: headerStyle
+                //   }
+                // // process cells merged and unmerged-all
             }
             else {
-                var rs = (rh.gridMerge === GridMerge.UnmergedAll) ? 1 : iterCount;
+                // let rs = (rh.gridMerge===GridMerge.UnmergedAll) ? 1 : iterCount
+                var rs = iterCount;
                 keyData.rowSpan = rs;
                 for (var j = 0; j < iterCount; j++) {
                     interRowTable[innerX + outerX + j + bias][keyDepth] = __assign({}, keyData);
@@ -521,7 +666,8 @@ var gen_inter_row_table = function (interRowTable, rowHeader, extra, width, dept
                 for (var _c = 0, _d = extra.cell; _c < _d.length; _c++) {
                     var c = _d[_c];
                     if (c.rowParentId === rh.blockId) {
-                        var cellStyle = style_process(c.style);
+                        // let cellStyle = style_process(c.style)
+                        var cellStyle = c.style;
                         // process function cell
                         if (rh.function) {
                             if (!agg_type_check(extra.attrInfo, c.attrName))
@@ -581,7 +727,8 @@ var gen_inter_column_table = function (interColumnTable, columnHeader, extra, wi
         var isLeaf = (ch.children && ch.children.length) ? false : true;
         var sourceBlockId = ch.blockId, source = (_a = ch.attrName) !== null && _a !== void 0 ? _a : ch.function;
         var headerDepth = depth + keyBias + topBias, keyDepth = headerDepth;
-        var headerStyle = style_process(ch.style);
+        // let headerStyle = style_process(ch.style)
+        var headerStyle = ch.style;
         var isKeyEmbedded = false;
         if (ch.key && ch.key.position === Position.TOP)
             keyDepth = headerDepth - 1;
@@ -627,24 +774,24 @@ var gen_inter_column_table = function (interColumnTable, columnHeader, extra, wi
                     isKey: false,
                     style: headerStyle
                 };
-                // process cells unmerged-first
-            }
-            else if (ch.gridMerge === GridMerge.UnmergedFirst) {
-                interColumnTable[keyDepth][innerY + outerY + bias] = keyData;
-                interColumnTable[headerDepth][innerY + outerY + bias] = {
-                    value: headValue,
-                    source: source,
-                    sourceBlockId: sourceBlockId,
-                    rowSpan: span, colSpan: 1,
-                    isUsed: false,
-                    isLeaf: isLeaf,
-                    isKey: false,
-                    style: headerStyle
-                };
-                // process cells merged and unmerged-all
+                // // process cells unmerged-first
+                // } else if(ch.gridMerge === GridMerge.UnmergedFirst) {
+                //   interColumnTable[keyDepth][innerY+outerY+bias] = keyData
+                //   interColumnTable[headerDepth][innerY+outerY+bias] = {
+                //     value: headValue,
+                //     source,
+                //     sourceBlockId,
+                //     rowSpan: span, colSpan: 1,
+                //     isUsed: false,
+                //     isLeaf,
+                //     isKey: false,
+                //     style: headerStyle
+                //   }
+                // // process cells merged and unmerged-all
             }
             else {
-                var cs = (ch.gridMerge === GridMerge.UnmergedAll) ? 1 : iterCount;
+                // let cs = (ch.gridMerge===GridMerge.UnmergedAll) ? 1 : iterCount
+                var cs = iterCount;
                 keyData.colSpan = cs;
                 for (var j = 0; j < iterCount; j++) {
                     interColumnTable[keyDepth][innerY + outerY + j + bias] = __assign({}, keyData);
@@ -665,7 +812,8 @@ var gen_inter_column_table = function (interColumnTable, columnHeader, extra, wi
                 for (var _c = 0, _d = extra.cell; _c < _d.length; _c++) {
                     var c = _d[_c];
                     if (c.colParentId === ch.blockId) {
-                        var cellStyle = style_process(c.style);
+                        // let cellStyle = style_process(c.style)
+                        var cellStyle = c.style;
                         // process function cell
                         if (ch.function) {
                             if (!agg_type_check(extra.attrInfo, c.attrName))
@@ -714,7 +862,8 @@ var gen_inter_cross_table = function (interCrossTable, rowExtra, colExtra, cell)
             for (var _i = 0, cell_2 = cell; _i < cell_2.length; _i++) {
                 var c = cell_2[_i];
                 if (c.rowParentId === rowValIdx[i].blockId && c.colParentId === colValIdx[j].blockId) {
-                    var cellStyle = style_process(c.style);
+                    // let cellStyle = style_process(c.style)
+                    var cellStyle = c.style;
                     var x = rowValIdx[i].idx, y = colValIdx[j].idx;
                     if (rowValIdx[i].isAgg || colValIdx[j].isAgg) {
                         if (!agg_type_check(rowExtra.attrInfo, c.attrName))
@@ -781,7 +930,7 @@ var gen_blank_facet_table = function (rawTable, header, info, depth, outerX, bia
             }
             for (var j = 0; j < iterCount; j++) {
                 // console.log('xxxxxx',  info.oldTable[x+j][y+beforeBias].value, x+j, y+beforeBias);
-                if (rawTable[x + j][y + beforeBias] !== undefined && !hb.entityMerge && hb.gridMerge === GridMerge.Merged) {
+                if (rawTable[x + j][y + beforeBias] !== undefined && !hb.entityMerge) {
                     if (info.tbClass === ROW_TABLE) {
                         // if(beforeBias > 0) rawTable[x+j][y].rowSpan = tmpFacetSpan + blank
                         if (nowBeforeBias > 0)
@@ -872,8 +1021,6 @@ var gen_final_table = function (table, tableClass) {
     for (var _i = 0, table_1 = table; _i < table_1.length; _i++) {
         var t = table_1[_i];
         var resLen = maxLength - t.length, tmp = t.length;
-        // for(let i=0; i<t.length; i++) {
-        // }
         for (var i = 0; i < resLen; i++) {
             if (tableClass === ROW_TABLE)
                 t.push({ rowSpan: 1, colSpan: spanList[i + tmp] });
@@ -948,8 +1095,191 @@ var gen_final_table = function (table, tableClass) {
     }
     return finalTable;
 };
+// generate matched value table
+var gen_valid_value_table = function (table, tableClass, idDict) {
+    var rowLen = 0, rowRecord = new Array(table.length).fill(0);
+    var vvTable = Array.from({ length: table.length }, function () { return new Array(rowLen)
+        .fill(null).map(function (_) { return ({ rowSpan: 1, colSpan: 1 }); }); });
+    for (var _i = 0, _a = table[0]; _i < _a.length; _i++) {
+        var t = _a[_i];
+        rowLen += t.colSpan;
+    }
+    for (var i = 0; i < table.length; i++) {
+        for (var j = 0; j < table[i].length; j++) {
+            var tmp = table[i][j], loc = new Array(), id = tmp.sourceBlockId;
+            if (id) {
+                if (idDict.rowDict[id])
+                    idDict.rowDict[id].locList.push(i);
+                else if (idDict.colDict[id])
+                    idDict.colDict[id].locList.push(rowRecord[i]);
+            }
+            for (var p = 0; p < tmp.rowSpan; p++) {
+                for (var q = 0; q < tmp.colSpan; q++) {
+                    loc.push({ x: i + p, y: rowRecord[i + p] + q });
+                    vvTable[i + p][rowRecord[i + p] + q] = __assign(__assign({}, tmp), { loc: loc, isSkip: false });
+                }
+                rowRecord[i + p] += tmp.colSpan;
+            }
+        }
+    }
+    if (tableClass === ROW_TABLE || tableClass === CROSS_TABLE) {
+        var _loop_2 = function (i) {
+            var hasHeader = false, hasCell = false, hasCellVal = false, hasBlank = false;
+            var lastBlank = -1, lastBId = "";
+            for (var j = 0; j < rowLen; j++) {
+                var tmp = vvTable[i][j], id = tmp.sourceBlockId;
+                if (id && idDict.rowDict[id]) {
+                    hasHeader = true;
+                    if (idDict.rowDict[id].hasBlank) {
+                        hasBlank = true;
+                        lastBlank = j;
+                        lastBId = id;
+                    }
+                }
+                if (id && idDict.cellDict[id]) {
+                    hasCell = true;
+                    if (tmp.value)
+                        hasCellVal = true;
+                }
+            }
+            if (hasHeader && hasCell && !hasCellVal) {
+                var dealBlank = false;
+                if (hasBlank) {
+                    var res = idDict.rowDict[lastBId].locList.find(function (e) { return e === i; });
+                    if (res && vvTable[i][lastBlank].rowSpan <= 1)
+                        dealBlank = true;
+                }
+                for (var j = 0; j < rowLen; j++) {
+                    var tmp = vvTable[i][j], delta = 1;
+                    tmp.isSkip = true;
+                    if (dealBlank) {
+                        vvTable[i - 1][j].isSkip = true;
+                        delta++;
+                    }
+                    for (var _e = 0, _f = tmp.loc; _e < _f.length; _e++) {
+                        var _g = _f[_e], x = _g.x, y = _g.y;
+                        vvTable[x][y].rowSpan -= j < lastBlank ? delta : 1;
+                    }
+                }
+            }
+        };
+        for (var i = 0; i < vvTable.length; i++) {
+            _loop_2(i);
+        }
+    }
+    if (tableClass === COLUM_TABLE || tableClass === CROSS_TABLE) {
+        var _loop_3 = function (j) {
+            var hasHeader = false, hasCell = false, hasCellVal = false, hasBlank = false;
+            var lastBlank = -1, lastBId = "";
+            for (var i = 0; i < vvTable.length; i++) {
+                var tmp = vvTable[i][j], id = tmp.sourceBlockId;
+                if (id && idDict.colDict[id]) {
+                    hasHeader = true;
+                    if (idDict.colDict[id].hasBlank) {
+                        hasBlank = true;
+                        lastBlank = i;
+                        lastBId = id;
+                    }
+                }
+                if (id && idDict.cellDict[id]) {
+                    hasCell = true;
+                    if (tmp.value)
+                        hasCellVal = true;
+                }
+            }
+            if (hasHeader && hasCell && !hasCellVal) {
+                var dealBlank = false;
+                if (hasBlank) {
+                    var res = idDict.rowDict[lastBId].locList.find(function (e) { return e === j; });
+                    if (res && vvTable[lastBlank][j].colSpan <= 1)
+                        dealBlank = true;
+                }
+                for (var i = 0; i < vvTable.length; i++) {
+                    var tmp = vvTable[i][j], delta = 1;
+                    tmp.isSkip = true;
+                    if (dealBlank) {
+                        vvTable[i][j - 1].isSkip = true;
+                        delta++;
+                    }
+                    for (var _h = 0, _j = tmp.loc; _h < _j.length; _h++) {
+                        var _k = _j[_h], x = _k.x, y = _k.y;
+                        vvTable[x][y].colSpan -= i < lastBlank ? delta : 1;
+                    }
+                }
+            }
+        };
+        for (var j = 0; j < rowLen; j++) {
+            _loop_3(j);
+        }
+    }
+    var retTable = new Array(), pos = 0;
+    for (var i = 0; i < vvTable.length; i++) {
+        if (!retTable[pos])
+            retTable[pos] = new Array();
+        for (var j = 0; j < rowLen; j++) {
+            var tmp = vvTable[i][j], id = tmp.sourceBlockId;
+            var mergeType = GridMerge.Merged;
+            var isRowHeader = (id && idDict.rowDict[id]) ? true : false;
+            var isColHeader = (id && idDict.colDict[id]) ? true : false;
+            if (isRowHeader)
+                mergeType = idDict.rowDict[id].gridMerge;
+            else if (isColHeader)
+                mergeType = idDict.colDict[id].gridMerge;
+            var rs = (isRowHeader && mergeType !== GridMerge.Merged) ? 1 : tmp.rowSpan;
+            var cs = (isColHeader && mergeType !== GridMerge.Merged) ? 1 : tmp.colSpan;
+            if (tmp.isSkip)
+                continue;
+            retTable[pos].push({
+                value: tmp.value,
+                sourceBlockId: tmp.sourceBlockId,
+                rowSpan: rs,
+                colSpan: cs,
+                style: tmp.style
+            });
+            if (mergeType !== GridMerge.UnmergedAll) {
+                for (var _b = 0, _c = tmp.loc; _b < _c.length; _b++) {
+                    var _d = _c[_b], x = _d.x, y = _d.y;
+                    if (mergeType === GridMerge.Merged)
+                        vvTable[x][y].isSkip = true;
+                    else if (mergeType === GridMerge.UnmergedFirst)
+                        vvTable[x][y].value = undefined;
+                }
+            }
+        }
+        if (retTable[pos].length > 0)
+            pos++;
+    }
+    // const util = require('util');
+    // console.log('vv Table', util.inspect(retTable, {showHidden: false, depth: null, colors: true}));
+    // console.log('vv Table', retTable);
+    return retTable;
+};
+var gen_styled_table = function (table, styles, idDict) {
+    var rowLen = 0, rowRecord = new Array(table.length).fill(0);
+    var retTable = new Array();
+    for (var _i = 0, _a = table[0]; _i < _a.length; _i++) {
+        var t = _a[_i];
+        rowLen += t.colSpan;
+    }
+    for (var i = 0; i < table.length; i++) {
+        retTable[i] = new Array();
+        for (var j = 0; j < table[i].length; j++) {
+            var tmp = __assign({}, table[i][j]), id = tmp.sourceBlockId;
+            var loc = { x: i + 1, y: rowRecord[i] + 1 };
+            tmp.style = style_process(deepAssign(style_selector_fill(id, loc, styles, idDict), tmp.style));
+            retTable[i].push(tmp);
+            for (var p = 0; p < tmp.rowSpan; p++) {
+                rowRecord[i + p] += tmp.colSpan;
+            }
+        }
+    }
+    // const util = require('util');
+    // console.log('styled Table', util.inspect(retTable, {showHidden: false, depth: null, colors: true}));
+    console.log('styled Table', retTable);
+    return retTable;
+};
 var table_process = function (tbClass, data, _a) {
-    var rowHeader = _a.rowHeader, columnHeader = _a.columnHeader, cell = _a.cell, attrInfo = _a.attrInfo;
+    var rowHeader = _a.rowHeader, columnHeader = _a.columnHeader, cell = _a.cell, attrInfo = _a.attrInfo, styles = _a.styles;
     var interTable, processTable = new Array();
     var finalTable = [];
     var rowDepth = calc_head_depth(rowHeader);
@@ -1070,7 +1400,7 @@ var table_process = function (tbClass, data, _a) {
             // oldTable: JSON.parse(JSON.stringify(processTable))
         };
         gen_blank_facet_table(processTable, rowHeader, info, 0, 0);
-        // console.log('new', processTable);
+        console.log('new', processTable);
         finalTable = gen_final_table(processTable, tbClass);
         console.log('final row', finalTable);
     }
@@ -1602,7 +1932,15 @@ var table_process = function (tbClass, data, _a) {
             console.log('final cross', finalTable);
         }
     }
+    var idDict = {
+        "rowDict": get_header_id_dict(rowHeader),
+        "colDict": get_header_id_dict(columnHeader),
+        "cellDict": get_cell_id_dict(cell)
+    };
+    finalTable = gen_valid_value_table(finalTable, tbClass, idDict);
+    finalTable = gen_styled_table(finalTable, styles, idDict);
     console.log(rowDepth, colDepth, rowSize, colSize);
+    console.log(idDict);
     return finalTable;
 };
 var transform = function (task) {
@@ -1614,7 +1952,7 @@ var transform = function (task) {
         console.log('Warning:', err.message);
         return new Array();
     }
-    var rowHeader = spec.rowHeader, columnHeader = spec.columnHeader, cell = spec.cell; spec.styles; var attrInfo = spec.attrInfo;
+    var rowHeader = spec.rowHeader, columnHeader = spec.columnHeader, cell = spec.cell, styles = spec.styles, attrInfo = spec.attrInfo;
     // check table class
     var tableClass = "";
     if (rowHeader !== undefined && rowHeader.length > 0) {
@@ -1626,7 +1964,7 @@ var transform = function (task) {
     else {
         tableClass = COLUM_TABLE;
     }
-    return table_process(tableClass, data, { rowHeader: rowHeader, columnHeader: columnHeader, cell: cell, attrInfo: attrInfo });
+    return table_process(tableClass, data, { rowHeader: rowHeader, columnHeader: columnHeader, cell: cell, attrInfo: attrInfo, styles: styles });
 };
 
 var utils = /*#__PURE__*/Object.freeze({

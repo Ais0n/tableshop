@@ -3,11 +3,11 @@
     <div class="toolbar">
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleSigmaDragStart">&#xe853;</i>
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleCutDragStart">&#xe650;</i>
-      <i class="iconfont iconsigma" @click="this.handleRotate">&#xe607;</i>
+      <!-- <i class="iconfont iconsigma" @click="this.handleRotate">&#xe607;</i> -->
       <!-- <i class="iconfont iconsigma" :draggable="true">&#xe641;</i> -->
     </div>
     <div class="showCompleteTable">
-      Show complete table: 
+      Preview mode:
       <a-switch v-model:checked="showCompleteTable" style="display: inline-block; margin-left: 10px;"/>
     </div>
     <div class="graphviewSubview">
@@ -38,9 +38,9 @@ export default {
     handleCutDragStart() {
       
     },
-    handleRotate() {
-      this.$bus.emit("rotate");
-    }
+    // handleRotate() {
+    //   this.$bus.emit("rotate");
+    // }
   },
   components: {
     GraphView,

@@ -60,7 +60,33 @@
         <div v-if="configEg && configEg.son1" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Grid Merge </div> 
           <div class="wrapper">
-            <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': !gridMerge}" @click="applyChanges('gridMerge', false)">
+            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'unmerged-first')">
+              <div class="configGlyph">
+                <div class="EUMsonwrapper"> 
+                  <div class="EUMson highlightCell" style="border-bottom: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
+                  <div class="EUMson highlightCell"> </div>
+                </div>
+                <div class="EUMsonwrapper">
+                  <div class="EUMson" style="border-bottom: 1px solid #bbbbbb"> {{ Cson1 }} </div>
+                  <div class="EUMson"> {{ Cson2 }} </div>
+                </div>
+              </div>
+              <div class="entityMergeText"> Unmerged with first value </div>
+            </div>
+            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'unmerged-first')">
+              <div class="configGlyph">
+                <div class="GUMparentwrapper"> 
+                  <div class="GUMparent highlightCell" style="border-right: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
+                  <div class="GUMparent highlightCell">  </div>
+                </div>
+                <div class="GUMsonwrapper">
+                  <div class="GUMson" style="border-top: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> {{ Cson1 }} </div>
+                  <div class="GUMson" style="border-top: 1px solid #bbbbbb;"> {{ Cson2 }} </div>
+                </div>
+              </div>
+              <div class="entityMergeText"> Unmerged with first value</div>
+            </div>
+            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
               <div class="configGlyph">
                 <div class="EUMsonwrapper"> 
                   <div class="EUMson highlightCell" style="border-bottom: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
@@ -71,9 +97,9 @@
                   <div class="EUMson"> {{ Cson2 }} </div>
                 </div>
               </div>
-              <div class="entityMergeText"> Unmerged </div>
+              <div class="entityMergeText"> Unmerged with all values </div>
             </div>
-            <div v-if="Cchannel == 'column'" class="glyphOption" :class="{'glyphSelected': !gridMerge}" @click="applyChanges('gridMerge', false)">
+            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
               <div class="configGlyph">
                 <div class="GUMparentwrapper"> 
                   <div class="GUMparent highlightCell" style="border-right: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
@@ -84,9 +110,9 @@
                   <div class="GUMson" style="border-top: 1px solid #bbbbbb;"> {{ Cson2 }} </div>
                 </div>
               </div>
-              <div class="entityMergeText"> Unmerged </div>
+              <div class="entityMergeText"> Unmerged with all values </div>
             </div>
-            <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': gridMerge}" @click="applyChanges('gridMerge', true)">
+            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'merged')">
               <div class="configGlyph">
                 <div class="EUMparent highlightCell"> {{ Cparent1 }} </div>
                 <div class="EUMsonwrapper">
@@ -96,7 +122,7 @@
               </div>
               <div class="entityMergeText"> Merged </div>
             </div>
-            <div v-if="Cchannel == 'column'" class="glyphOption" :class="{'glyphSelected': gridMerge}" @click="applyChanges('gridMerge', true)">
+            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'merged')">
               <div class="configGlyph">
                 <div class="GUMparentwrapper"> 
                   <div class="GUMparent highlightCell"> {{ Cparent1 }} </div>
@@ -337,6 +363,103 @@
       </div>
       <div v-if="tab == 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Templates </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Row/Column No. </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Row </div>
+              <div class="glyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="RAitem highlightCell"> ... </div>
+                  <div class="RAitem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="RAitem highlightCell" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="RAitem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="RAitem highlightCell" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                </div>
+                <div class="entityMergeText"> Alternating </div>
+              </div>
+              <div class="glyphOption" :class="{'glyphSelected': rowNoOption == 'none'}" @click="applyChangesToRolColNo('odd', 'Row')"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="RAitem"> ... </div>
+                  <div class="RAitem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="RAitem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="RAitem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="RAitem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="lineNoCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="rowNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
+                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
+                <a-switch size="small" checked-children="even rows" un-checked-children="odd rows" :checked="rowNoType == 'even'" @change="applyChangesToRolColNo(rowNoType == 'odd' ? 'even' : 'odd', 'Row', rowNoColor)"> </a-switch>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Column </div>
+              <div class="glyphOption" :class="{'glyphSelected': colNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Col', colNoColor)"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="CAitem highlightCell"> ... </div>
+                  <div class="CAitem" style="border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="CAitem highlightCell"> ... </div>
+                  <div class="CAitem" style="border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="CAitem highlightCell"> ... </div>
+                </div>
+                <div class="entityMergeText"> Alternating </div>
+              </div>
+              <div class="glyphOption" :class="{'glyphSelected': colNoOption == 'none'}" @click="applyChangesToRolColNo('odd', 'Col')"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="CAitem"> ... </div>
+                  <div class="CAitem" style="border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="CAitem"> ... </div>
+                  <div class="CAitem" style="border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="CAitem"> ... </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="lineNoCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="colNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
+                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
+                <a-switch size="small" checked-children="even columns" un-checked-children="odd columns" :checked="colNoType == 'even'" @change="applyChangesToRolColNo(colNoType == 'odd' ? 'even' : 'odd', 'Col', colNoColor)"> </a-switch>
+              </div>
+            </div>
+            <div class="templateDropdown" @click="this.lineNoCustomize = !this.lineNoCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Header </div> 
+          <div class="wrapper">
+            <div  class="glyphOption" :class="{'glyphSelected': true}" @click="applyChanges('entityMerge', false)">
+              <div class="configGlyph">
+                <div class="F3item highlightCell"> ... </div>
+                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                <div class="F3item highlightCell" style="border-top: 1px solid #bbbbbb;"> ... </div>
+              </div>
+              <div class="entityMergeText"> Alternating </div>
+            </div>
+            <div  class="glyphOption" :class="{'glyphSelected': false}" @click="applyChanges('entityMerge', false)">
+              <div class="configGlyph">
+                <div class="F3item"> ... </div>
+                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
+              </div>
+              <div class="entityMergeText"> None </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -349,8 +472,9 @@ import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   data() {
     return ({
+      // for blocks
       entityMerge: false,
-      gridMerge: true,
+      gridMerge: "merged",
       facet: 1,
       key: undefined,
       blankLine: false,
@@ -358,10 +482,17 @@ export default {
       background: undefined,
       font: undefined, 
       tab: "attr",
+      // for tables
+      '.oddRows': undefined,
+      '.evenRows': undefined,
+      '.oddCols': undefined,
+      '.evenCols': undefined,
+      // tmp
+      lineNoCustomize: false,
     });
   },
   computed: {
-    ...mapState(["selectedBlock", "attrInfo", "configEg"]),
+    ...mapState(["selectedBlock", "attrInfo", "configEg", "selectedTable"]),
     dataType() {
       let attrName = this.selectedBlock.attrName;
       for(let i = 0; i < this.attrInfo.length; i++) {
@@ -393,6 +524,46 @@ export default {
     },
     Cchannel() {
       return this.configEg.channel;
+    },
+    rowNoOption() {
+      if(!this['.oddRows'] && !this['.evenRows']) return 'none';
+      else return 'alternating';
+    },
+    colNoOption() {
+      if(!this['.oddCols'] && !this['.evenCols']) return 'none';
+      else return 'alternating';
+    },
+    rowNoType() {
+      if(this['.evenRows']) {
+        return 'even';
+      } else {
+        return 'odd';
+      }
+    },
+    colNoType() {
+      if(this['.evenCols']) {
+        return 'even';
+      } else {
+        return 'odd';
+      }
+    },
+    rowNoColor() {
+      if(this['.oddRows']) {
+        return this['.oddRows'].background.color;
+      } else if(this['.evenRows']) {
+        return this['.evenRows'].background.color;
+      } else {
+        return '#aaaaaa';
+      }
+    },
+    colNoColor() {
+      if(this['.oddCols']) {
+        return this['.oddCols'].background.color;
+      } else if(this['.evenCols']) {
+        return this['.evenCols'].background.color;
+      } else {
+        return '#aaaaaa';
+      }
     }
   },
   methods: {
@@ -465,6 +636,64 @@ export default {
       this.storeSelectedBlock(block);
       // 更新tree
       this.$bus.emit("update", block);
+    },
+    applyChangesToRolColNo(type, pos, color) {
+      let s = `.${type}${pos}s`, t = `.${type == 'odd' ? 'even' : 'odd'}${pos}s`;
+      this[s] = color ? {
+        background: {
+          color: color,
+        }
+      } : undefined;
+      this[t] = undefined;
+      let styles = this.selectedTable;
+      styles[s] = color ? {
+        background: {
+          color: color,
+        }
+      } : undefined;
+      styles[t] = undefined;
+      this.$bus.emit('updateglobal', styles);
+    },
+    applyGlobalChanges(className, key1, key2, value) {
+      console.log("global changes: ", className, key1, key2, value);
+      // if(className == '.oddRows' || className == '.evenRows') {
+      //   if(key1) {
+      //     this.rowNoPattern = {
+      //       type: className == '.oddRows' ? 'odd' : 'even',
+      //       color: value,
+      //     }
+      //   } else {
+      //     this.rowNoPattern = undefined;
+      //   }
+      // }
+      if(!this[className]) this[className] = {};
+      if(key1) {
+        if(!this[className][key1]) this[className][key1] = {};
+        if(key2) this[className][key1][key2] = value;
+        else this[className][key1] = undefined;
+      } else {
+        this[className] = undefined;
+      }
+      
+      let styles = this.selectedTable;
+      if(!styles || typeof(styles) != 'object') styles = {};
+      if(!styles[className]) block.style[className] = {};
+      if(key1) {
+        if(!styles[className][key1]) styles[className][key1] = {};
+        if(key2) styles[className][key1][key2] = value;
+        else styles[className][key1] = undefined;
+      } else {
+        styles[className] = undefined;
+      }
+
+      this.$bus.emit('updateglobal', styles);
+
+      // this.$bus.emit("updateglobal", {
+      //   className,
+      //   key1,
+      //   key2,
+      //   value,
+      // });
     }
   },
   watch: {
@@ -472,7 +701,7 @@ export default {
       if(typeof(val) != 'undefined' && val != oldval) {
         // set default values
         this.entityMerge = (typeof(val.entityMerge) != 'undefined') ? val.entityMerge : false;
-        this.gridMerge = (typeof(val.gridMerge) != 'undefined') ? val.gridMerge : true;
+        this.gridMerge = (typeof(val.gridMerge) != 'undefined') ? val.gridMerge : "merged";
         this.facet = (typeof(val.facet) != 'undefined') ? val.facet : 1;
         this.key = val.key;
         this.blankLine = (typeof(val.blankLine) != 'undefined') ? val.blankLine : false;
@@ -489,8 +718,32 @@ export default {
           size: 12,
           weight: 'Regular'
         };
+        
       }
     },
+    selectedTable(val, oldval) {
+      if(val != oldval) {
+        // set default values
+        // this.rowNoPattern = (typeof(val['.oddRows']) != 'undefined') ? {
+        //   type: 'odd',
+        //   color: val['.oddRows'].background.color,
+        // } : (typeof(val['.evenRows']) != 'undefined') ? {
+        //   type: 'even',
+        //   color: val['.evenRows'].background.color,
+        // } : undefined;
+        // this.colNoPattern = (typeof(val['.oddCols']) != 'undefined') ? {
+        //   type: 'odd',
+        //   color: val['.oddCols'].background.color,
+        // } : (typeof(val['.evenCols']) != 'undefined') ? {
+        //   type: 'even',
+        //   color: val['.evenCols'].background.color,
+        // } : undefined;
+        this['.oddRows'] = val['.oddRows'];
+        this['.oddCols'] = val['.oddCols'];
+        this['.evenRows'] = val['.evenRows'];
+        this['.evenCols'] = val['.evenCols'];
+      }
+    }
     // entityMerge(val, oldval) {
     //   if(typeof(val) != 'undefined' && val != oldval) {
     //     this.autoApply();
@@ -973,12 +1226,49 @@ export default {
   justify-content: center;
 }
 
+.RAitem {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  padding-bottom: 5px;
+}
+
+.CAitem {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* vertical-align: center; */
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 5px;
+}
+
 .cPosGlyphOption {
   display: inline-block;
   width: 80px;
   margin-left: calc(16.7% - 55px);
   margin-right: calc(16.7% - 55px);
   padding: 2px 5px;
+}
+
+.templateDropdown {
+  margin-top: 5px;
+  width: 100%;
+  height: 18px;
+  background-color: rgba(157, 178, 191, 0.5);
+  text-align: center; 
+  color: #666666; 
+  line-height: 15px;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+.templateDropdown:hover {
+  background-color: rgba(157, 178, 191, 0.75);
 }
 
 .cPosGlyphOption:hover {
