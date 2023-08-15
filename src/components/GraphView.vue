@@ -363,8 +363,12 @@ export default {
         e.target.classList.remove("bottomchildhover");
         e.target.classList.remove("toprighthover");
         e.target.classList.remove("bottomlefthover");
+        e.target.classList.remove("areahover");
       }
-      if (x < box.left + 20) {
+      if(x >= box.right - 60 && x < box.right - 20 && (e.target.dataset.channel == 'row' || e.target.dataset.channel == 'column')) {
+        clearClass(e);
+        e.target.classList.add("areahover");
+      } else if (x < box.left + 20) {
         clearClass(e);
         if(e.target.dataset.channel == 'column' && y > box.bottom - 20) {
           e.target.classList.add('bottomlefthover');
@@ -375,9 +379,11 @@ export default {
         clearClass(e);
         if(e.target.dataset.channel == 'row' && y < box.top + 10) {
           e.target.classList.add('toprighthover');
-        } else if(y > box.top + 30) {
-          e.target.classList.add('rightchildhover');
-        } else {
+        } 
+        // else if(y > box.top + 30) {
+        //   e.target.classList.add('rightchildhover');
+        // } 
+        else {
           e.target.classList.add('righthover');
         }
       } else if (y < box.top + box.height / 2) {
@@ -385,9 +391,10 @@ export default {
         e.target.classList.add('tophover');
       } else {
         clearClass(e);
-        if(x > box.left + 80) {
-          e.target.classList.add("bottomchildhover");
-        } else {
+        // if(x > box.left + 80) {
+        //   e.target.classList.add("bottomchildhover");
+        // } else 
+        {
           e.target.classList.add('bottomhover');
         }
       }
@@ -412,6 +419,8 @@ export default {
         dir = 'topright';
       } else if(e.target.classList.contains('bottomlefthover')) {
         dir = 'bottomleft';
+      } else if(e.target.classList.contains('areahover')) {
+        dir = 'area';
       }
       e.target.classList.remove('lefthover');
       e.target.classList.remove('righthover');
@@ -421,6 +430,7 @@ export default {
       e.target.classList.remove("bottomchildhover");
       e.target.classList.remove("toprighthover");
       e.target.classList.remove("bottomlefthover");
+      e.target.classList.remove("areahover");
       if (dir != "") e.preventDefault(); else return;
       console.log(dir);
       console.log(e.target);
@@ -867,6 +877,7 @@ export default {
       e.target.classList.remove('bottomchildhover');
       e.target.classList.remove("toprighthover");
       e.target.classList.remove('bottomlefthover');
+      e.target.classList.remove('areahover');
     },
     checkInsertValid(parentBlock, isInsertEntityMerge) {
       if(!parentBlock.children || !(parentBlock.children instanceof Array) || parentBlock.children.length == 0) return true;
@@ -1175,6 +1186,7 @@ export default {
           let newDom = new Object();
           // newDom.className = (arr[i].blockId == '-1') ? 'placeholderBlock' : 'block';
           newDom.className = 'block';
+          newDom.id = uuid();
           newDom.style = {
             position: 'absolute',
             top: cell.top,
@@ -1202,6 +1214,7 @@ export default {
             bid: cell.sourceBlockId,
             channel: cell.channel,
             unfoldbutton: cell.unfoldbutton,
+            rotatebutton: cell.rotatebutton,
             rowSpan: cell.rowSpan,
             colSpan: cell.colSpan,
             row: cell.row,
@@ -1524,6 +1537,7 @@ export default {
         for(let i = 0; i < fullTable.length; i++) {
           for(let j = 0; j < fullTable[i].length; j++) {
             fullTable[i][j].unfoldbutton = false;
+            // fullTable[i][j].rotatebutton = false;
             fullTable[i][j].indent = 0;
           }
         }
@@ -1753,6 +1767,9 @@ export default {
           newTable[newrow].push(newObj);
         }
       }
+      if(newTable instanceof Array && newTable.length > 0 && newTable[0].length > 0) {
+        newTable[0][newTable[0].length - 1].rotatebutton = true; 
+      }
       return newTable;
     },
     addIndex(table) {
@@ -1962,9 +1979,10 @@ export default {
   /* border: 1px solid black; */
   cursor: pointer;
   text-align: center;
-  font-family: Inter-Light-7, BlinkMacSystemFont, "Segoe UI", Roboto,
+  /* font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
+  font-family: Inter-Regular-9;
   z-index: 3000;
   box-shadow: 0 0 0 1px #cccccc;
   background-color: white;

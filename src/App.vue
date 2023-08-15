@@ -162,4 +162,8 @@ html {
   font-family: 'Inter-Thin-11';
   src: url("./assets/fonts/Inter-Thin-11.otf");
 }
+
+pre {
+  
+}
 </style>

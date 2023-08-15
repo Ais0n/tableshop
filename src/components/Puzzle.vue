@@ -1,9 +1,9 @@
 <template>
-  <div v-for="(dom, index) in domSource" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
+  <div v-for="(dom, index) in domSource" :id="dom.id" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
     :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :draggable="dom.draggable"
-    @dragover="dom.ondragover" @dragstart="dom.ondragstart" @dragleave="dom.ondragleave" @drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
+    @dragover="(e) => {entered = index; dom.ondragover(e)}" @dragstart="dom.ondragstart" @dragleave="(e) => { entered = -1; dom.ondragleave(e)}" @drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
-    <pre class="puzzleText">{{dom.innerText}}</pre>
+    <div class="puzzleText">{{dom.innerText}}</div>
     <div class="childborder" :style="`height: ${dom.style.height - 30}px; width: ${dom.style.width - 30}px;`"></div>
     <div class="trborder1"></div>
     <div class="trborder2"></div>
@@ -14,11 +14,14 @@
         <i class="iconfont"> {{dom.dataset.channel == 'row' ? "&#xeb10;" : "&#xeb11;"}}</i> 
       </template> 
     </a-button>
-    <a-button v-if="!showCompleteTable && !isCanvas" type="text" size="small" class="unfoldButton" style="top: 0; right: 0; position: absolute" @click="handleRotate(dom)"> 
+    <a-button v-if="!showCompleteTable && !isCanvas && dom.dataset.rotatebutton" type="text" size="small" class="unfoldButton" style="top: 0; right: 0; position: absolute" @click="handleRotate(dom)"> 
       <template #icon> 
         <i class="iconfont"> &#xe607; </i> 
       </template> 
     </a-button>
+    <!-- for dragenter -->
+    <div v-if="entered == index" class="judgedrag"> </div>
+
     <!-- top (canvas only) -->
     <div v-if="!showCompleteTable && isCanvas">
       <div v-if="puzzleType == 'horizontal'" v-for="i in dom.dataset.colSpan" class="horizontalSemiCircle upSemiCircle canvasSemiCircle" :style="`right: ${i*bw-bw/2-pr}px; top: ${-pr}px;`" :class="{'phBorder': dom.className == 'placeholderBlock', 'highlightedBlock': dom.dataset.bid == highlightedBlockId}" data-dir='top' style="border-top: 1px solid #DDE6ED"/>
@@ -73,7 +76,7 @@ export default {
   },
   data() {
     return ({
-
+      entered: -1,
     });
   },
   computed: {
@@ -129,9 +132,6 @@ export default {
 }
 
 .puzzleText {
-  font-family: Inter-Light-7, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   overflow: hidden;
   pointer-events: none;
   white-space: pre-wrap;
@@ -298,5 +298,20 @@ export default {
 
 .canvasSemiCircle {
   background-color: #DDE6ED;
+}
+
+.judgedrag {
+  position: absolute;
+  right: 20px;
+  height: 100%;
+  width: 40px;
+  top: 0;
+  background-color: rgba(200, 200, 200, 0.5);
+  border: 1px solid #eeeeee;
+  pointer-events: none;
+}
+
+.areahover .judgedrag {
+  border: 2px solid red; 
 }
 </style>

@@ -438,25 +438,154 @@
           </div>
         </div>
         <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Header </div> 
-          <div class="wrapper">
-            <div  class="glyphOption" :class="{'glyphSelected': true}" @click="applyChanges('entityMerge', false)">
-              <div class="configGlyph">
-                <div class="F3item highlightCell"> ... </div>
-                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
-                <div class="F3item highlightCell" style="border-top: 1px solid #bbbbbb;"> ... </div>
+          <div class="configAttrSubpanelTitle"> Row Header </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
               </div>
-              <div class="entityMergeText"> Alternating </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'none'}" @click="applyChangesToRolColNo('odd', 'Row')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
             </div>
-            <div  class="glyphOption" :class="{'glyphSelected': false}" @click="applyChanges('entityMerge', false)">
-              <div class="configGlyph">
-                <div class="F3item"> ... </div>
-                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
-                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
-                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
-                <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
+            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="rowNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
+                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
+                <a-switch size="small" checked-children="even rows" un-checked-children="odd rows" :checked="rowNoType == 'even'" @change="applyChangesToRolColNo(rowNoType == 'odd' ? 'even' : 'odd', 'Row', rowNoColor)"> </a-switch>
               </div>
-              <div class="entityMergeText"> None </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font weight </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="colNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
+                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
+                <a-switch size="small" checked-children="even columns" un-checked-children="odd columns" :checked="colNoType == 'even'" @change="applyChangesToRolColNo(colNoType == 'odd' ? 'even' : 'odd', 'Col', colNoColor)"> </a-switch>
+              </div>
+            </div>
+            <div class="templateDropdown" @click="this.rowHeaderCustomize = !this.rowHeaderCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Column Header </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'none'}" @click="applyChangesToRolColNo('odd', 'Row')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="rowNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
+                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
+                <a-switch size="small" checked-children="even rows" un-checked-children="odd rows" :checked="rowNoType == 'even'" @change="applyChangesToRolColNo(rowNoType == 'odd' ? 'even' : 'odd', 'Row', rowNoColor)"> </a-switch>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font weight </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': colHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.colHeader', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': colHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.colHeader', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="colHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="colNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
+                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
+                <a-switch size="small" checked-children="even columns" un-checked-children="odd columns" :checked="colNoType == 'even'" @change="applyChangesToRolColNo(colNoType == 'odd' ? 'even' : 'odd', 'Col', colNoColor)"> </a-switch>
+              </div>
+            </div>
+            <div class="templateDropdown" @click="this.colHeaderCustomize = !this.colHeaderCustomize">
+              <i class='iconfont'> &#xeb10; </i>
             </div>
           </div>
         </div>
@@ -487,8 +616,12 @@ export default {
       '.evenRows': undefined,
       '.oddCols': undefined,
       '.evenCols': undefined,
+      '.rowHeader': undefined,
+      '.colHeader': undefined,
       // tmp
       lineNoCustomize: false,
+      rowHeaderCustomize: false,
+      colHeaderCustomize: false,
     });
   },
   computed: {
@@ -564,6 +697,12 @@ export default {
       } else {
         return '#aaaaaa';
       }
+    },
+    rowHeaderFontWeight() {
+      return this['.rowHeader'] ? this['.rowHeader'].font.weight : "Regular";
+    },
+    colHeaderFontWeight() {
+      return this['.colHeader'] ? this['.colHeader'].font.weight : "Regular";
     }
   },
   methods: {
@@ -677,7 +816,7 @@ export default {
       
       let styles = this.selectedTable;
       if(!styles || typeof(styles) != 'object') styles = {};
-      if(!styles[className]) block.style[className] = {};
+      if(!styles[className]) styles[className] = {};
       if(key1) {
         if(!styles[className][key1]) styles[className][key1] = {};
         if(key2) styles[className][key1][key2] = value;
@@ -742,6 +881,8 @@ export default {
         this['.oddCols'] = val['.oddCols'];
         this['.evenRows'] = val['.evenRows'];
         this['.evenCols'] = val['.evenCols'];
+        this['.rowHeader'] = val['.rowHeader'];
+        this['.colHeader'] = val['.colHeader'];
       }
     }
     // entityMerge(val, oldval) {
@@ -1245,6 +1386,13 @@ export default {
   justify-content: center;
   align-items: center;
   padding-bottom: 5px;
+}
+
+.RHitem {
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cPosGlyphOption {
