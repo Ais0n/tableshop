@@ -365,7 +365,7 @@ export default {
         e.target.classList.remove("bottomlefthover");
         e.target.classList.remove("areahover");
       }
-      if(x >= box.right - 60 && x < box.right - 20 && (e.target.dataset.channel == 'row' || e.target.dataset.channel == 'column')) {
+      if(x >= box.right - 60 && x < box.right - 20 && y < box.bottom - 20 && (e.target.dataset.channel == 'row' || e.target.dataset.channel == 'column')) {
         clearClass(e);
         e.target.classList.add("areahover");
       } else if (x < box.left + 20) {
@@ -380,9 +380,9 @@ export default {
         if(e.target.dataset.channel == 'row' && y < box.top + 10) {
           e.target.classList.add('toprighthover');
         } 
-        // else if(y > box.top + 30) {
-        //   e.target.classList.add('rightchildhover');
-        // } 
+        else if(e.target.dataset.channel == 'column' && y > box.top + 30) {
+          e.target.classList.add('rightchildhover');
+        } 
         else {
           e.target.classList.add('righthover');
         }
@@ -391,9 +391,9 @@ export default {
         e.target.classList.add('tophover');
       } else {
         clearClass(e);
-        // if(x > box.left + 80) {
-        //   e.target.classList.add("bottomchildhover");
-        // } else 
+        if(e.target.dataset.channel == 'row' && x > box.left + 60) {
+          e.target.classList.add("bottomchildhover");
+        } else 
         {
           e.target.classList.add('bottomhover');
         }
@@ -470,7 +470,7 @@ export default {
             tmp.channel = channel;
             targetBlock.arr[targetBlock.index] = tmp;
           }
-        } else if(dir == 'rightchild' || dir == 'bottomchild') {
+        } else if(dir == 'right' || dir == 'bottomchild') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
@@ -565,7 +565,7 @@ export default {
             }
             targetBlock.arr.splice(targetBlock.index + (dir == 'bottom' ? 1 : 0), 0, tmp);
           }
-        } else if(dir == 'right') { // right, + cell
+        } else if(dir == 'area') { // right, + cell
           if(this.draggedItemType == 'function') {
             this.$message.error("Illegal drop!");
             return;
@@ -683,7 +683,7 @@ export default {
             tmp.channel = channel;
             targetBlock.arr[targetBlock.index] = tmp;
           }
-        } else if(dir == 'bottomchild' || dir == 'rightchild') {
+        } else if(dir == 'bottom' || dir == 'rightchild') {
           if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
@@ -779,7 +779,7 @@ export default {
             }
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, tmp);
           }
-        } else if(dir == 'bottom') { // bottom, + cell
+        } else if(dir == 'area') { // bottom, + cell
           if(this.draggedItemType == 'function') {
             this.$message.error("Illegal drop!");
             return;
