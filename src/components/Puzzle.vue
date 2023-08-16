@@ -14,7 +14,7 @@
         <i class="iconfont"> {{dom.dataset.channel == 'row' ? "&#xeb10;" : "&#xeb11;"}}</i> 
       </template> 
     </a-button>
-    <a-button v-if="!showCompleteTable && !isCanvas && dom.dataset.rotatebutton" type="text" size="small" class="unfoldButton" style="top: 0; right: 0; position: absolute" @click="handleRotate(dom)"> 
+    <a-button v-if="!showCompleteTable && !isCanvas && dom.dataset.rotatebutton && entered != index" type="text" size="small" class="unfoldButton" style="top: 0; right: 0; position: absolute" @click="handleRotate(dom)"> 
       <template #icon> 
         <i class="iconfont"> &#xe607; </i> 
       </template> 

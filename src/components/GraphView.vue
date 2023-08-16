@@ -1604,9 +1604,9 @@ export default {
             head.i = i;
             head.j = j;
             head.unfolded = unfolded;
-            if(!unfolded && (head.count > max_visible_values || head.inherited)) {
+            if(!unfolded && (head.count > max_visible_values || head.isInherited)) {
               addByRange(rSet, i, i + fullTable[i][j].rowSpan);
-              head.inherited = true;
+              head.isInherited = true;
             }
           } else if(getIndexInStack(curId) == -1){ // 子级
             let indent = ((head && head.entityMerge) ? 10 : 0) + ((head && head.indent) ? head.indent : 0);
@@ -1615,7 +1615,7 @@ export default {
             stackInsert({
               blockId: curId,
               count: 1,
-              inherited: head ? (head.inherited) : false,
+              isInherited: head ? (head.isInherited) : false,
               i,
               j,
               unfolded,
@@ -1647,9 +1647,9 @@ export default {
             // if(valueList.length > max_visible_values && ((!unfolded && head.count == max_visible_values) || (unfolded && head.count == valueList.length - 1))) {
             //   fullTable[i][j].unfoldbutton = true;
             // }
-            if(!unfolded && (head.count > max_visible_values || head.inherited)) {
+            if(!unfolded && (head.count > max_visible_values || head.isInherited)) {
               addByRange(rSet, i, i + fullTable[i][j].rowSpan);
-              head.inherited = true;
+              head.isInherited = true;
             }
           }
         }
@@ -1697,15 +1697,15 @@ export default {
           // if(valueList.length > max_visible_values && ((!unfolded && head.count == max_visible_values) || (unfolded && head.count == valueList.length))) {
           //   fullTable[searchList[i].i][searchList[i].j].unfoldbutton = true;
           // }
-          if(!unfolded && (head.count > max_visible_values || head.inherited)) {
+          if(!unfolded && (head.count > max_visible_values || head.isInherited)) {
             addByRange(cSet, searchList[i].col, searchList[i].col + searchList[i].colSpan);
-            head.inherited = true;
+            head.isInherited = true;
           }
         } else if(getIndexInStack(curId) == -1){
           stackInsert({
             blockId: curId,
             count: 1,
-            inherited: head ? (head.inherited) : false,
+            isInherited: head ? (head.isInherited) : false,
             i: searchList[i].i,
             j: searchList[i].j,
             unfolded
@@ -1733,9 +1733,9 @@ export default {
           // if(valueList.length > max_visible_values && ((!unfolded && head.count == max_visible_values) || (unfolded && head.count == valueList.length))) {
           //   fullTable[searchList[i].i][searchList[i].j].unfoldbutton = true;
           // }
-          if(!unfolded && (head.count > max_visible_values || head.inherited)) {
+          if(!unfolded && (head.count > max_visible_values || head.isInherited)) {
             addByRange(cSet, searchList[i].col, searchList[i].col + searchList[i].colSpan);
-            head.inherited = true;
+            head.isInherited = true;
           }
         }
       }
@@ -1854,7 +1854,7 @@ export default {
           spec
         };
         let spec2 = Utils.deepClone(spec);
-        console.log("Processing spec: ", spec2);
+        console.log("Processing spec: ", JSON.parse(JSON.stringify(spec2)));
         let res = tableShop.default.utils.transform(tableSpec);
         console.log("Get full table: ", res);
         this.addIndex(res);
@@ -1895,9 +1895,10 @@ export default {
       //   return;
       // }
       // console.log(this.selectedBlock);
-      let block = this.findBlock(dataset.bid);
-      console.log(block);
-      let tableId = block.tableId;
+      // let block = this.findBlock(dataset.bid);
+      // console.log(block);
+      // let tableId = block.tableId;
+      let tableId = dataset.tableId;
       this.rotateTable(this.canvas[tableId]);
       this.updateTable();
     }

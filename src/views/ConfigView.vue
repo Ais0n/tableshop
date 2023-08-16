@@ -261,7 +261,7 @@
             </div>
             <div class="keyPropsWrapper">
               <div style="display: inline-block" class="keyPropsText"> Hierarchy</div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': key.inherited == false}" @click="applyChanges('key', 'inherited', false)">
+              <div class="inheritGlyphOption" :class="{'glyphSelected': key.isInherited == false}" @click="applyChanges('key', 'isInherited', false)">
                 <div class="configGlyph">
                   <div class="inheritWrapper"> 
                     <div class="inheritItem"> 1., 2., 3., ... </div>
@@ -269,7 +269,7 @@
                 </div>
                 <div class="entityMergeText"> Single-level </div>
               </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': key.inherited == true}" @click="applyChanges('key', 'inherited', true)">
+              <div class="inheritGlyphOption" :class="{'glyphSelected': key.isInherited == true}" @click="applyChanges('key', 'isInherited', true)">
                 <div class="configGlyph">
                   <div class="inheritWrapper"> 
                     <div class="inheritItem"> 1., 1.1., 1.1.1., ... </div>
@@ -761,12 +761,12 @@ export default {
         this.key = {
           position: 'embedded',
           pattern: 'A',
-          inherited: true,
+          isInherited: true,
         }
         block.key = {
           position: 'embedded',
           pattern: 'A',
-          inherited: true,
+          isInherited: true,
         }
       } else {
         this.key = undefined;
