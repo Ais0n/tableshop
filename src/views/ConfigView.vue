@@ -175,7 +175,7 @@
               </div>
               <div class="entityMergeText"> Faceted in 2 groups </div>
             </div>
-            <div class="FglyphOption" :class="{'glyphSelected': facet >= 3}" @click="applyChanges('facet', facet < 3 ? (facet = 3) : facet)">
+            <div class="FglyphOption" :class="{'glyphSelected': facet >= 3}" @click="applyChanges('facet', facet < 3 ? 3 : facet)">
               <div class="configGlyph">
                 <div class="F3item highlightCell"> {{ Cparent1 }} </div>
                 <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
