@@ -6,7 +6,8 @@
     >
       {{dom.innerText}}
     </div> -->
-    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" @cell-unfold="handleUnfold($event)" @cell-rotate="handleRotate($event)" :showCompleteTable="showCompleteTable"> </Puzzle>
+    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" @cell-unfold="handleUnfold($event)" @cell-rotate="handleRotate($event)" :showCompleteTable="showCompleteTable" :dragging="dragging"> 
+    </Puzzle>
     <div id="tableCanvas" class="tableCanvas" v-show="false">
       <div id="graphViewLeftTopBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+hlineTop+'px;top:0px;left:0px'" @dragover="handleDragOver($event, 'LT')" @drop="handleDrop($event, 'LT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LT'}" @dragleave="handleDragLeave"/>
       <div id="graphViewLeftBottomBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+(viewHeight-hlineTop)+'px;top:'+hlineTop+'px;left:0px'" @dragover="handleDragOver($event, 'LB')" @drop="handleDrop($event, 'LB')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LB'}" @dragleave="handleDragLeave"/>
@@ -112,6 +113,7 @@ export default {
       cmSeparateMode: "separate",
       // cmSelectCellIndex: -1,
       modalopen: false,
+      dragging: false,
     });
   },
   computed: {
@@ -340,6 +342,7 @@ export default {
     // },
     handleBlockDragstart(e) {
       console.log(e)
+      this.dragging = true;
       this.$store.commit("storeDraggedItemType", 'block');
       this.$store.commit("storeDraggedBlock", e.target);
     },
@@ -365,25 +368,28 @@ export default {
         e.target.classList.remove("bottomlefthover");
         e.target.classList.remove("areahover");
       }
-      if(x >= box.right - 60 && x < box.right - 20 && y < box.bottom - 20 && (e.target.dataset.channel == 'row' || e.target.dataset.channel == 'column')) {
+      // if(x >= box.right - 60 && x < box.right - 20 && y < box.bottom - 20 && (e.target.dataset.channel == 'row' || e.target.dataset.channel == 'column')) {
+      //   clearClass(e);
+      //   e.target.classList.add("areahover");
+      // } else 
+      if (x < box.left + 20) {
         clearClass(e);
-        e.target.classList.add("areahover");
-      } else if (x < box.left + 20) {
-        clearClass(e);
-        if(e.target.dataset.channel == 'column' && y > box.bottom - 20) {
-          e.target.classList.add('bottomlefthover');
-        } else {
+        // if(e.target.dataset.channel == 'column' && y > box.bottom - 20) {
+        //   e.target.classList.add('bottomlefthover');
+        // } else 
+        {
           e.target.classList.add('lefthover');
         }
       } else if (x > box.right - 20) {
         clearClass(e);
-        if(e.target.dataset.channel == 'row' && y < box.top + 10) {
-          e.target.classList.add('toprighthover');
-        } 
-        else if(e.target.dataset.channel == 'column' && y > box.top + 30) {
-          e.target.classList.add('rightchildhover');
-        } 
-        else {
+        // if(e.target.dataset.channel == 'row' && y < box.top + 10) {
+        //   e.target.classList.add('toprighthover');
+        // } 
+        // else if(e.target.dataset.channel == 'column' && y > box.top + 30) {
+        //   e.target.classList.add('rightchildhover');
+        // } 
+        // else 
+        {
           e.target.classList.add('righthover');
         }
       } else if (y < box.top + box.height / 2) {
@@ -391,48 +397,49 @@ export default {
         e.target.classList.add('tophover');
       } else {
         clearClass(e);
-        if(e.target.dataset.channel == 'row' && x > box.left + 60) {
-          e.target.classList.add("bottomchildhover");
-        } else 
+        // if(e.target.dataset.channel == 'row' && x > box.left + 60) {
+        //   e.target.classList.add("bottomchildhover");
+        // } else 
         {
           e.target.classList.add('bottomhover');
         }
       }
     },
-    handleBlockDrop(e) {
+    handleBlockDrop(e, dir) {
       e.stopPropagation();
       this.dropoverBox = "";
-      let dir = "";
-      if(e.target.classList.contains('lefthover')) {
-        dir = 'left';
-      } else if(e.target.classList.contains('righthover')) {
-        dir = 'right';
-      } else if(e.target.classList.contains('tophover')) {
-        dir = 'top';
-      } else if(e.target.classList.contains('bottomhover')) {
-        dir = 'bottom';
-      } else if(e.target.classList.contains('rightchildhover')) {
-        dir = 'rightchild';
-      } else if(e.target.classList.contains('bottomchildhover')) {
-        dir = 'bottomchild';
-      } else if(e.target.classList.contains('toprighthover')) {
-        dir = 'topright';
-      } else if(e.target.classList.contains('bottomlefthover')) {
-        dir = 'bottomleft';
-      } else if(e.target.classList.contains('areahover')) {
-        dir = 'area';
-      }
-      e.target.classList.remove('lefthover');
-      e.target.classList.remove('righthover');
-      e.target.classList.remove('tophover');
-      e.target.classList.remove('bottomhover');
-      e.target.classList.remove("rightchildhover");
-      e.target.classList.remove("bottomchildhover");
-      e.target.classList.remove("toprighthover");
-      e.target.classList.remove("bottomlefthover");
-      e.target.classList.remove("areahover");
-      if (dir != "") e.preventDefault(); else return;
-      console.log(dir);
+      // let dir = "";
+      // if(e.target.classList.contains('lefthover')) {
+      //   dir = 'left';
+      // } else if(e.target.classList.contains('righthover')) {
+      //   dir = 'right';
+      // } else if(e.target.classList.contains('tophover')) {
+      //   dir = 'top';
+      // } else if(e.target.classList.contains('bottomhover')) {
+      //   dir = 'bottom';
+      // } 
+      // else if(e.target.classList.contains('rightchildhover')) {
+      //   dir = 'rightchild';
+      // } else if(e.target.classList.contains('bottomchildhover')) {
+      //   dir = 'bottomchild';
+      // } else if(e.target.classList.contains('toprighthover')) {
+      //   dir = 'topright';
+      // } else if(e.target.classList.contains('bottomlefthover')) {
+      //   dir = 'bottomleft';
+      // } else if(e.target.classList.contains('areahover')) {
+      //   dir = 'area';
+      // }
+      // e.target.classList.remove('lefthover');
+      // e.target.classList.remove('righthover');
+      // e.target.classList.remove('tophover');
+      // e.target.classList.remove('bottomhover');
+      // e.target.classList.remove("rightchildhover");
+      // e.target.classList.remove("bottomchildhover");
+      // e.target.classList.remove("toprighthover");
+      // e.target.classList.remove("bottomlefthover");
+      // e.target.classList.remove("areahover");
+      // if (dir != "") e.preventDefault(); else return;
+      // console.log(dir);
       console.log(e.target);
       let {bid, channel} = e.target.dataset;
       if(channel == 'row') {
@@ -1173,6 +1180,7 @@ export default {
         newDom.ondragover = this.handleBlockDragover;
         newDom.ondrop = this.handleBlockDrop;
         newDom.ondragleave = this.handleBlockDragleave;
+        newDom.ondragend = this.handleDragend;
         newDom.oncontextmenu = this.openMenu;
         newDom.onclick = this.handleBlockClick;
         // dom.appendChild(newDom);
@@ -1420,6 +1428,10 @@ export default {
     },
     handleDragLeave(e) {
       e.stopPropagation();
+      this.dropoverBox = "";
+    },
+    handleDragend(e) {
+      this.dragging = false;
       this.dropoverBox = "";
     },
     updateBlock(block) {
@@ -1908,6 +1920,8 @@ export default {
     this.$bus.on('update', this.updateBlock);
     this.$bus.on('rotate', this.handleRotate);
     this.$bus.on('updateglobal', this.updateGlobal);
+    this.$bus.on('attrdragstart', () => { this.dragging = true; })
+    this.$bus.on('attrdragend', this.handleDragend)
 
     // let tableCanvasDom = document.getElementById("tableCanvas");
     // this.viewHeight = tableCanvasDom.scrollHeight;
@@ -2075,5 +2089,17 @@ export default {
 
 .qsep:hover {
   border-bottom: 2px solid red !important;
+}
+
+.dragbubble {
+  position: absolute;
+  bottom: -170px;
+  width: 300px;
+  height: 150px;
+  background-color: rgba(200, 200, 200, 1);
+  border: 1px solid #eeeeee;
+  pointer-events: none;
+  z-index: 7000;
+  left: 100%;
 }
 </style>

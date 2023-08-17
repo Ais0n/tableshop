@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 // import './style.css'
 import App from './App.vue'
-import {Select, Input, Button, message, Card, AutoComplete, Empty, Modal, Radio, Progress, Tag, Spin, Popover, Tooltip, List, Avatar, Switch, Segmented, InputNumber, Checkbox, Tabs} from "ant-design-vue";
+import {Select, Input, Button, message, Card, AutoComplete, Empty, Modal, Radio, Progress, Tag, Spin, Popover, Tooltip, List, Avatar, Switch, Segmented, InputNumber, Checkbox, Tabs, Popconfirm} from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
 import './assets/icons/iconfont.css';
 import { store } from "./store/store.js"
@@ -16,6 +16,7 @@ app.use(Button);
 app.use(Segmented);
 app.use(Checkbox);
 app.use(Tabs);
+app.use(Popconfirm);
 // app.use(Icon);
 app.use(Card);
 app.use(Switch);

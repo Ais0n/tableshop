@@ -3,7 +3,7 @@
     <div class="entitySubview">
       <div class="title2"> Entities </div>
       <!-- <div class="entityList"> -->
-        <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)" class="attrInfoItem" @dragstart="handleDragStart(attr)" :draggable="true">
+        <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)" class="attrInfoItem" @dragstart="handleDragStart(attr)" :draggable="true" @dragend="handleDragend">
           <i v-if="attr.dataType == 'categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
           <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
           <div class="attrInfoItemText"> {{attr.name}} </div>
@@ -46,6 +46,10 @@ export default {
       console.log("dragstart")
       this.$store.commit("storeDraggedAttr", attr);
       this.$store.commit("storeDraggedItemType", 'attr');
+      this.$bus.emit("attrdragstart");
+    },
+    handleDragend() {
+      this.$bus.emit("attrdragend");
     }
   },
   components: {

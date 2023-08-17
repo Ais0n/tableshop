@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "36984047",
+      "name": "dodetop",
+      "font_class": "dodetop",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "36984048",
+      "name": "dodeparent",
+      "font_class": "dodeparent",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "36984049",
+      "name": "dodebottom",
+      "font_class": "dodebottom",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "36984050",
+      "name": "dodechild",
+      "font_class": "dodechild",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "36984051",
+      "name": "dodecross",
+      "font_class": "dodecross",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "36984052",
+      "name": "dodecross2",
+      "font_class": "dodecross2",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "36983990",
+      "name": "dodechild2",
+      "font_class": "dodechild21",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
       "icon_id": "5387602",
       "name": "末端展开",
       "font_class": "moduanzhankai",
