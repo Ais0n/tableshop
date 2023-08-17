@@ -18,12 +18,25 @@
       </a-select-option>
     </a-select>
     <a-button class="header-button" @click="importDataset"> Import </a-button>
+    <a-button class="header-button" @click="viewDataset"> View Data </a-button>
+    <a-modal v-model:open="open" :footer="null"> 
+      <a-table :columns="headers"  :data-source="data.values">
+        <template #headerCell="{ column }">
+          {{ column.title }}
+        </template>
+
+        <template #bodyCell="{ column, record }">
+           {{ record[column.dataIndex] }}
+        </template>
+      </a-table>
+    </a-modal>
   </div>
 </template>
 
 <script>
 import { EXAMPLE_DATA } from "../CONSTANT.js";
 import csvtojson from "csvtojson";
+import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
   name: "HeaderView",
@@ -31,27 +44,41 @@ export default {
     return ({
       dataset: "",
       fileName: undefined,
+      open: false,
     });
   },
   computed: {
+    ...mapState(["data"]),
+    headers() {
+      if(!this.data || !(this.data.values instanceof Array) || this.data.values.length == 0) return [];
+      let tmp = Object.keys(this.data.values[0]);
+      let res = [];
+      for(let i = 0; i < tmp.length; i++) {
+        res.push({
+          title: tmp[i],
+          dataIndex: tmp[i],
+        })
+      }
+      return res;
+    },
     EXAMPLE_DATA() {
       return EXAMPLE_DATA;
     }
   },
   methods: {
     async importDataset() {
-        console.log(this.dataset)
-        if(!this.dataset || this.dataset == "") {
-          this.$message.error("Please select a dataset");
-          return;
-        }
-        try {
-          this.importData(this.dataset);
-        } catch (e) {
-          console.log(e);
-          this.$message.error("Unsupported File Type");
-        }
-      },
+      console.log(this.dataset)
+      if(!this.dataset || this.dataset == "") {
+        this.$message.error("Please select a dataset");
+        return;
+      }
+      try {
+        this.importData(this.dataset);
+      } catch (e) {
+        console.log(e);
+        this.$message.error("Unsupported File Type");
+      }
+    },
     async importData(rawData) {
       console.log("importData:", rawData);
       console.log("fileName:", this.fileName);
@@ -99,6 +126,13 @@ export default {
         return;
       }
     },
+    viewDataset() {
+      if(!this.data) {
+        this.$message.error("Please first import a dataset.");
+        return;
+      }
+      this.open = true;
+    }
   }
 
 

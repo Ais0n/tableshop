@@ -3,10 +3,17 @@
     <div class="entitySubview">
       <div class="title2"> Entities </div>
       <!-- <div class="entityList"> -->
-        <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)" class="attrInfoItem" @dragstart="handleDragStart(attr)" :draggable="true" @dragend="handleDragend">
-          <i v-if="attr.dataType == 'categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
-          <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
-          <div class="attrInfoItemText"> {{attr.name}} </div>
+        <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)">
+          <div class="attrInfoItem">
+            <div @dragstart="handleDragStart(attr)" :draggable="true" @dragend="handleDragend" @click="selected=i">
+              <i v-if="attr.dataType == 'categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
+              <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
+              <div class="attrInfoItemText"> {{attr.name}} </div>
+            </div>
+            <div v-if="selected == i" style="display: flex">
+              <mychart style="margin-left: 20px;" :chartId="`attr_${i}`" :attr="attr" :draggable="false"> </mychart>
+            </div>
+          </div>
         </div>
       <!-- </div> -->
     </div>
@@ -27,11 +34,12 @@
 import { ref } from 'vue'
 import { mapState, mapMutations, mapActions } from "vuex";
 import GraphView from '../components/GraphView.vue';
+import Mychart from '../components/Mychart.vue';
 export default {
   name: "DataView",
   data() {
     return ({
-
+      selected: 0,
     });
   },
   computed: {
@@ -54,6 +62,7 @@ export default {
   },
   components: {
     GraphView,
+    Mychart,
   }
 }
 </script>
@@ -128,7 +137,7 @@ export default {
   border-radius: 5px;
   margin-top: 7px;
   margin-bottom: 5px;
-  padding: 2px 5px;
+  padding: 3px 5px;
 
 }
 
@@ -152,6 +161,12 @@ export default {
   cursor: pointer;
   font-size: 18px;
   float: right;
+}
+
+.valueList {
+  margin-top: 10px;
+  border: 1px solid #aaaaaa;
+  overflow-y: scroll;
 }
 
 .contextmenu::-webkit-scrollbar {
