@@ -19,6 +19,8 @@
     </a-select>
     <a-button class="header-button" @click="importDataset"> Import </a-button>
     <a-button class="header-button" @click="viewDataset"> View Data </a-button>
+    <i class="iconfont header-icon" @click="undo"> &#xebbd; </i>
+    <i class="iconfont header-icon" @click="redo"> &#xeb83; </i>
     <a-modal v-model:open="open" :footer="null"> 
       <a-table :columns="headers"  :data-source="data.values">
         <template #headerCell="{ column }">
@@ -132,6 +134,12 @@ export default {
         return;
       }
       this.open = true;
+    },
+    undo() {
+      this.$bus.emit("undo");
+    },
+    redo() {
+      this.$bus.emit("redo");
     }
   }
 
@@ -179,6 +187,22 @@ export default {
   font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.header-icon {
+  display: inline-block;
+  line-height: 24px;
+  height: 24px;
+  margin-left: 15px;
+  text-align: center;
+  color: black;
+  padding: 0px 3px;
+}
+
+.header-icon:hover {
+  /* background-color: #9DB2BF; */
+  color: white;
+  cursor: pointer;
 }
 
 .header-select {

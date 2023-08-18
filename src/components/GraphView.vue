@@ -114,6 +114,8 @@ export default {
       // cmSelectCellIndex: -1,
       modalopen: false,
       dragging: false,
+      _history: [],
+      _historyIndex: 0,
     });
   },
   computed: {
@@ -1268,13 +1270,16 @@ export default {
         else return tmp;
       })
     },
-    drawGraph() {
+    drawGraph(stored) {
       let tables = this.showCompleteTable ? this.fullTables : this.foldedTables;
       this.clearGraph();
       // this.drawGraphCanvas(this.canvas, this.canvasDom);
       for(let i = 0; i < tables.length; i++) {
         this.calcGraphConfig(tables[i]);
         this.drawTable(tables[i].table, i, this.tableDom);
+      }
+      if(stored) {
+        this._history[this._historyIndex++] = Utils.deepClone(this.canvas);
       }
       // this.drawGraphCanvas(this.fcell, this.tableDom);
     },
@@ -1851,7 +1856,7 @@ export default {
       this.foldedTables[id].table = newTable;
       this.drawGraph();
     },
-    updateTable() {
+    updateTable(stored=true) {
       this.fullTables = [];
       this.foldedTables = [];
       for(let i = 0; i < this.canvas.length; i++) {
@@ -1885,7 +1890,7 @@ export default {
           top: spec.top,
         });
       }
-      this.drawGraph();
+      this.drawGraph(stored);
     },
     rotateTable(table) {
       const changeChannel = (arr) => {
@@ -1913,6 +1918,17 @@ export default {
       let tableId = dataset.tableId;
       this.rotateTable(this.canvas[tableId]);
       this.updateTable();
+    },
+    handleUndo() {
+      if(this._historyIndex == 1 || this._history.length < this._historyIndex) return;
+      this._historyIndex -= 1;
+      this.canvas = Utils.deepClone(this._history[this._historyIndex - 1]);
+      this.updateTable(false);
+    },
+    handleRedo() {
+      if(this._historyIndex >= this._history.length) return;
+      this.canvas = Utils.deepClone(this._history[this._historyIndex++]);
+      this.updateTable(false);
     }
   },
   mounted() {
@@ -1920,8 +1936,11 @@ export default {
     this.$bus.on('update', this.updateBlock);
     this.$bus.on('rotate', this.handleRotate);
     this.$bus.on('updateglobal', this.updateGlobal);
-    this.$bus.on('attrdragstart', () => { this.dragging = true; })
-    this.$bus.on('attrdragend', this.handleDragend)
+    this.$bus.on('attrdragstart', () => { this.dragging = true; });
+    this.$bus.on('attrdragend', this.handleDragend);
+    this.$bus.on('undo', this.handleUndo);
+    this.$bus.on('redo', this.handleRedo);
+    this._history[this._historyIndex++] = [];
 
     // let tableCanvasDom = document.getElementById("tableCanvas");
     // this.viewHeight = tableCanvasDom.scrollHeight;

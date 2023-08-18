@@ -32,7 +32,8 @@
     <!-- <div style="height: calc(100% - 4px); width: 30px; position: absolute; right: 5px; top: 2px; border: 2px solid #526D82; pointer-events: none; background-color: #eeeeee;"> <i class="iconfont" style="width: 20px; height: 20px; position: absolute; right: 2px; top: calc(50% - 10px);"> &#xe603; </i> </div> -->
 
     <!-- for drag disambiguition -->
-    <a-popconfirm v-if="openPanel_id == index" :placement="tmp_dir" cancel-text="Cancel" ok-text="OK" @cancel="dropSelectCancel" @confirm="()=>{}" :open="openPanel">
+    <a-popconfirm v-if="openPanel_id == index" :placement="tmp_dir" cancel-text="Cancel" @cancel="dropSelectCancel"  :open="openPanel">
+      <template #okButton></template>
       <template #title>
         <p class="dropSelectText"> Select the desired result: </p>
         <div v-if="dom.dataset.channel == 'row' && tmp_dir == 'right'">
@@ -125,7 +126,7 @@
           <div class="dropSelectOption" @click="dropSelectFinish('bottom')">
             <i class="iconfont"> &#xe600; </i>
             <!-- <a-radio :checked="selectedDir == 'bottom'" @change="selectedDir = 'bottom'"> </a-radio> -->
-            <div class="dropSelectText"> Append to the bottom </div>
+            <div class="dropSelectText" style="font-size: 13px"> Append to the bottom </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 160px;"> 
                 <div style="height: 30px; border: 1px solid #aaaaaa; display: flex; justify-content: center; align-items: center;"> {{dom.innerText}} </div>
@@ -153,7 +154,7 @@
           <div class="dropSelectOption" @click="dropSelectFinish('area')">
             <i class="iconfont"> &#xe600; </i>
             <!-- <a-radio :checked="selectedDir == 'area'" @change="selectedDir = 'area'"> </a-radio> -->
-            <div class="dropSelectText"> Append to the bottom </div>
+            <div class="dropSelectText" style="font-size: 13px"> Append to the bottom </div>
             <div class="dropSelectOptionGlyph" style="flex-direction: column">
               <div style="border: 1px solid #aaaaaa; height: 30px; width: 160px; display: flex; justify-content: center; align-items: center; "> 
                 {{ dom.innerText }}
