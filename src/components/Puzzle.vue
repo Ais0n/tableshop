@@ -332,6 +332,10 @@ export default {
       e.stopPropagation();
       e.preventDefault();
       console.log(e, dom);
+      if(e.target.dataset.channel == 'cell') {
+        dom.ondrop(e);
+        return;
+      }
       this.openPanel_id = this.entered;
       this.entered = -1;
       // dom.ondrop(e);

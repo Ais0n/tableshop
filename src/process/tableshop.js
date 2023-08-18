@@ -239,9 +239,10 @@ var header_fill = function (attrInfo, styles, header) {
                 return "continue";
             }
             var attr = attrInfo.find(function (obj) {
-                return obj.name == hb.attrName;
+                return obj.name === hb.attrName;
             });
-            hb.values = (_e = hb.values) !== null && _e !== void 0 ? _e : attr.values;
+            if (attr !== undefined)
+                hb.values = (_e = hb.values) !== null && _e !== void 0 ? _e : attr.values;
             // if(hb.children && hb.children.length===0) hb.children = undefined
             header_fill(attrInfo, styles, hb.children);
         };
@@ -617,7 +618,8 @@ var gen_inter_row_table = function (interRowTable, rowHeader, extra, width, dept
                 isKey: true,
                 style: headerStyle
             };
-            extra.preVal[source] = rh.values[i];
+            if (source)
+                extra.preVal[source] = rh.values[i];
             if (rh.entityMerge) {
                 iterCount = gen_inter_row_table(interRowTable, rh.children, extra, width, depth, outerX + innerX + 1, bias, rh.entityMerge, key, keyBias);
             }
@@ -763,7 +765,8 @@ var gen_inter_column_table = function (interColumnTable, columnHeader, extra, wi
                 isKey: true,
                 style: headerStyle
             };
-            extra.preVal[source] = ch.values[i];
+            if (source)
+                extra.preVal[source] = ch.values[i];
             if (ch.entityMerge) {
                 iterCount = gen_inter_column_table(interColumnTable, ch.children, extra, width, depth, outerY + innerY + 1, bias, ch.entityMerge, key, keyBias);
             }

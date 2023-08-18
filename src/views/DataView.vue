@@ -9,6 +9,9 @@
               <i v-if="attr.dataType == 'categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
               <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
               <div class="attrInfoItemText"> {{attr.name}} </div>
+              <a-button shape="circle" size="small" class="title-button" @dragstart="handleTitleDragStart($event, attr)" :draggable="true" @dragend="handleDragend">
+                <i class="iconfont"> &#xe680; </i>
+              </a-button>
             </div>
             <div v-if="selected == i" style="display: flex">
               <mychart style="margin-left: 20px;" :chartId="`attr_${i}`" :attr="attr" :draggable="false"> </mychart>
@@ -55,6 +58,12 @@ export default {
       this.$store.commit("storeDraggedAttr", attr);
       this.$store.commit("storeDraggedItemType", 'attr');
       this.$bus.emit("attrdragstart");
+    },
+    handleTitleDragStart(e, attr) {
+      e.stopPropagation();
+      console.log("titleDragstart");
+      this.$store.commit("storeDraggedValue", attr.name);
+      this.$store.commit("storeDraggedItemType", 'value');
     },
     handleDragend() {
       this.$bus.emit("attrdragend");
@@ -138,7 +147,7 @@ export default {
   margin-top: 7px;
   margin-bottom: 5px;
   padding: 3px 5px;
-
+  position: relative;
 }
 
 .attrInfoItemIcon {
@@ -167,6 +176,14 @@ export default {
   margin-top: 10px;
   border: 1px solid #aaaaaa;
   overflow-y: scroll;
+}
+
+.title-button {
+  /* display: inline-block; */
+  /* float: right; */
+  position: absolute;
+  right: 5px;
+  top: 1px;
 }
 
 .contextmenu::-webkit-scrollbar {

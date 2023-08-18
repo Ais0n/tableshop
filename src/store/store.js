@@ -10,6 +10,7 @@ export const store = createStore({
       draggedItemType: "",
       draggedAttr: undefined,
       draggedBlock: undefined,
+      draggedValue: "", 
       
       selectedBlock: undefined,
       selectedTable: undefined,
@@ -31,6 +32,9 @@ export const store = createStore({
     },
     storeDraggedBlock (state, draggedBlock) {
       state.draggedBlock = draggedBlock;
+    },
+    storeDraggedValue (state, draggedValue) {
+      state.draggedValue = draggedValue;
     },
     storeSelectedBlock (state, selectedBlock) {
       state.selectedBlock = selectedBlock;

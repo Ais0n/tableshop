@@ -119,7 +119,7 @@ export default {
     });
   },
   computed: {
-    ...mapState(["data", "attrInfo", "draggedAttr", "draggedItemType", "draggedBlock", "selectedBlock"]),
+    ...mapState(["data", "attrInfo", "draggedAttr", "draggedItemType", "draggedBlock", "selectedBlock", "draggedValue"]),
     cmBlockValueLists_t() {
       let res = [];
       for(let i = 0; i < this.cmBlockValueLists.length; i++) {
@@ -450,7 +450,7 @@ export default {
             this.$message.error("Illegal drop!");
             return;
           }
-          if(this.draggedItemType == 'attr') {
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
@@ -458,7 +458,12 @@ export default {
               throw new Error("Invalid insert");
               return;
             }
-            targetBlock.arr[targetBlock.index] = {
+            targetBlock.arr[targetBlock.index] = this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              children: [targetBlock.arr[targetBlock.index]],
+              blockId: uuid(),
+              channel,
+            } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
               children: [targetBlock.arr[targetBlock.index]],
@@ -480,7 +485,7 @@ export default {
             targetBlock.arr[targetBlock.index] = tmp;
           }
         } else if(dir == 'right' || dir == 'bottomchild') {
-          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function' || this.draggedItemType == 'value') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
@@ -495,6 +500,11 @@ export default {
             parentBlock.children.push(this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: newBlockId,
+              channel,
+            } : this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: newBlockId,
+              entityMerge: false,
               channel,
             } : {
               attrName: this.draggedAttr.name,
@@ -544,7 +554,7 @@ export default {
             // targetBlock.arr[targetBlock.index].children = [tmp];
           }
         } else if(dir == 'top' || dir == 'bottom') { // top || bottom
-          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function' || this.draggedItemType == 'value') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
@@ -556,9 +566,14 @@ export default {
               function: 'sum',
               blockId: uuid(),
               channel,
+            } : this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: uuid(),
+              channel,
             } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
+              channel,
             })
           } else { // block
             // 首先将被拖动的块从树中删除
@@ -575,7 +590,7 @@ export default {
             targetBlock.arr.splice(targetBlock.index + (dir == 'bottom' ? 1 : 0), 0, tmp);
           }
         } else if(dir == 'area') { // right, + cell
-          if(this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'function' || this.draggedItemType == 'value') {
             this.$message.error("Illegal drop!");
             return;
           }
@@ -637,8 +652,13 @@ export default {
             this.$message.error("Please rotate the dropped block(s) first.");
             return;
           }
-          if(this.draggedItemType == 'attr') {
-            block_r.columnHeader.push({
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
+            block_r.columnHeader.push(this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: uuid(),
+              children: [],
+              channel: 'column',
+            } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
               children: [],
@@ -663,7 +683,7 @@ export default {
             this.$message.error("Illegal drop!");
             return;
           }
-          if(this.draggedItemType == 'attr') {
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
@@ -671,7 +691,12 @@ export default {
               throw new Error("Invalid insert");
               return;
             }
-            targetBlock.arr[targetBlock.index] = {
+            targetBlock.arr[targetBlock.index] = this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: uuid(),
+              children: [targetBlock.arr[targetBlock.index]],
+              channel,
+            } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
               children: [targetBlock.arr[targetBlock.index]],
@@ -693,7 +718,7 @@ export default {
             targetBlock.arr[targetBlock.index] = tmp;
           }
         } else if(dir == 'bottom' || dir == 'rightchild') {
-          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function' || this.draggedItemType == 'value') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             let parentBlock = targetBlock.arr[targetBlock.index];
@@ -708,6 +733,12 @@ export default {
             parentBlock.children.push(this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: newBlockId,
+              entityMerge: false,
+              channel,
+            } : this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: newBlockId,
+              entityMerge: false,
               channel,
             } : {
               attrName: this.draggedAttr.name,
@@ -756,7 +787,7 @@ export default {
             // targetBlock.arr[targetBlock.index].children = [tmp];
           }
         } else if(dir == 'left' || dir == 'right') { // 'left' || 'right'
-          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function' || this.draggedItemType == 'value') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
@@ -766,6 +797,10 @@ export default {
             }
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, this.draggedItemType == 'function' ? {
               function: 'sum',
+              blockId: uuid(),
+              channel,
+            } : this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
               blockId: uuid(),
               channel,
             } : {
@@ -789,7 +824,7 @@ export default {
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, tmp);
           }
         } else if(dir == 'area') { // bottom, + cell
-          if(this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'function' || this.draggedItemType == 'value') {
             this.$message.error("Illegal drop!");
             return;
           }
@@ -853,8 +888,13 @@ export default {
             this.$message.error("Please rotate the dropped block(s) first.");
             return;
           }
-          if(this.draggedItemType == 'attr') {
-            block_c.rowHeader.push({
+          if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
+            block_c.rowHeader.push(this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: uuid(),
+              children: [],
+              channel: 'row',
+            } : {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
               children: [],
@@ -990,17 +1030,21 @@ export default {
         e.target.classList.add('tableCanvasBoxHighlight');
         return;
       } else {
-        let block = this.findBlock(e.target.dataset.bid);
-        if(!block) return; 
-        let tableId = block.tableId;
-        let isRowEmpty = !(this.canvas[tableId].rowHeader instanceof Array && this.canvas[tableId].rowHeader.length > 0);
-        let isColEmpty = !(this.canvas[tableId].columnHeader instanceof Array && this.canvas[tableId].columnHeader.length > 0);
+        // let block = this.findBlock(e.target.dataset.bid);
+        // if(!block) return; 
+        // let tableId = block.tableId;
+        // let isRowEmpty = !(this.canvas[tableId].rowHeader instanceof Array && this.canvas[tableId].rowHeader.length > 0);
+        // let isColEmpty = !(this.canvas[tableId].columnHeader instanceof Array && this.canvas[tableId].columnHeader.length > 0);
         clearClass(e);
         // console.log(isRowEmpty, isColEmpty)
-        if(isColEmpty && y < box.top + 20) {
-          e.target.classList.add('tophover');
-        } else if(isRowEmpty && x < box.left + 20) {
+        if(x < box.left + 20) {
           e.target.classList.add('lefthover');
+        } else if (x > box.right - 20) {
+          e.target.classList.add('righthover');
+        } else if(y < box.top + 20) {
+          e.target.classList.add('tophover');
+        } else if(y > box.bottom - 20) {
+          e.target.classList.add('bottomhover');
         } else {
           e.target.classList.add('tableCanvasBoxHighlight');
         }
@@ -1009,7 +1053,7 @@ export default {
     handleCellBlockDrop(e) {
       e.stopPropagation();
       this.dropoverBox = "";
-      if(e.target.classList.contains("tableCanvasBoxHighlight")) {
+      if(e.target.classList.contains("tableCanvasBoxHighlight")) { // 拖入块中
         e.target.classList.remove("tableCanvasBoxHighlight");
         let rowParentId, colParentId;
         if(!e.target.dataset.bid) { // 拖入空白块
@@ -1035,7 +1079,10 @@ export default {
           rowParentId = e.target.dataset.rowParentId;
           colParentId = e.target.dataset.colParentId;
         }
-        if(this.draggedItemType == 'attr') {
+        if(this.draggedItemType == 'function' || this.draggedItemType == 'value') {
+          this.$message.error("Illegal dragging!");
+          return;
+        } else if(this.draggedItemType == 'attr') {
           if(e.target.dataset.bid) { // 替换现有块
             let cell = this.canvas[e.target.dataset.tableId];
             for(let i = 0; i < cell.length; i++) {
@@ -1083,33 +1130,82 @@ export default {
             cell.push(tmp);
           }
         }
-      } else if(e.target.classList.contains("tophover")) {
+      } else if(e.target.classList.contains("tophover")){
         e.target.classList.remove("tophover");
         let block = this.findBlock(e.target.dataset.bid);
         if(!block) return;
         let tableId = block.tableId;
-        let columnHeader = this.canvas[tableId].columnHeader;
-        if(this.draggedItemType == 'function') {
-          this.$message.error("Illegal dragging!");
-          return;
-        } else if(this.draggedItemType == 'attr') {
-          let bid = uuid();
-          columnHeader.push({
-            attrName: this.draggedAttr.name,
-            blockId: bid,
-            children: [],
-            channel: 'column',
-          })
-          block.arr[block.index].colParentId = bid;
+        // let columnHeader = this.canvas[tableId].columnHeader;
+        // if(this.draggedItemType == 'function') {
+        //   this.$message.error("Illegal dragging!");
+        //   return;
+        // } else
+        
+        let cpid = e.target.dataset.colParentId;
+        
+        if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
+          if(!cpid) {
+            let bid = uuid();
+            this.canvas[tableId].columnHeader.push(this.draggedItemType == 'function' ? {
+              function: "sum",
+              blockId: bid,
+              children: [],
+              channel: 'column',
+            } : this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: bid,
+              children: [],
+              channel: 'column',
+            } : {
+              attrName: this.draggedAttr.name,
+              blockId: bid,
+              children: [],
+              channel: 'column',
+            })
+            block.arr[block.index].colParentId = bid;
+          } else {
+            let target = this.findBlock(cpid);
+            if(!target) return;
+            if(!(target.arr[target.index].children instanceof Array)) {
+              target.arr[target.index].children = [];
+            }
+            let bid = uuid();
+            target.arr[target.index].children.push(this.draggedItemType == 'function' ? {
+              function: "sum",
+              blockId: bid,
+              children: [],
+              channel: 'column',
+            } : this.draggedItemType == 'value' ? {
+              values: [this.draggedValue],
+              blockId: bid,
+              children: [],
+              channel: 'column',
+            } : {
+              attrName: this.draggedAttr.name,
+              blockId: bid,
+              children: [],
+              channel: 'column',
+            })
+            block.arr[block.index].colParentId = bid;
+          }
         } else {
           let sourceBlock = this.deleteBlock(this.draggedBlock.dataset.bid);
           if(!sourceBlock) return;
           sourceBlock.children = [];
           sourceBlock.channel = 'column';
-          columnHeader.push(sourceBlock);
+          if(!cpid) {
+            this.canvas[tableId].columnHeader.push(sourceBlock);
+          } else {
+            let target = this.findBlock(cpid);
+            if(!target) return;
+            if(!(target.arr[target.index].children instanceof Array)) {
+              target.arr[target.index].children = [];
+            }
+            target.arr[target.index].children.push(sourceBlock);
+          }
           block.arr[block.index].colParentId = sourceBlock.blockId;
         }
-      } else {
+      } else if(e.target.classList.contains("lefthover")){
         e.target.classList.remove("lefthover");
         let block = this.findBlock(e.target.dataset.bid);
         if(!block) return;
@@ -1395,6 +1491,23 @@ export default {
         };
         // this.addPoint(newBlock, pos);
         this.canvas.push(table);
+      } else if (this.draggedItemType == 'value') {
+        let newBlock = {
+          values: [this.draggedValue],
+          blockId: uuid(),
+          channel,
+        };
+        let table = {
+          type: 'block',
+          rowHeader: [newBlock],
+          columnHeader: [],
+          cell: [],
+          attrInfo: this.attrInfo,
+          left: e.offsetX,
+          top: e.offsetY,
+        };
+        // this.addPoint(newBlock, pos);
+        this.canvas.push(table);
       } else if (this.draggedItemType == 'function') {
         let newBlock = {
           function: 'sum',
@@ -1412,7 +1525,7 @@ export default {
         };
         // this.addPoint(newBlock, pos);
         this.canvas.push(table);
-      } else {
+      } else if (this.draggedItemType == 'block'){
         // 首先将被拖动的块从树中删除
         let tmp = this.deleteBlock(this.draggedBlock.dataset.bid);
         console.log(tmp)
