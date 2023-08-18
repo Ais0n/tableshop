@@ -1030,21 +1030,17 @@ export default {
         e.target.classList.add('tableCanvasBoxHighlight');
         return;
       } else {
-        // let block = this.findBlock(e.target.dataset.bid);
-        // if(!block) return; 
-        // let tableId = block.tableId;
-        // let isRowEmpty = !(this.canvas[tableId].rowHeader instanceof Array && this.canvas[tableId].rowHeader.length > 0);
-        // let isColEmpty = !(this.canvas[tableId].columnHeader instanceof Array && this.canvas[tableId].columnHeader.length > 0);
+        let block = this.findBlock(e.target.dataset.bid);
+        if(!block) return; 
+        let tableId = block.tableId;
+        let isRowEmpty = !(this.canvas[tableId].rowHeader instanceof Array && this.canvas[tableId].rowHeader.length > 0);
+        let isColEmpty = !(this.canvas[tableId].columnHeader instanceof Array && this.canvas[tableId].columnHeader.length > 0);
         clearClass(e);
         // console.log(isRowEmpty, isColEmpty)
-        if(x < box.left + 20) {
-          e.target.classList.add('lefthover');
-        } else if (x > box.right - 20) {
-          e.target.classList.add('righthover');
-        } else if(y < box.top + 20) {
+        if(isColEmpty && y < box.top + 20) {
           e.target.classList.add('tophover');
-        } else if(y > box.bottom - 20) {
-          e.target.classList.add('bottomhover');
+        } else if(isRowEmpty && x < box.left + 20) {
+          e.target.classList.add('lefthover');
         } else {
           e.target.classList.add('tableCanvasBoxHighlight');
         }
@@ -1053,7 +1049,7 @@ export default {
     handleCellBlockDrop(e) {
       e.stopPropagation();
       this.dropoverBox = "";
-      if(e.target.classList.contains("tableCanvasBoxHighlight")) { // 拖入块中
+      if(e.target.classList.contains("tableCanvasBoxHighlight")) {
         e.target.classList.remove("tableCanvasBoxHighlight");
         let rowParentId, colParentId;
         if(!e.target.dataset.bid) { // 拖入空白块
@@ -1130,82 +1126,38 @@ export default {
             cell.push(tmp);
           }
         }
-      } else if(e.target.classList.contains("tophover")){
+      } else if(e.target.classList.contains("tophover")) {
         e.target.classList.remove("tophover");
         let block = this.findBlock(e.target.dataset.bid);
         if(!block) return;
         let tableId = block.tableId;
-        // let columnHeader = this.canvas[tableId].columnHeader;
-        // if(this.draggedItemType == 'function') {
-        //   this.$message.error("Illegal dragging!");
-        //   return;
-        // } else
-        
-        let cpid = e.target.dataset.colParentId;
-        
-        if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
-          if(!cpid) {
-            let bid = uuid();
-            this.canvas[tableId].columnHeader.push(this.draggedItemType == 'function' ? {
-              function: "sum",
-              blockId: bid,
-              children: [],
-              channel: 'column',
-            } : this.draggedItemType == 'value' ? {
-              values: [this.draggedValue],
-              blockId: bid,
-              children: [],
-              channel: 'column',
-            } : {
-              attrName: this.draggedAttr.name,
-              blockId: bid,
-              children: [],
-              channel: 'column',
-            })
-            block.arr[block.index].colParentId = bid;
-          } else {
-            let target = this.findBlock(cpid);
-            if(!target) return;
-            if(!(target.arr[target.index].children instanceof Array)) {
-              target.arr[target.index].children = [];
-            }
-            let bid = uuid();
-            target.arr[target.index].children.push(this.draggedItemType == 'function' ? {
-              function: "sum",
-              blockId: bid,
-              children: [],
-              channel: 'column',
-            } : this.draggedItemType == 'value' ? {
-              values: [this.draggedValue],
-              blockId: bid,
-              children: [],
-              channel: 'column',
-            } : {
-              attrName: this.draggedAttr.name,
-              blockId: bid,
-              children: [],
-              channel: 'column',
-            })
-            block.arr[block.index].colParentId = bid;
-          }
+        let columnHeader = this.canvas[tableId].columnHeader;
+        if(this.draggedItemType == 'function') {
+          this.$message.error("Illegal dragging!");
+          return;
+        } else if(this.draggedItemType == 'attr' || this.draggedItemType == 'value') {
+          let bid = uuid();
+          columnHeader.push(this.draggedItemType == 'value' ? {
+            values: [this.draggedValue],
+            blockId: bid,
+            children: [],
+            channel: 'column',
+          } : {
+            attrName: this.draggedAttr.name,
+            blockId: bid,
+            children: [],
+            channel: 'column',
+          })
+          block.arr[block.index].colParentId = bid;
         } else {
           let sourceBlock = this.deleteBlock(this.draggedBlock.dataset.bid);
           if(!sourceBlock) return;
           sourceBlock.children = [];
           sourceBlock.channel = 'column';
-          if(!cpid) {
-            this.canvas[tableId].columnHeader.push(sourceBlock);
-          } else {
-            let target = this.findBlock(cpid);
-            if(!target) return;
-            if(!(target.arr[target.index].children instanceof Array)) {
-              target.arr[target.index].children = [];
-            }
-            target.arr[target.index].children.push(sourceBlock);
-          }
+          columnHeader.push(sourceBlock);
           block.arr[block.index].colParentId = sourceBlock.blockId;
         }
-      } else if(e.target.classList.contains("lefthover")){
+      } else {
         e.target.classList.remove("lefthover");
         let block = this.findBlock(e.target.dataset.bid);
         if(!block) return;
