@@ -1258,6 +1258,7 @@ export default {
           newDom.ondragover = (cell.channel == 'cell') ? this.handleCellBlockDragover : this.handleBlockDragover;
           newDom.ondrop = (cell.channel == 'cell') ? this.handleCellBlockDrop : this.handleBlockDrop;
           newDom.ondragleave = (cell.channel == 'cell') ? this.handleCellBlockDragleave : this.handleBlockDragleave;
+          newDom.ondragend = this.handleDragend;
           newDom.oncontextmenu = this.openMenu;
           newDom.onclick = this.handleBlockClick;
           // dom.appendChild(newDom);
@@ -1436,6 +1437,7 @@ export default {
       this.dropoverBox = "";
     },
     handleDragend(e) {
+      console.log("dragend", e)
       this.dragging = false;
       this.dropoverBox = "";
     },

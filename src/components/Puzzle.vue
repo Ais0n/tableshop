@@ -1,6 +1,6 @@
 <template>
   <div v-for="(dom, index) in domSource" :id="dom.id" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
-    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :draggable="dom.draggable" @dragend="dom.dragend"
+    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :draggable="dom.draggable" @dragend="dom.ondragend"
     @dragover="(e) => {entered = index; dom.ondragover(e)}" @dragstart="dom.ondragstart" @dragleave="(e) => { entered = -1; dom.ondragleave(e)}" @drop="dropSelect($event, dom)" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
     <div class="puzzleText">{{dom.innerText}}</div>
