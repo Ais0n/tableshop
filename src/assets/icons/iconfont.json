@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "36993632",
+      "name": "dodechild3",
+      "font_class": "dodechild3",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
       "icon_id": "36984047",
       "name": "dodetop",
       "font_class": "dodetop",
@@ -46,6 +53,27 @@
       "font_class": "dodecross2",
       "unicode": "e605",
       "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "36993511",
+      "name": "dodetop-copy",
+      "font_class": "dodetop-copy",
+      "unicode": "eb76",
+      "unicode_decimal": 60278
+    },
+    {
+      "icon_id": "36993518",
+      "name": "dodebottom-copy",
+      "font_class": "dodebottom-copy",
+      "unicode": "eb77",
+      "unicode_decimal": 60279
+    },
+    {
+      "icon_id": "36993543",
+      "name": "dodechild-copy",
+      "font_class": "dodechild-copy",
+      "unicode": "eb78",
+      "unicode_decimal": 60280
     },
     {
       "icon_id": "36983990",

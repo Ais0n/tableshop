@@ -32,13 +32,13 @@
     <!-- <div style="height: calc(100% - 4px); width: 30px; position: absolute; right: 5px; top: 2px; border: 2px solid #526D82; pointer-events: none; background-color: #eeeeee;"> <i class="iconfont" style="width: 20px; height: 20px; position: absolute; right: 2px; top: calc(50% - 10px);"> &#xe603; </i> </div> -->
 
     <!-- for drag disambiguition -->
-    <a-popconfirm v-if="openPanel_id == index" :placement="tmp_dir" ok-text="OK" cancel-text="Cancel" @confirm="dropSelectFinish" @cancel="dropSelectCancel" :open="openPanel">
+    <a-popconfirm v-if="openPanel_id == index" :placement="tmp_dir" cancel-text="Cancel" ok-text="OK" @cancel="dropSelectCancel" @confirm="()=>{}" :open="openPanel">
       <template #title>
-        <p class="dropSelectText"> Choose your desired result: </p>
+        <p class="dropSelectText"> Select the desired result: </p>
         <div v-if="dom.dataset.channel == 'row' && tmp_dir == 'right'">
-          
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'right'" @change="selectedDir = 'right'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('right')">
+            <i class="iconfont"> &#xe603; </i>
+            <!-- <a-radio :checked="selectedDir == 'right'" @change="selectedDir = 'right'"> </a-radio> -->
             <div class="dropSelectText"> Insert by hierarchy </div>
             <div class="dropSelectOptionGlyph">
               <div style="border: 1px solid #aaaaaa; height: 60px; width: 80px; display: flex; justify-content: center; align-items: center; "> 
@@ -50,8 +50,9 @@
               </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'area'" @change="selectedDir = 'area'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('area')">
+            <i class="iconfont"> &#xeb76; </i>
+            <!-- <a-radio :checked="selectedDir == 'area'" @change="selectedDir = 'area'"> </a-radio> -->
             <div class="dropSelectText"> Append to the right </div>
             <div class="dropSelectOptionGlyph">
               <div style="border: 1px solid #aaaaaa; height: 30px; width: 80px; display: flex; justify-content: center; align-items: center; "> 
@@ -62,8 +63,9 @@
               </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'topright'" @change="selectedDir = 'topright'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('topright')">
+            <i class="iconfont"> &#xe605; </i>
+            <!-- <a-radio :checked="selectedDir == 'topright'" @change="selectedDir = 'topright'"> </a-radio> -->
             <div class="dropSelectText"> Build a crosstab </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 80px;"> 
@@ -79,8 +81,9 @@
         </div>
 
         <div v-if="dom.dataset.channel == 'row' && tmp_dir == 'top'">
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'top'" @change="selectedDir = 'top'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('top')">
+            <i class="iconfont"> &#xe602; </i>
+            <!-- <a-radio :checked="selectedDir == 'top'" @change="selectedDir = 'top'"> </a-radio> -->
             <div class="dropSelectText"> Append to the top </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 160px;"> 
@@ -89,8 +92,9 @@
               </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'topright'" @change="selectedDir = 'topright'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('topright')">
+            <i class="iconfont"> &#xe605; </i>
+            <!-- <a-radio :checked="selectedDir == 'topright'" @change="selectedDir = 'topright'"> </a-radio> -->
             <div class="dropSelectText"> Build a crosstab </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 80px;"> 
@@ -106,8 +110,9 @@
         </div>
 
         <div v-if="dom.dataset.channel == 'row' && tmp_dir == 'bottom'">
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'bottomchild'" @change="selectedDir = 'bottomchild'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('bottomchild')">
+            <i class="iconfont"> &#xe608; </i>
+            <!-- <a-radio :checked="selectedDir == 'bottomchild'" @change="selectedDir = 'bottomchild'"> </a-radio> -->
             <div class="dropSelectText"> Insert by hierarchy </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 160px;"> 
@@ -117,8 +122,9 @@
               </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'bottom'" @change="selectedDir = 'bottom'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('bottom')">
+            <i class="iconfont"> &#xe600; </i>
+            <!-- <a-radio :checked="selectedDir == 'bottom'" @change="selectedDir = 'bottom'"> </a-radio> -->
             <div class="dropSelectText"> Append to the bottom </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 160px;"> 
@@ -130,8 +136,9 @@
         </div>
 
         <div v-if="dom.dataset.channel == 'column' && tmp_dir == 'bottom'">  
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'bottom'" @change="selectedDir = 'bottom'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('bottom')">
+            <i class="iconfont"> &#xeb78; </i>
+            <!-- <a-radio :checked="selectedDir == 'bottom'" @change="selectedDir = 'bottom'"> </a-radio> -->
             <div class="dropSelectText"> Insert by hierarchy </div>
             <div class="dropSelectOptionGlyph" style="flex-direction: column">
               <div style="border: 1px solid #aaaaaa; height: 30px; width: 160px; display: flex; justify-content: center; align-items: center; "> 
@@ -143,8 +150,9 @@
               </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'area'" @change="selectedDir = 'area'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('area')">
+            <i class="iconfont"> &#xe600; </i>
+            <!-- <a-radio :checked="selectedDir == 'area'" @change="selectedDir = 'area'"> </a-radio> -->
             <div class="dropSelectText"> Append to the bottom </div>
             <div class="dropSelectOptionGlyph" style="flex-direction: column">
               <div style="border: 1px solid #aaaaaa; height: 30px; width: 160px; display: flex; justify-content: center; align-items: center; "> 
@@ -155,8 +163,9 @@
               </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'bottomleft'" @change="selectedDir = 'bottomleft'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('bottomleft')">
+            <i class="iconfont"> &#xe604; </i>
+            <!-- <a-radio :checked="selectedDir == 'bottomleft'" @change="selectedDir = 'bottomleft'"> </a-radio> -->
             <div class="dropSelectText"> Build a crosstab </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 80px;"> 
@@ -172,16 +181,18 @@
         </div>
 
         <div v-if="dom.dataset.channel == 'column' && tmp_dir == 'left'">
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'left'" @change="selectedDir = 'left'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('left')">
+            <i class="iconfont"> &#xeb77; </i>
+            <!-- <a-radio :checked="selectedDir == 'left'" @change="selectedDir = 'left'"> </a-radio> -->
             <div class="dropSelectText"> Append to the left </div>
             <div class="dropSelectOptionGlyph" style="width: 160px; display: flex;">
               <div style="height: 30px; width: 80px; border: 1px solid #aaaaaa; display: flex; justify-content: center; align-items: center;"> {{egValue}} </div>
               <div style="height: 30px; width: 80px; border: 1px solid #aaaaaa; display: flex; justify-content: center; align-items: center;"> {{dom.innerText}} </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'bottomleft'" @change="selectedDir = 'bottomleft'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('bottomleft')">
+            <i class="iconfont"> &#xe604; </i>
+            <!-- <a-radio :checked="selectedDir == 'bottomleft'" @change="selectedDir = 'bottomleft'"> </a-radio> -->
             <div class="dropSelectText"> Build a crosstab </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 80px;"> 
@@ -197,8 +208,9 @@
         </div>
 
         <div v-if="dom.dataset.channel == 'column' && tmp_dir == 'right'">
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'bottomchild'" @change="selectedDir = 'bottomchild'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('rightchild')">
+            <i class="iconfont"> &#xe606; </i>
+            <!-- <a-radio :checked="selectedDir == 'rightchild'" @change="selectedDir = 'rightchild'"> </a-radio> -->
             <div class="dropSelectText"> Insert by hierarchy </div>
             <div class="dropSelectOptionGlyph" >
               <div style="width: 60px; height: 60px; border: 1px solid #aaaaaa; display: flex; justify-content: center; align-items: center;"> {{dom.innerText}} </div>
@@ -206,8 +218,9 @@
               <div style="width: 60px; height: 40px; border: 1px solid #aaaaaa; display: flex; justify-content: center; align-items: center; margin-top: 20px;">  ......  </div>
             </div>
           </div>
-          <div class="dropSelectOption">
-            <a-radio :checked="selectedDir == 'right'" @change="selectedDir = 'right'"> </a-radio>
+          <div class="dropSelectOption" @click="dropSelectFinish('right')">
+            <i class="iconfont"> &#xeb76; </i>
+            <!-- <a-radio :checked="selectedDir == 'right'" @change="selectedDir = 'right'"> </a-radio> -->
             <div class="dropSelectText"> Append to the right </div>
             <div class="dropSelectOptionGlyph">
               <div style="width: 90px; height: 40px; border: 1px solid #aaaaaa; display: flex; justify-content: center; align-items: center;"> {{ dom.innerText }} </div>
@@ -359,21 +372,21 @@ export default {
         this.egValue = "sum";
       }
 
-      if(dom.dataset.channel == 'row') {
-        if(dir == 'right') this.selectedDir = 'right';
-        else if(dir == 'bottom') this.selectedDir = 'bottomchild';
-        else if(dir == 'top') this.selectedDir = 'top';
-      } else if(dom.dataset.channel == 'column') {
-        if(dir == 'bottom') this.selectedDir = 'bottom';
-        else if(dir == 'right') this.selectedDir = 'rightchild';
-        else if(dir == 'left') this.selectedDir = 'left';
-      }
+      // if(dom.dataset.channel == 'row') {
+      //   if(dir == 'right') this.selectedDir = 'right';
+      //   else if(dir == 'bottom') this.selectedDir = 'bottomchild';
+      //   else if(dir == 'top') this.selectedDir = 'top';
+      // } else if(dom.dataset.channel == 'column') {
+      //   if(dir == 'bottom') this.selectedDir = 'bottom';
+      //   else if(dir == 'right') this.selectedDir = 'rightchild';
+      //   else if(dir == 'left') this.selectedDir = 'left';
+      // }
 
       this.openPanel = true;
     },
-    dropSelectFinish() {
+    dropSelectFinish(dir) {
       this.openPanel = false;
-      this.tmp_dom.ondrop(this.tmp_e, this.selectedDir);
+      this.tmp_dom.ondrop(this.tmp_e, dir);
     },
     dropSelectCancel() {
       this.openPanel = false;
@@ -596,11 +609,18 @@ export default {
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   display: inline-block;
+  margin-left: 5px;
 }
 
 .dropSelectOption {
   /* margin-top: 5px; */
   margin-bottom: 20px;
+  width: 180px;
+  padding: 5px 5px 5px 5px;
+}
+
+.dropSelectOption:hover{
+  background-color: #ddeaed;
 }
 
 .dropSelectOptionGlyph {

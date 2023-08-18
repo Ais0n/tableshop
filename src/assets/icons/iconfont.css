@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4146316 */
-  src: url('iconfont.woff2?t=1692270996662') format('woff2'),
-       url('iconfont.woff?t=1692270996662') format('woff'),
-       url('iconfont.ttf?t=1692270996662') format('truetype');
+  src: url('iconfont.woff2?t=1692339827804') format('woff2'),
+       url('iconfont.woff?t=1692339827804') format('woff'),
+       url('iconfont.ttf?t=1692339827804') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-dodechild3:before {
+  content: "\e606";
 }
 
 .icon-dodetop:before {
@@ -35,6 +39,18 @@
 
 .icon-dodecross2:before {
   content: "\e605";
+}
+
+.icon-dodetop-copy:before {
+  content: "\eb76";
+}
+
+.icon-dodebottom-copy:before {
+  content: "\eb77";
+}
+
+.icon-dodechild-copy:before {
+  content: "\eb78";
 }
 
 .icon-dodechild21:before {
