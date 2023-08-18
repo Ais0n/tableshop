@@ -230,7 +230,7 @@
           </div>
         </div>
       </template>
-       <div style="width: 100%; height: 100%; position: absolute; top: 0px; right: 0px;"></div>
+       <div style="width: 100%; height: 100%; position: absolute; top: 0px; right: 0px; pointer-events: none"></div>
     </a-popconfirm>
 
     <!-- top (canvas only) -->
@@ -354,7 +354,7 @@ export default {
       e.target.classList.remove('bottomhover');
       if (dir != "") e.preventDefault(); else return;
       console.log(dir);
-      if((dom.dataset.channel == 'row' && dir == 'left') || (dom.dataset.channel == 'column' && dir == 'top')) {
+      if(this.draggedItemType == 'function' || (dom.dataset.channel == 'row' && dir == 'left') || (dom.dataset.channel == 'column' && dir == 'top')) {
         dom.ondrop(e, dir);
         return;
       }

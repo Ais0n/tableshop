@@ -446,7 +446,11 @@ export default {
       let {bid, channel} = e.target.dataset;
       if(channel == 'row') {
         if(dir == 'left') {
-          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'function') {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          if(this.draggedItemType == 'attr') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
@@ -454,11 +458,7 @@ export default {
               throw new Error("Invalid insert");
               return;
             }
-            targetBlock.arr[targetBlock.index] = this.draggedItemType == 'function' ? {
-              function: 'sum',
-              blockId: uuid(),
-              channel
-            } : {
+            targetBlock.arr[targetBlock.index] = {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
               children: [targetBlock.arr[targetBlock.index]],
@@ -659,7 +659,11 @@ export default {
         }
       } else if(channel == 'column') {
         if(dir == 'top') {
-          if(this.draggedItemType == 'attr' || this.draggedItemType == 'function') {
+          if(this.draggedItemType == 'function') {
+            this.$message.error("Illegal drop!");
+            return;
+          }
+          if(this.draggedItemType == 'attr') {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
@@ -667,11 +671,7 @@ export default {
               throw new Error("Invalid insert");
               return;
             }
-            targetBlock.arr[targetBlock.index] = this.draggedItemType == 'function' ? {
-              function: 'sum',
-              blockId: uuid(),
-              channel,
-            } : {
+            targetBlock.arr[targetBlock.index] = {
               attrName: this.draggedAttr.name,
               blockId: uuid(),
               children: [targetBlock.arr[targetBlock.index]],
