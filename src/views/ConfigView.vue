@@ -692,6 +692,190 @@
           </div>
         </div>
         <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Aggregations (Header Cells) </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': aggBorderStyle == 'double'}" @click="applyGlobalChanges('.sumTitle', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': aggBorderStyle == 'solid'}" @click="applyGlobalChanges('.sumTitle', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': aggBorderStyle == 'none'}" @click="applyGlobalChanges('.sumTitle', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="aggCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="aggBorderColor" class="colorinput" @input="e => applyGlobalChanges('.sumTitle', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="aggBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.sumTitle', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="aggBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.sumTitle', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': aggFontWeight != 'Regular'}" @click="applyGlobalChanges('.sumTitle', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': aggFontWeight == 'Regular'}" @click="applyGlobalChanges('.sumTitle', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="aggCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="aggFontColor" class="colorinput" @input="e => applyGlobalChanges('.sumTitle', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="aggFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.sumTitle', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="aggCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="aggBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.sumTitle', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="aggCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="aggIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.sumTitle', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.aggCustomize = !this.aggCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Aggregations (Value Cells) </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': aggCellBorderStyle == 'double'}" @click="applyGlobalChanges('.sumCell', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': aggCellBorderStyle == 'solid'}" @click="applyGlobalChanges('.sumCell', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': aggCellBorderStyle == 'none'}" @click="applyGlobalChanges('.sumCell', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="aggCellCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="aggCellBorderColor" class="colorinput" @input="e => applyGlobalChanges('.sumCell', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="aggCellBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.sumCell', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="aggCellBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.sumCell', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': aggCellFontWeight != 'Regular'}" @click="applyGlobalChanges('.sumCell', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': aggCellFontWeight == 'Regular'}" @click="applyGlobalChanges('.sumCell', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="aggCellCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="aggCellFontColor" class="colorinput" @input="e => applyGlobalChanges('.sumCell', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="aggCellFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.sumCell', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="aggCellCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="aggCellBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.sumCell', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="aggCellCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="aggCellIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.sumCell', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.aggCellCustomize = !this.aggCellCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Row Header </div> 
           <div class="wrapper" style="flex-direction: column">
             <div class="keyPropsWrapper">
@@ -998,6 +1182,8 @@ export default {
       '.rowHeader': undefined,
       '.columnHeader': undefined,
       '.cell': undefined,
+      '.sumCell': undefined,
+      '.sumTitle': undefined,
       '.rl1': undefined,
       '.rl2': undefined,
       '.rl3': undefined,
@@ -1048,6 +1234,8 @@ export default {
       '.c20': undefined,
       // tmp
       lineNoCustomize: false,
+      aggCustomize: false,
+      aggCellCustomize: false,
       rowHeaderCustomize: false,
       columnHeaderCustomize: false,
       cellCustomize: false,
@@ -1328,6 +1516,60 @@ export default {
       if(!this.selectedPos) return "solid";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].indent ? this[cl].indent : 0;
+    },
+    aggBorderStyle() {
+      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.style ? this['.sumTitle'].border.style : "solid";
+    },
+    aggBorderColor() {
+      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.color ? this['.sumTitle'].border.color : "#000000";
+    },
+    aggBorderWidth() {
+      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.width ? this['.sumTitle'].border.width : 1;
+    },
+    aggBorderPosition() {
+      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.position ? this['.sumTitle'].border.position: 'All';
+    },
+    aggFontWeight() {
+      return this['.sumTitle'] && this[".sumTitle"].font && this['.sumTitle'].font.weight ? this['.sumTitle'].font.weight : "Regular";
+    },
+    aggFontColor() {
+      return this[".sumTitle"] && this[".sumTitle"].font && this['.sumTitle'].font.color ? this['.sumTitle'].font.color : "#000000";
+    },
+    aggFontSize() {
+      return this[".sumTitle"] && this[".sumTitle"].font && this['.sumTitle'].font.size ? this['.sumTitle'].font.size : 12;
+    },
+    aggBackgroundColor() {
+      return this[".sumTitle"] && this[".sumTitle"].background && this['.sumTitle'].background.color ? this['.sumTitle'].background.color : '#ffffff';
+    },
+    aggIndent() {
+      return this[".sumTitle"] && this[".sumTitle"].indent ? this[".sumTitle"].indent : 0;
+    },
+    aggCellBorderStyle() {
+      return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.style ? this['.sumCell'].border.style : "solid";
+    },
+    aggCellBorderColor() {
+      return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.color ? this['.sumCell'].border.color : "#000000";
+    },
+    aggCellBorderWidth() {
+      return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.width ? this['.sumCell'].border.width : 1;
+    },
+    aggCellBorderPosition() {
+      return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.position ? this['.sumCell'].border.position: 'All';
+    },
+    aggCellFontWeight() {
+      return this['.sumCell'] && this[".sumCell"].font && this['.sumCell'].font.weight ? this['.sumCell'].font.weight : "Regular";
+    },
+    aggCellFontColor() {
+      return this[".sumCell"] && this[".sumCell"].font && this['.sumCell'].font.color ? this['.sumCell'].font.color : "#000000";
+    },
+    aggCellFontSize() {
+      return this[".sumCell"] && this[".sumCell"].font && this['.sumCell'].font.size ? this['.sumCell'].font.size : 12;
+    },
+    aggCellBackgroundColor() {
+      return this[".sumCell"] && this[".sumCell"].background && this['.sumCell'].background.color ? this['.sumCell'].background.color : '#ffffff';
+    },
+    aggCellIndent() {
+      return this[".sumCell"] && this[".sumCell"].indent ? this[".sumCell"].indent : 0;
     },
     // tab() {
     //   if(this.selectedBlock) return "attr"; 
