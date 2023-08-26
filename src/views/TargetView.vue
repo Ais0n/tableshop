@@ -2,9 +2,9 @@
   <div class="targetview">
     <div class="toolbar">
       <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleSigmaDragStart">&#xe853;</i>
-      <i class="iconfont iconsigma" :draggable="true" @dragstart="this.handleCutDragStart">&#xe650;</i>
+      <!-- <i class="iconfont iconsigma" @dragstart="this.handleCutDragStart">&#xe61d;</i> -->
       <!-- <i class="iconfont iconsigma" @click="this.handleRotate">&#xe607;</i> -->
-      <!-- <i class="iconfont iconsigma" :draggable="true">&#xe641;</i> -->
+      <i class="iconfont iconsigma" @click="exportTable">&#xe615;</i>
     </div>
     <div class="showCompleteTable">
       Preview mode:
@@ -38,6 +38,9 @@ export default {
     handleCutDragStart() {
       
     },
+    exportTable() {
+      this.$bus.emit("export");
+    }
     // handleRotate() {
     //   this.$bus.emit("rotate");
     // }
@@ -84,8 +87,8 @@ export default {
   background-color: rgb(194, 211, 225);
   position: absolute;
   border-radius: 15px;
-  width: 50%;
-  left: 25%;
+  width: 170px;
+  left: calc(50% - 85px);
   top: 10px;
   height: 32px;
   z-index: 3000;

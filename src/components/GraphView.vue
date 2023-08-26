@@ -1,5 +1,5 @@
 <template>
-  <div id="graphCanvas" class="graphCanvas" @dragover="handleDragOver($event, 'GC')" @drop="handleDrop($event, 'GC')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'GC'}">
+  <div id="graphCanvas" class="graphCanvas" @dragover="handleDragOver($event, 'GC')" @drop="handleDrop($event, 'GC')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'GC'}" @click="clearBlockClick">
     <!-- <div v-for="(dom, index) in canvasDom" :key="'canvasDom' + String(index)" :class="dom.className" :style="dom.style" :data-bid="dom.dataset.bid"
     :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :draggable="dom.draggable"
     @dragover="dom.ondragover" @dragstart="handleBlockDragstart" @dragleave="dom.ondragleave" :drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
@@ -27,9 +27,9 @@
       <!-- Options -->
       <div class="cmOption" @click="cmDelete">Delete</div>
       <div class="cmOption" @click="cmEditValues">Edit values</div>
-      <div class="cmOption" @click="cmSeparate">Separate</div>
+      <!-- <div class="cmOption" @click="cmSeparate">Separate</div> -->
       <!-- Modal For EditValues -->
-      <a-modal v-model:open="modalopen" title="Edit values" @ok="()=>{}" :zIndex="6000">
+      <a-modal v-model:open="modalopen" title="Edit values" @ok="cmEditValuesConfirm" :zIndex="6000">
         <div v-if="cmBlockType=='Function'">
           Function:
           <a-select v-model:value="cmFunctionValue" style="margin-left: 15px">
@@ -40,23 +40,24 @@
         <div v-else class="cmBlockValueList">
           <Spreadsheet v-for="(table, index) in cmBlockValueLists_t" :key="`cmBlockValueList_${JSON.stringify(table)}`" :header="cmBlockType == 'Entity' ? [cmBlock.attrName] : []" :table="table" 
           @cell-change="handlecmBlockValueListCellChange(index, $event)" :qsep="cmSeparateMode == 'quickSeparate'" @cell-separate="handlecmQsep(index, $event)" style="display: inline-block; margin-left: 15px">
-            <a-popover trigger="click" placement="rightTop">
-              <template #content>
-                <a-checkbox-group v-model:value="cmBlockFilteredList" :options="cmBlockValueLists[index]" style="width: 100px; height: 200px; overflow-y: scroll;"/>
+            <a-popconfirm placement="rightTop" @confirm="cmFilterConfirm">
+              <template #icon/>
+              <template #description>
                 <div>
                   <a-button type="link" @click="(e) => {cmBlockFilteredList = cmBlockValueLists[index]}"> Check all </a-button>
                   <a-button type="link" @click="(e) => {cmBlockFilteredList = []}"> Reset </a-button>
                 </div>
+                <a-checkbox-group v-model:value="cmBlockFilteredList" :options="cmBlockOriginalValueList" style="width: 150px; overflow-y: scroll; padding-right: 15px;"/>
               </template>
               <i class="iconfont iconFilter"> &#xe6bf; </i>
-            </a-popover>
+            </a-popconfirm>
           </Spreadsheet>
-          <div class="separateButtonMenu" style="padding-left: calc(50% - 110px)">
+          <!-- <div class="separateButtonMenu" style="padding-left: calc(50% - 110px)">
             <a-button class="separateButton"> Separate </a-button>
             <a-radio-group button-style="solid" :value="cmSeparateMode">
               <a-radio-button class="separateButton"  @click="setQuickSeparate" value="quickSeparate"> Quick separate </a-radio-button>
             </a-radio-group>
-          </div>
+          </div> -->
         </div>
       </a-modal>
     </div>
@@ -943,7 +944,8 @@ export default {
       return true;
     },
     handleBlockClick(e) {
-      console.log(e)
+      console.log(e);
+      e.stopPropagation();
       let block = this.findBlock(e.target.dataset.bid);
       console.log(block)
       if(!block) return;
@@ -963,6 +965,12 @@ export default {
         parent3: valueList1[2],
         channel: e.target.dataset.channel,
       })
+    },
+    clearBlockClick(e) {
+      console.log(e)
+      this.$store.commit("storeSelectedTable", undefined);
+      this.$store.commit("storeSelectedBlock", undefined);
+      this.$store.commit("storeConfigEg", undefined);
     },
     openMenu(e) {
       e.preventDefault();
@@ -1553,14 +1561,27 @@ export default {
       this.cmBlockValueLists = [valueList];
       this.cmBlockType = blockType;
       this.cmFunctionValue = block.function;
+      this.cmBlockFilteredList = valueList;
       this.modalopen = true;
     },
     handlecmBlockValueListCellChange(index, value) {
       console.log(value);
-      this.cmBlockValueList[index] = Utils.transposeTable(value)[0];
+      this.cmBlockValueLists[index] = Utils.transposeTable(value)[0];
+    },
+    cmEditValuesConfirm() {
+      let values = this.cmBlockValueLists[0];
+      console.log(values)
+      let block = this.findBlock(this.cmBlockDom.dataset.bid);
+      if(!block) return;
+      block.arr[block.index].values = values;
+      this.updateTable();
+      this.modalopen = false;
     },
     cmSeparate() {
       
+    },
+    cmFilterConfirm() {
+      this.cmBlockValueLists[0] = this.cmBlockFilteredList;
     },
     handlecmQsep(index, info) {
       let separated_indexes = new Set();
@@ -1680,7 +1701,7 @@ export default {
             if(!unfolded && head.count == max_visible_values) {
               fullTable[head.i][head.j].unfoldbutton = true;
             }
-            fullTable[i][j].indent = head.indent;
+            fullTable[i][j].indent = fullTable[head.i][head.j].indent;
             head.count++;
             // if(valueList.length > max_visible_values && ((!unfolded && head.count == max_visible_values) || (unfolded && head.count == valueList.length - 1))) {
             //   fullTable[i][j].unfoldbutton = true;
@@ -1706,7 +1727,7 @@ export default {
               indent,
               entityMerge,
             });
-            fullTable[i][j].indent = indent;
+            fullTable[i][j].indent = (head && head.entityMerge) ? indent : 0;
           } else { // 父级
             while(isStackNotEmpty()) {
               head = getStackHead();
@@ -1972,6 +1993,13 @@ export default {
       let tmp = Utils.deepClone(table.columnHeader);
       table.columnHeader = table.rowHeader;
       table.rowHeader = tmp;
+      if(table.cell instanceof Array) {
+        for(let i = 0; i < table.cell.length; i++) {
+          let _tmp = table.cell[i].rowParentId;
+          table.cell[i].rowParentId = table.cell[i].colParentId;
+          table.cell[i].colParentId = _tmp;
+        }
+      }
     },
     handleRotate(dataset) {
       // if(!this.selectedBlock) {
@@ -1996,6 +2024,20 @@ export default {
       if(this._historyIndex >= this._history.length) return;
       this.canvas = Utils.deepClone(this._history[this._historyIndex++]);
       this.updateTable(false);
+    },
+    handleExport() {
+      console.log("export")
+      if(!this.selectedBlock) {
+        this.$message.error("Please select a table first.");
+        return;
+      }
+      let block = this.findBlock(this.selectedBlock.blockId);
+      console.log(block)
+      if(!block) {
+        this.$message.error("Please select a table first.");
+        return;
+      }
+      tableShop.default.utils.table2excel({table: this.fullTables[block.tableId].table, url: "export"});
     }
   },
   mounted() {
@@ -2007,6 +2049,7 @@ export default {
     this.$bus.on('attrdragend', this.handleDragend);
     this.$bus.on('undo', this.handleUndo);
     this.$bus.on('redo', this.handleRedo);
+    this.$bus.on('export', this.handleExport);
     this._history[this._historyIndex++] = [];
 
     // let tableCanvasDom = document.getElementById("tableCanvas");
@@ -2134,7 +2177,7 @@ export default {
   overflow: scroll;
   text-align: left;
   width: 140px;
-  height: 200px;
+  height: 150px;
 }
 
 .contextmenu::-webkit-scrollbar {

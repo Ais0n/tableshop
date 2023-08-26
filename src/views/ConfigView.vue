@@ -1,6 +1,7 @@
 <template>
   <div class="configview">
-    <div v-if="this.selectedBlock">
+    <div v-if="this.selectedBlock" class="configPanel">
+      <!-- <div class="title2" style="margin-bottom: 5px;"> Configurations </div> -->
       <div class="configAttrHeader">
         <div :class="tab != 'table' ? 'configTabSelected' : 'configTabUnselected'" @click="tab = 'attr'">
           <i v-if="this.dataType == 'categorical'" class="iconfont configAttrHeaderIcon">&#xe624;</i>
@@ -9,13 +10,13 @@
         </div>
         <div :class="tab == 'table' ? 'configTabSelected' : 'configTabUnselected'" @click="tab = 'table'">
           <i class="iconfont configAttrHeaderIcon">&#xe62f;</i>
-          <div class="configAttrHeaderText"> Table </div>
+          <div class="configAttrHeaderText"> Global </div>
         </div>
       </div>
       <div v-if="tab != 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Structure </div>
         <div v-if="configEg && configEg.son1" class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Hierarchical Merge </div> 
+          <div class="configAttrSubpanelTitle"> Group By </div> 
           <div class="wrapper">
             <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': !entityMerge}" @click="applyChanges('entityMerge', false)">
               <div class="configGlyph">
@@ -703,7 +704,11 @@ export default {
     },
     colHeaderFontWeight() {
       return this['.colHeader'] ? this['.colHeader'].font.weight : "Regular";
-    }
+    },
+    // tab() {
+    //   if(this.selectedBlock) return "attr"; 
+    //   else return "table";
+    // }
   },
   methods: {
     ...mapMutations(["storeSelectedBlock"]),
@@ -877,12 +882,12 @@ export default {
         //   type: 'even',
         //   color: val['.evenCols'].background.color,
         // } : undefined;
-        this['.oddRows'] = val['.oddRows'];
-        this['.oddCols'] = val['.oddCols'];
-        this['.evenRows'] = val['.evenRows'];
-        this['.evenCols'] = val['.evenCols'];
-        this['.rowHeader'] = val['.rowHeader'];
-        this['.colHeader'] = val['.colHeader'];
+        this['.oddRows'] = val? val['.oddRows'] : undefined;
+        this['.oddCols'] = val? val['.oddCols'] : undefined;
+        this['.evenRows'] = val? val['.evenRows'] : undefined;
+        this['.evenCols'] = val? val['.evenCols'] : undefined;
+        this['.rowHeader'] = val? val['.rowHeader'] : undefined;
+        this['.colHeader'] = val? val['.colHeader'] : undefined;
       }
     }
     // entityMerge(val, oldval) {
@@ -1000,6 +1005,17 @@ export default {
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   /* margin-bottom: 5px; */
+}
+
+.configPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.structureConfigPanel {
+}
+
+.styleConfigPanel {
 }
 
 .wrapper {

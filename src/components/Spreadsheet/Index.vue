@@ -25,8 +25,8 @@
           :class="{'qsep': qsep && i != Table.length - 1}"
           :cellValue="rowValue"
           :givenId="`${name}_cell_${i}_${j}`"
-          :editable="highlightedId == `${name}_cell_${i}_${j}`"
-          :highlight="highlightedId == `${name}_cell_${i}_${j}`"
+          :editable="editable && highlightedId == `${name}_cell_${i}_${j}`"
+          :highlight="editable && highlightedId == `${name}_cell_${i}_${j}`"
           @cell-change="handleCellChange(name, i, j, $event)"
           @cell-click="handleCellClick(name, i, j, `${name}_cell_${i}_${j}`, $event)"
         />
@@ -55,11 +55,11 @@ export default {
     // },
     initRowNum: { //暂时没用
       type: Number,
-      default: 6,
+      default: 1,
     },
     initColNum: { //暂时没用
       type: Number,
-      default: 6,
+      default: 1,
     },
     fixedRowNum: { //暂时没用
       type: Number,
@@ -80,6 +80,10 @@ export default {
     qsep: { // 用于quick separate
       type: Boolean,
       default: false,
+    },
+    editable: {
+      type: Boolean,
+      default: true,
     }
   },
   data() {

@@ -1,11 +1,48 @@
 <template>
-  <div class="dataview">
+  <div class="dataview" id="dataview">
+    <div class="dataSubview">
+      <div class="title2" style="margin-bottom: 5px"> Data </div>
+      <a-popconfirm title="Choose a dataset" ok-text="Import" cancel-text="Cancel" @confirm="importDataset" placement="rightTop">
+        <template #description>
+          <a-select
+            ref="select"
+            v-model:value="dataset"
+            class="header-select"
+            size="small"
+            placeholder="Select data"
+          >
+            <a-select-option
+              v-for="expdata in EXAMPLE_DATA"
+              :key="expdata.name"
+              :value="JSON.stringify(expdata)"
+            >
+              {{ expdata.name }}
+            </a-select-option>
+          </a-select>
+        </template>
+        <a-button class="header-button"> Import Dataset </a-button>
+      </a-popconfirm>
+      <a-button class="header-button"> Import Table </a-button>
+      <div style="margin-top: 15px; background-color:white; border-radius: 5px; padding: 7px 7px;">
+        <!-- <a-table v-if="data" :columns="headers"  :data-source="data.values" >
+          <template #headerCell="{ column }">
+            {{ column.title }}
+          </template>
+
+          <template #bodyCell="{ column, record }">
+            {{ record[column.dataIndex] }}
+          </template>
+        </a-table> -->
+        <Spreadsheet v-if="data" :header="headers" :table="data.values" :editable="false" class="sourceView"/>
+        <a-empty v-else> </a-empty>
+      </div>
+    </div>
     <div class="entitySubview">
       <div class="title2"> Entities </div>
-      <!-- <div class="entityList"> -->
+      <div id="entitySubviewContainer">
         <div v-for="(attr, i) in this.attrInfo" :key="'attrInfo_'+String(i)">
           <div class="attrInfoItem">
-            <div @dragstart="handleDragStart(attr)" :draggable="true" @dragend="handleDragend" @click="selected=i">
+            <div @dragstart="handleDragStart(attr)" :draggable="true" @dragend="handleDragend">
               <i v-if="attr.dataType == 'categorical'" class="iconfont attrInfoItemIcon">&#xe624;</i>
               <i v-else class="iconfont attrInfoItemIcon">&#xe6da;</i> 
               <div class="attrInfoItemText"> {{attr.name}} </div>
@@ -13,13 +50,16 @@
                 <i class="iconfont"> &#xe680; </i>
               </a-button>
             </div>
-            <div v-if="selected == i" style="display: flex">
+            <div style="display: flex">
               <mychart style="margin-left: 20px;" :chartId="`attr_${i}`" :attr="attr" :draggable="false"> </mychart>
             </div>
           </div>
         </div>
-      <!-- </div> -->
+      </div>
     </div>
+    <a-modal v-model:open="open" :footer="null"> 
+      
+    </a-modal>
     <!-- <div class="datamodelSubview">
       <div class="title2"> Data Model </div>
       <div class="datamodelList"> </div>
@@ -38,17 +78,106 @@ import { ref } from 'vue'
 import { mapState, mapMutations, mapActions } from "vuex";
 import GraphView from '../components/GraphView.vue';
 import Mychart from '../components/Mychart.vue';
+import { EXAMPLE_DATA } from "../CONSTANT.js";
+import csvtojson from "csvtojson";
+import Spreadsheet from '../components/Spreadsheet/Index.vue';
 export default {
   name: "DataView",
   data() {
     return ({
-      selected: 0,
+      // selected: 0,
+      dataset: "",
+      fileName: undefined,
+      open: false,
     });
   },
   computed: {
-    ...mapState(["attrInfo"])
+    ...mapState(["attrInfo", "data"]),
+    headers() {
+      if(!this.data || !(this.data.values instanceof Array) || this.data.values.length == 0) return [];
+      let tmp = Object.keys(this.data.values[0]);
+      // let res = [];
+      // for(let i = 0; i < tmp.length; i++) {
+      //   res.push({
+      //     title: tmp[i],
+      //     dataIndex: tmp[i],
+      //   })
+      // }
+      // return res;
+      return tmp;
+    },
+    EXAMPLE_DATA() {
+      return EXAMPLE_DATA;
+    }
   },
   methods: {
+    async importDataset() {
+      // console.log(this.dataset)
+      if(!this.dataset || this.dataset == "") {
+        this.$message.error("Please select a dataset");
+        return;
+      }
+      try {
+        this.importData(this.dataset);
+      } catch (e) {
+        console.log(e);
+        this.$message.error("Unsupported File Type");
+      }
+    },
+    async importData(rawData) {
+      // console.log("importData:", rawData);
+      // console.log("fileName:", this.fileName);
+
+      try {
+        let data;
+        if(this.fileName && (this.fileName.slice(-3) == "csv" || this.fileName.slice(-3) == "CSV")) {
+          let parsedJSONData = await csvtojson.fromString(rawData);
+          console.log("parsedJSONData:", parsedJSONData);
+          data = {
+            "name": this.fileName.slice(0, -3),
+            "values": parsedJSONData
+          };
+        } else if(this.fileName && (this.fileName.slice(-4) == "json" || this.fileName.slice(-4) == "JSON")) {
+          data = {
+            "name": this.fileName.slice(0, -4),
+            "values": rawData
+          };
+        } else if(!this.fileName) {
+          data = JSON.parse(rawData);
+        } else {
+          throw new Error("Unsupported File Type");
+        }
+        this.$store.commit("changeData", data);
+        console.log(data);
+        let attrs = Object.keys(data.values[0]);
+        let attrInfo = [];
+        for(let j = 0; j < attrs.length; j++) {
+          let attr = attrs[j], valueList = [];
+          for(let i = 0; i < data.values.length; i++) {
+            valueList.push(data.values[i][attr])
+          }
+          valueList = Array.from(new Set(valueList));
+          let dataType = typeof(valueList[0]) == "string" ? "categorical" : "numerical";
+          attrInfo.push({
+            "name": attr,
+            "values": valueList,
+            "dataType": dataType,
+          });
+        }
+        this.$store.commit("storeAttrInfo", attrInfo);
+      } catch (e) {
+        console.log(e);
+        this.$message.error("Unsupported File Type");
+        return;
+      }
+    },
+    // viewDataset() {
+    //   if(!this.data) {
+    //     this.$message.error("Please first import a dataset.");
+    //     return;
+    //   }
+    //   this.open = true;
+    // },
     handleSigmaDragStart() {
       console.log("drag")
       this.$store.commit("storeDraggedItemType", 'function');
@@ -69,9 +198,16 @@ export default {
       this.$bus.emit("attrdragend");
     }
   },
+  updated() {
+    let tmp = document.getElementById("entitySubviewContainer"), tmp2 = document.getElementById("dataview");
+    tmp2 = tmp2.getBoundingClientRect().height;
+    console.log(tmp2);
+    tmp.style.height = `${tmp2 - 400}px`;
+  },
   components: {
     GraphView,
     Mychart,
+    Spreadsheet,
   }
 }
 </script>
@@ -84,10 +220,34 @@ export default {
   padding: 15px 20px 15px 20px;
 }
 
+.dataSubview {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
 .entitySubview {
   width: 100%;
-  height: 20%;
   margin-bottom: 15px;
+  position: relative;
+}
+
+#entitySubviewContainer {
+  overflow-y: scroll;
+  padding: 5px 5px;
+  width: 100%;
+}
+
+#entitySubviewContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.sourceView {
+  height: 250px;
+  overflow: scroll;
+}
+
+.sourceView::-webkit-scrollbar:vertical {
+  display: none;
 }
 
 /* .entityList {
@@ -114,7 +274,7 @@ export default {
 
 .graphviewSubview {
   width: 100%;
-  height: 30%;
+  height: 20%;
   margin-bottom: 15px;
 }
 
@@ -124,6 +284,27 @@ export default {
   margin-bottom: 10px;
   color: black;
   white-space: nowrap;
+}
+
+.header-select {
+  display: inline-block;
+  margin-left: 30px;
+  width: 120px;
+  border-radius: 5px !important;
+  height: 28px;
+}
+
+.header-button {
+  display: inline-block;
+  line-height: 24px;
+  height: 24px;
+  margin-right: 20px;
+  text-align: center;
+  padding: 0px 9px 0px 9px;
+  border-radius: 5px;
+  font-family: Inter-Regular-9, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 #system-title {
