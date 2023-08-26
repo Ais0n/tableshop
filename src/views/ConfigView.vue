@@ -508,7 +508,7 @@
           </div>
         </div>
         <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Current Row(s) </div> 
+          <div class="configAttrSubpanelTitle"> Current Row </div> 
           <div class="wrapper" style="flex-direction: column">
             <div class="keyPropsWrapper">
               <div style="display: inline-block" class="keyPropsText"> Border </div>
@@ -595,6 +595,98 @@
               <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
             </div>
             <div class="templateDropdown" @click="this.curRowCustomize = !this.curRowCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Current Column </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': curColBorderStyle == 'double'}" @click="applyChangesToCur('column', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': curColBorderStyle == 'solid'}" @click="applyChangesToCur('column', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': curColBorderStyle == 'none'}" @click="applyChangesToCur('column', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="curColCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="curColBorderColor" class="colorinput" @input="e => applyChangesToCur('column', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="curColBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToCur('column', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="curColBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyChangesToCur('column', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': curColFontWeight != 'Regular'}" @click="applyChangesToCur('column', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': curColFontWeight == 'Regular'}" @click="applyChangesToCur('column', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="curColCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="curColFontColor" class="colorinput" @input="e => applyChangesToCur('column', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="curColFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToCur('column', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="curColCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="curColBackgroundColor" class="colorinput" @input="e => applyChangesToCur('column', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="curColCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="curColIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToCur('column', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.curColCustomize = !this.curColCustomize">
               <i class='iconfont'> &#xeb10; </i>
             </div>
           </div>
@@ -961,6 +1053,7 @@ export default {
       cellCustomize: false,
       hierarchyCustomize: false,
       curRowCustomize: false,
+      curColCustomize: false,
     });
   },
   computed: {
@@ -1189,6 +1282,51 @@ export default {
     curRowIndent() {
       if(!this.selectedPos) return "solid";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].indent ? this[cl].indent : 0;
+    },
+    curColBorderStyle() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.style ? this[cl].border.style : "solid";
+    },
+    curColBorderColor() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.color ? this[cl].border.color : "#000000";
+    },
+    curColBorderWidth() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.width ? this[cl].border.width : 1;
+    },
+    curColBorderPosition() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.position ? this[cl].border.position: 'All';
+    },
+    curColFontWeight() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].font && this[cl].font.weight ? this[cl].font.weight : "Regular";
+    },
+    curColFontColor() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].font && this[cl].font.color ? this[cl].font.color : "#000000";
+    },
+    curColFontSize() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].font && this[cl].font.size ? this[cl].font.size : 12;
+    },
+    curColBackgroundColor() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
+      return this[cl] && this[cl].background && this[cl].background.color ? this[cl].background.color : '#ffffff';
+    },
+    curColIndent() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].indent ? this[cl].indent : 0;
     },
     // tab() {
