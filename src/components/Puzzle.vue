@@ -1,6 +1,6 @@
 <template>
-  <div v-for="(dom, index) in domSource" :id="dom.id" :class="dom.className + (dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '')" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
-    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :draggable="dom.draggable" @dragend="dom.ondragend"
+  <div v-for="(dom, index) in domSource" :id="dom.id" :class="dom.className + ((dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '') + ((dom.dataset.bid == highlightedBlockId && dom.dataset.row == highlightedPos.row && dom.dataset.col == highlightedPos.col) ? ' highlightedPos' : ''))" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
+    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :data-row-span="dom.dataset.rowSpan" :data-col-span="dom.dataset.colSpan" :draggable="dom.draggable" @dragend="dom.ondragend"
     @dragover="(e) => {entered = index; dom.ondragover(e)}" @dragstart="dom.ondragstart" @dragleave="(e) => { entered = -1; dom.ondragleave(e)}" @drop="dropSelect($event, dom)" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
     <div class="puzzleText">{{dom.innerText}}</div>
@@ -284,6 +284,10 @@ export default {
       type: String,
       default: undefined,
     },
+    highlightedPos: {
+      type: Object,
+      default: {},
+    },
     dragging: {
       type: Boolean,
       default: false,
@@ -423,6 +427,23 @@ export default {
 .highlightedBlock .horizontalSemiCircle {
   border-top: 1px solid #dddddd;
   background-color: #dddddd;
+}
+
+.highlightedPos {
+  border: 1px solid black;
+  border-top: 3px solid;
+}
+
+.highlightedPos .verticalSemiCircle {
+  border-left: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.highlightedPos .horizontalSemiCircle {
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
 }
 
 .puzzleText {

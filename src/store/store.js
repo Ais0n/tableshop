@@ -14,6 +14,7 @@ export const store = createStore({
       
       selectedBlock: undefined,
       selectedTable: undefined,
+      selectedPos: undefined,
       configEg: undefined,
     }
   },
@@ -41,6 +42,9 @@ export const store = createStore({
     },
     storeSelectedTable (state, selectedTable) {
       state.selectedTable = selectedTable;
+    },
+    storeSelectedPos (state, selectedPos) {
+      state.selectedPos = selectedPos;
     },
     storeConfigEg (state, configEg) {
       state.configEg = configEg;

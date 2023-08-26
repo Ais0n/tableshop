@@ -6,7 +6,7 @@
     >
       {{dom.innerText}}
     </div> -->
-    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" @cell-unfold="handleUnfold($event)" @cell-rotate="handleRotate($event)" :showCompleteTable="showCompleteTable" :dragging="dragging"> 
+    <Puzzle :domSource="tableDom" :isCanvas="false" :highlightedBlockId="selectedBlockId" :highlightedPos="selectedPos" @cell-unfold="handleUnfold($event)" @cell-rotate="handleRotate($event)" :showCompleteTable="showCompleteTable" :dragging="dragging"> 
     </Puzzle>
     <div id="tableCanvas" class="tableCanvas" v-show="false">
       <div id="graphViewLeftTopBox" class="tableCanvasBox" :style="'width:'+vlineLeft+'px;height:'+hlineTop+'px;top:0px;left:0px'" @dragover="handleDragOver($event, 'LT')" @drop="handleDrop($event, 'LT')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'LT'}" @dragleave="handleDragLeave"/>
@@ -120,7 +120,7 @@ export default {
     });
   },
   computed: {
-    ...mapState(["data", "attrInfo", "draggedAttr", "draggedItemType", "draggedBlock", "selectedBlock", "draggedValue"]),
+    ...mapState(["data", "attrInfo", "draggedAttr", "draggedItemType", "draggedBlock", "selectedBlock", "draggedValue", "selectedPos"]),
     cmBlockValueLists_t() {
       let res = [];
       for(let i = 0; i < this.cmBlockValueLists.length; i++) {
@@ -949,6 +949,12 @@ export default {
       let block = this.findBlock(e.target.dataset.bid);
       console.log(block)
       if(!block) return;
+      this.$store.commit("storeSelectedPos", {
+        row: e.target.dataset.row,
+        col: e.target.dataset.col,
+        rowSpan: e.target.dataset.rowSpan,
+        colSpan: e.target.dataset.colSpan,
+      });
       this.$store.commit("storeSelectedTable", this.canvas[block.tableId].styles);
       block = block.arr[block.index];
       this.$store.commit("storeSelectedBlock", block);
@@ -2147,19 +2153,19 @@ export default {
 }
 
 .lefthover {
-  border-left: 3px solid red;
+  border-left: 3px solid red !important;
 }
 
 .righthover {
-  border-right: 3px solid red;
+  border-right: 3px solid red !important;
 }
 
 .tophover {
-  border-top: 3px solid red;
+  border-top: 3px solid red !important;
 }
 
 .bottomhover{
-  border-bottom: 3px solid red;
+  border-bottom: 3px solid red !important;
 }
 
 .hvline {

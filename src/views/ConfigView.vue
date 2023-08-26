@@ -508,11 +508,11 @@
           </div>
         </div>
         <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Current Row </div> 
+          <div class="configAttrSubpanelTitle"> Current Row(s) </div> 
           <div class="wrapper" style="flex-direction: column">
             <div class="keyPropsWrapper">
               <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'double')">
+              <div class="posGlyphOption" :class="{'glyphSelected': curRowBorderStyle == 'double'}" @click="applyChangesToCur('row', 'border', 'style', 'double')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -522,7 +522,7 @@
                 </div>
                 <div class="entityMergeText"> Double </div>
               </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'solid')">
+              <div class="posGlyphOption" :class="{'glyphSelected': curRowBorderStyle == 'solid'}" @click="applyChangesToCur('row', 'border', 'style', 'solid')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -531,7 +531,7 @@
                 </div>
                 <div class="entityMergeText"> Single </div>
               </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'none')">
+              <div class="posGlyphOption" :class="{'glyphSelected': curRowBorderStyle == 'none'}" @click="applyChangesToCur('row', 'border', 'style', 'none')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -541,13 +541,13 @@
                 <div class="entityMergeText"> None </div>
               </div>
             </div>
-            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+            <div style="margin-top: 5px;" v-if="curRowCustomize"> 
               <div class="keyPropsWrapper">
                 <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="rowHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'border', 'color', e.target.value)"/>
-                <a-input-number :value="rowHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'width', value)"/> 
+                <input type="color" :value="curRowBorderColor" class="colorinput" @input="e => applyChangesToCur('row', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="curRowBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToCur('row', 'border', 'width', value)"/> 
                 <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-                <a-select v-model:value="rowHeaderBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'position', value)">
+                <a-select v-model:value="curRowBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyChangesToCur('row', 'border', 'position', value)">
                   <a-select-option value="All"> All </a-select-option>
                   <a-select-option value="Top"> Top </a-select-option>
                   <a-select-option value="Bottom"> Bottom </a-select-option>
@@ -558,7 +558,7 @@
             </div>
             <div class="keyPropsWrapper">
               <div style="display: inline-block" class="keyPropsText"> Font</div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Bold')">
+              <div class="inheritGlyphOption" :class="{'glyphSelected': curRowFontWeight != 'Regular'}" @click="applyChangesToCur('row', 'font', 'weight', 'Bold')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
@@ -567,7 +567,7 @@
                 </div>
                 <div class="entityMergeText"> Bold </div>
               </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Regular')">
+              <div class="inheritGlyphOption" :class="{'glyphSelected': curRowFontWeight == 'Regular'}" @click="applyChangesToCur('row', 'font', 'weight', 'Regular')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="posItem highlightCell" > Header </div>
@@ -577,24 +577,24 @@
                 <div class="entityMergeText"> Regular </div>
               </div>
             </div>
-            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+            <div style="margin-top: 5px;" v-if="curRowCustomize"> 
               <div class="keyPropsWrapper">
                 <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="rowHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'font', 'color', e.target.value)"/>
-                <a-input-number :value="rowHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'font', 'size', value)"/> 
+                <input type="color" :value="curRowFontColor" class="colorinput" @input="e => applyChangesToCur('row', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="curRowFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToCur('row', 'font', 'size', value)"/> 
                 <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
               </div>
             </div>
-            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+            <div class="keyPropsWrapper" v-if="curRowCustomize">
               <div style="display: inline-block" class="keyPropsText"> Background</div>
-              <input type="color" :value="rowHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'background', 'color', e.target.value)"/>
+              <input type="color" :value="curRowBackgroundColor" class="colorinput" @input="e => applyChangesToCur('row', 'background', 'color', e.target.value)"/>
             </div>
-            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+            <div class="keyPropsWrapper" v-if="curRowCustomize">
               <div style="display: inline-block" class="keyPropsText"> Indent</div>
-              <a-input-number :value="rowHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'indent', undefined, value)"/> 
+              <a-input-number :value="curRowIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToCur('row', 'indent', undefined, value)"/> 
               <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
             </div>
-            <div class="templateDropdown" @click="this.rowHeaderCustomize = !this.rowHeaderCustomize">
+            <div class="templateDropdown" @click="this.curRowCustomize = !this.curRowCustomize">
               <i class='iconfont'> &#xeb10; </i>
             </div>
           </div>
@@ -914,16 +914,57 @@ export default {
       '.cl2': undefined,
       '.cl3': undefined,
       '.cl4': undefined,
+      '.r1': undefined,
+      '.r2': undefined,
+      '.r3': undefined,
+      '.r4': undefined,
+      '.r5': undefined,
+      '.r6': undefined,
+      '.r7': undefined,
+      '.r8': undefined,
+      '.r9': undefined,
+      '.r10': undefined,
+      '.r11': undefined,
+      '.r12': undefined,
+      '.r13': undefined,
+      '.r14': undefined,
+      '.r15': undefined,
+      '.r16': undefined,
+      '.r17': undefined,
+      '.r18': undefined,
+      '.r19': undefined,
+      '.r20': undefined,
+      '.c1': undefined,
+      '.c2': undefined,
+      '.c3': undefined,
+      '.c4': undefined,
+      '.c5': undefined,
+      '.c6': undefined,
+      '.c7': undefined,
+      '.c8': undefined,
+      '.c9': undefined,
+      '.c10': undefined,
+      '.c11': undefined,
+      '.c12': undefined,
+      '.c13': undefined,
+      '.c14': undefined,
+      '.c15': undefined,
+      '.c16': undefined,
+      '.c17': undefined,
+      '.c18': undefined,
+      '.c19': undefined,
+      '.c20': undefined,
       // tmp
       lineNoCustomize: false,
       rowHeaderCustomize: false,
       columnHeaderCustomize: false,
       cellCustomize: false,
       hierarchyCustomize: false,
+      curRowCustomize: false,
     });
   },
   computed: {
-    ...mapState(["selectedBlock", "attrInfo", "configEg", "selectedTable"]),
+    ...mapState(["selectedBlock", "attrInfo", "configEg", "selectedTable", "selectedPos"]),
     dataType() {
       let attrName = this.selectedBlock.attrName;
       for(let i = 0; i < this.attrInfo.length; i++) {
@@ -1076,7 +1117,7 @@ export default {
       return this[".columnHeader"] && this[".columnHeader"].background && this['.columnHeader'].background.color ? this['.columnHeader'].background.color : '#ffffff';
     },
     columnHeaderIndent() {
-      return this[".rowHeader"] && this[".rowHeader"].indent ? this[".rowHeader"].indent : 0;
+      return this[".columnHeader"] && this[".columnHeader"].indent ? this[".columnHeader"].indent : 0;
     },
     cellBorderStyle() {
       return this[".cell"] && this[".cell"].border && this['.cell'].border.style ? this['.cell'].border.style : "solid";
@@ -1103,7 +1144,52 @@ export default {
       return this[".cell"] && this[".cell"].background && this['.cell'].background.color ? this['.cell'].background.color : '#ffffff';
     },
     cellIndent() {
-      return this[".rowHeader"] && this[".rowHeader"].indent ? this[".rowHeader"].indent : 0;
+      return this[".cell"] && this[".cell"].indent ? this[".cell"].indent : 0;
+    },
+    curRowBorderStyle() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.style ? this[cl].border.style : "solid";
+    },
+    curRowBorderColor() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.color ? this[cl].border.color : "#000000";
+    },
+    curRowBorderWidth() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.width ? this[cl].border.width : 1;
+    },
+    curRowBorderPosition() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].border && this[cl].border.position ? this[cl].border.position: 'All';
+    },
+    curRowFontWeight() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].font && this[cl].font.weight ? this[cl].font.weight : "Regular";
+    },
+    curRowFontColor() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].font && this[cl].font.color ? this[cl].font.color : "#000000";
+    },
+    curRowFontSize() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].font && this[cl].font.size ? this[cl].font.size : 12;
+    },
+    curRowBackgroundColor() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].background && this[cl].background.color ? this[cl].background.color : '#ffffff';
+    },
+    curRowIndent() {
+      if(!this.selectedPos) return "solid";
+      let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
+      return this[cl] && this[cl].indent ? this[cl].indent : 0;
     },
     // tab() {
     //   if(this.selectedBlock) return "attr"; 
@@ -1197,6 +1283,15 @@ export default {
       } : undefined;
       styles[t] = undefined;
       this.$bus.emit('updateglobal', styles);
+    },
+    applyChangesToCur(channel, key1, key2, value) {
+      let className;
+      if(channel == 'row') {
+        className = '.r' + String(Number(this.selectedPos.row) + 1);
+      } else {
+        className = '.c' + String(Number(this.selectedPos.col) + 1);
+      }
+      this.applyGlobalChanges(className, key1, key2, value);
     },
     applyChangesToHier(channel, isClear, color) {
       let c = channel[0];
@@ -1317,10 +1412,15 @@ export default {
         //   type: 'even',
         //   color: val['.evenCols'].background.color,
         // } : undefined;
-        let arr = ['.oddRows', '.oddCols', '.evenRows', '.evenCols', '.rowHeader', '.columnHeader', '.cell', '.rl1', '.rl2', '.rl3', '.rl4', '.cl1', '.cl2', '.cl3', '.cl4'];
-        arr.forEach(item => {
-          this[item] = val? val[item] : undefined;
-        })
+        // let arr = ['.oddRows', '.oddCols', '.evenRows', '.evenCols', '.rowHeader', '.columnHeader', '.cell', '.rl1', '.rl2', '.rl3', '.rl4', '.cl1', '.cl2', '.cl3', '.cl4'];
+        // for(let i = 0; i < arr.length; i++) {
+        //   this[arr[i]] = val ? val[arr[i]] : undefined;
+        // }
+        if(!val) return;
+        let tmp = Object.keys(val);
+        for(let i = 0; i < tmp.length; i++) {
+          this[tmp[i]] = val ? val[tmp[i]] : undefined;
+        }
         
       }
     }
