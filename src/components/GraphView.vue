@@ -1,5 +1,5 @@
 <template>
-  <div id="graphCanvas" class="graphCanvas" @dragover="handleDragOver($event, 'GC')" @drop="handleDrop($event, 'GC')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'GC'}" @click="clearBlockClick">
+  <div id="graphCanvas" class="graphCanvas" @dragover="handleDragOver($event, 'GC')" @drop="handleDrop($event, 'GC')" :class="{'tableCanvasBoxHighlight': dropoverBox == 'GC'}">
     <!-- <div v-for="(dom, index) in canvasDom" :key="'canvasDom' + String(index)" :class="dom.className" :style="dom.style" :data-bid="dom.dataset.bid"
     :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :draggable="dom.draggable"
     @dragover="dom.ondragover" @dragstart="handleBlockDragstart" @dragleave="dom.ondragleave" :drop="dom.ondrop" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
@@ -1261,7 +1261,7 @@ export default {
             width: cell.width,
             computed: "",
           };
-          let properties = ["background-color", "border", "border-top", "border-bottom", "border-left", "border-right", "font", "font-size", "font-family", "font-weight", "color"];
+          let properties = ["background-color", "border", "border-top", "border-bottom", "border-left", "border-right", "font", "font-size", "font-family", "font-weight", "color", "padding-left"];
           properties.forEach(prop => {
             if(cell.style && typeof(cell.style[prop]) != 'undefined') {
               newDom.style.computed += `${prop}: ${cell.style[prop]}; `;

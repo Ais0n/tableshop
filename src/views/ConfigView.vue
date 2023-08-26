@@ -361,6 +361,13 @@
             </a-select>
           </div>
         </div>
+        <div v-if="border" class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Indent </div> 
+          <div class="wrapper"> 
+            <a-input-number v-model:value="indent" size="small" :min="1" :max="100000" style="width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('indent', value)"/> 
+            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
+          </div>
+        </div>
       </div>
       <div v-if="tab == 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Templates </div>
@@ -395,7 +402,7 @@
             <div style="margin-top: 5px;" v-if="lineNoCustomize"> 
               <div class="keyPropsWrapper">
                 <div style="display: inline-block" class="keyPropsText"> Color </div>
-                <input type="color" :value="rowNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
+                <input type="color" :value="rowNoColor" class="colorinput" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
                 <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
                 <a-switch size="small" checked-children="even rows" un-checked-children="odd rows" :checked="rowNoType == 'even'" @change="applyChangesToRolColNo(rowNoType == 'odd' ? 'even' : 'odd', 'Row', rowNoColor)"> </a-switch>
               </div>
@@ -428,7 +435,7 @@
             <div style="margin-top: 5px;" v-if="lineNoCustomize"> 
               <div class="keyPropsWrapper">
                 <div style="display: inline-block" class="keyPropsText"> Color </div>
-                <input type="color" :value="colNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
+                <input type="color" :value="colNoColor" class="colorinput" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
                 <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
                 <a-switch size="small" checked-children="even columns" un-checked-children="odd columns" :checked="colNoType == 'even'" @change="applyChangesToRolColNo(colNoType == 'odd' ? 'even' : 'odd', 'Col', colNoColor)"> </a-switch>
               </div>
@@ -439,11 +446,73 @@
           </div>
         </div>
         <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Row Header </div> 
+          <div class="configAttrSubpanelTitle"> Hierarchy </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Row </div>
+              <div class="glyphOption" :class="{'glyphSelected': rowHierType == 'Sequential'}" @click="applyChangesToHier('row', false, rowHierColor)"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="SItem" style="background-color: #aaaaaa"> ... </div>
+                  <div class="SItem" style="background-color: #cccccc; border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="SItem" style="background-color: #eeeeee; border-top: 1px solid #bbbbbb;"> ... </div>
+                </div>
+                <div class="entityMergeText"> Sequential </div>
+              </div>
+              <div class="glyphOption" :class="{'glyphSelected': rowHierType == 'none'}" @click="applyChangesToHier('row', true)"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="SItem"> ... </div>
+                  <div class="SItem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="SItem" style="border-top: 1px solid #bbbbbb;"> ... </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="hierarchyCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="rowHierColor" class="colorinput" @input="e => applyChangesToHier('row', false, e.target.value)"/>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Column </div>
+              <div class="glyphOption" :class="{'glyphSelected': colHierType == 'Sequential'}" @click="applyChangesToHier('column', false, colHierColor)"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="F1son" style="background-color: #aaaaaa;"> ... </div>
+                  <div class="F1son" style="background-color: #cccccc; border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="F1son" style="background-color: #eeeeee;"> ... </div>
+                </div>
+                <div class="entityMergeText"> Sequential </div>
+              </div>
+              <div class="glyphOption" :class="{'glyphSelected': colHierType == 'none'}" @click="applyChangesToHier('column', true)"
+              style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
+                <div class="configGlyph">
+                  <div class="F1son"> ... </div>
+                  <div class="F1son" style="border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="F1son"> ... </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="hierarchyCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText"> Color </div>
+                <input type="color" :value="colHierColor" class="colorinput" @input="e => applyChangesToHier('column', false, e.target.value)"/>
+              </div>
+            </div>
+            <div class="templateDropdown" @click="this.hierarchyCustomize = !this.hierarchyCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Current Row </div> 
           <div class="wrapper" style="flex-direction: column">
             <div class="keyPropsWrapper">
               <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'double')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -453,7 +522,7 @@
                 </div>
                 <div class="entityMergeText"> Double </div>
               </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'solid')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -462,7 +531,7 @@
                 </div>
                 <div class="entityMergeText"> Single </div>
               </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'none'}" @click="applyChangesToRolColNo('odd', 'Row')">
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'none')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -474,14 +543,21 @@
             </div>
             <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
               <div class="keyPropsWrapper">
-                <div style="display: inline-block" class="keyPropsText"> Color </div>
-                <input type="color" :value="rowNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
-                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
-                <a-switch size="small" checked-children="even rows" un-checked-children="odd rows" :checked="rowNoType == 'even'" @change="applyChangesToRolColNo(rowNoType == 'odd' ? 'even' : 'odd', 'Row', rowNoColor)"> </a-switch>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="rowHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="rowHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="rowHeaderBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
               </div>
             </div>
             <div class="keyPropsWrapper">
-              <div style="display: inline-block" class="keyPropsText"> Font weight </div>
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
               <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Bold')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
@@ -503,11 +579,20 @@
             </div>
             <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
               <div class="keyPropsWrapper">
-                <div style="display: inline-block" class="keyPropsText"> Color </div>
-                <input type="color" :value="colNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
-                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
-                <a-switch size="small" checked-children="even columns" un-checked-children="odd columns" :checked="colNoType == 'even'" @change="applyChangesToRolColNo(colNoType == 'odd' ? 'even' : 'odd', 'Col', colNoColor)"> </a-switch>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="rowHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="rowHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
               </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="rowHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="rowHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
             </div>
             <div class="templateDropdown" @click="this.rowHeaderCustomize = !this.rowHeaderCustomize">
               <i class='iconfont'> &#xeb10; </i>
@@ -515,11 +600,11 @@
           </div>
         </div>
         <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Column Header </div> 
+          <div class="configAttrSubpanelTitle"> Row Header </div> 
           <div class="wrapper" style="flex-direction: column">
             <div class="keyPropsWrapper">
               <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'double')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -529,7 +614,7 @@
                 </div>
                 <div class="entityMergeText"> Double </div>
               </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'alternating'}" @click="applyChangesToRolColNo('odd', 'Row', rowNoColor)">
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'solid')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -538,7 +623,7 @@
                 </div>
                 <div class="entityMergeText"> Single </div>
               </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowNoOption == 'none'}" @click="applyChangesToRolColNo('odd', 'Row')">
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'none')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="RHitem  highlightCell"> ... </div>
@@ -550,15 +635,22 @@
             </div>
             <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
               <div class="keyPropsWrapper">
-                <div style="display: inline-block" class="keyPropsText"> Color </div>
-                <input type="color" :value="rowNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(rowNoType, 'Row', e.target.value)"/>
-                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
-                <a-switch size="small" checked-children="even rows" un-checked-children="odd rows" :checked="rowNoType == 'even'" @change="applyChangesToRolColNo(rowNoType == 'odd' ? 'even' : 'odd', 'Row', rowNoColor)"> </a-switch>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="rowHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="rowHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="rowHeaderBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
               </div>
             </div>
             <div class="keyPropsWrapper">
-              <div style="display: inline-block" class="keyPropsText"> Font weight </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': colHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.colHeader', 'font', 'weight', 'Bold')">
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Bold')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
@@ -567,7 +659,7 @@
                 </div>
                 <div class="entityMergeText"> Bold </div>
               </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': colHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.colHeader', 'font', 'weight', 'Regular')">
+              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Regular')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="posItem highlightCell" > Header </div>
@@ -577,15 +669,208 @@
                 <div class="entityMergeText"> Regular </div>
               </div>
             </div>
-            <div style="margin-top: 5px;" v-if="colHeaderCustomize"> 
+            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
               <div class="keyPropsWrapper">
-                <div style="display: inline-block" class="keyPropsText"> Color </div>
-                <input type="color" :value="colNoColor" style="width: 25px; border: none; background-color: transparent;" @input="e => applyChangesToRolColNo(colNoType, 'Col', e.target.value)"/>
-                <div style="display: inline-block; margin-left: 5px; margin-right: 5px"> for </div>
-                <a-switch size="small" checked-children="even columns" un-checked-children="odd columns" :checked="colNoType == 'even'" @change="applyChangesToRolColNo(colNoType == 'odd' ? 'even' : 'odd', 'Col', colNoColor)"> </a-switch>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="rowHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="rowHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
               </div>
             </div>
-            <div class="templateDropdown" @click="this.colHeaderCustomize = !this.colHeaderCustomize">
+            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="rowHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="rowHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.rowHeaderCustomize = !this.rowHeaderCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Column Header </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="columnHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="columnHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'border', 'color', e.target.value)"/>
+                <a-input-number v-model:value="columnHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="columnHeaderBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': columnHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.columnHeader', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': columnHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.columnHeader', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="columnHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="columnHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'font', 'color', e.target.value)"/>
+                <a-input-number v-model:value="columnHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="columnHeaderCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="columnHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="columnHeaderCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="columnHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.columnHeaderCustomize = !this.columnHeaderCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Body Cells </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'double'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'solid'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'none'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="cellCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="cellBorderColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'border', 'color', e.target.value)"/>
+                <a-input-number v-model:value="cellBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select v-model:value="cellBorderPosition" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyGlobalChanges('.cell', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': cellFontWeight != 'Regular'}" @click="applyGlobalChanges('.cell', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': cellFontWeight == 'Regular'}" @click="applyGlobalChanges('.cell', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="cellCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="cellFontColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'font', 'color', e.target.value)"/>
+                <a-input-number v-model:value="cellFontSize" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="cellCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="cellBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="cellCustomize">
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="cellIndent" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.cellCustomize = !this.cellCustomize">
               <i class='iconfont'> &#xeb10; </i>
             </div>
           </div>
@@ -610,7 +895,8 @@ export default {
       blankLine: false,
       border: undefined,
       background: undefined,
-      font: undefined, 
+      font: undefined,
+      indent: undefined,
       tab: "attr",
       // for tables
       '.oddRows': undefined,
@@ -618,11 +904,22 @@ export default {
       '.oddCols': undefined,
       '.evenCols': undefined,
       '.rowHeader': undefined,
-      '.colHeader': undefined,
+      '.columnHeader': undefined,
+      '.cell': undefined,
+      '.rl1': undefined,
+      '.rl2': undefined,
+      '.rl3': undefined,
+      '.rl4': undefined,
+      '.cl1': undefined,
+      '.cl2': undefined,
+      '.cl3': undefined,
+      '.cl4': undefined,
       // tmp
       lineNoCustomize: false,
       rowHeaderCustomize: false,
-      colHeaderCustomize: false,
+      columnHeaderCustomize: false,
+      cellCustomize: false,
+      hierarchyCustomize: false,
     });
   },
   computed: {
@@ -699,11 +996,114 @@ export default {
         return '#aaaaaa';
       }
     },
-    rowHeaderFontWeight() {
-      return this['.rowHeader'] ? this['.rowHeader'].font.weight : "Regular";
+    rowHierType() {
+      if(this['.rl1']) {
+        return 'Sequential';
+      } else {
+        return 'none';
+      }
     },
-    colHeaderFontWeight() {
-      return this['.colHeader'] ? this['.colHeader'].font.weight : "Regular";
+    rowHierColor() {
+      if(this['.rl1'] && this['.rl1'].background.color) {
+        return this['.rl1'].background.color;
+      } {
+        return '#aaaaaa';
+      }
+    },
+    colHierType() {
+      if(this['.cl1']) {
+        return 'Sequential';
+      } else {
+        return 'none';
+      }
+    },
+    colHierColor() {
+      if(this['.cl1'] && this['.cl1'].background.color) {
+        return this['.cl1'].background.color;
+      } {
+        return '#aaaaaa';
+      }
+    },
+    rowHeaderBorderStyle() {
+      return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.style ? this['.rowHeader'].border.style : "solid";
+    },
+    rowHeaderBorderColor() {
+      return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.color ? this['.rowHeader'].border.color : "#000000";
+    },
+    rowHeaderBorderWidth() {
+      return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.width ? this['.rowHeader'].border.width : 1;
+    },
+    rowHeaderBorderPosition() {
+      return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.position ? this['.rowHeader'].border.position: 'All';
+    },
+    rowHeaderFontWeight() {
+      return this['.rowHeader'] && this[".rowHeader"].font && this['.rowHeader'].font.weight ? this['.rowHeader'].font.weight : "Regular";
+    },
+    rowHeaderFontColor() {
+      return this[".rowHeader"] && this[".rowHeader"].font && this['.rowHeader'].font.color ? this['.rowHeader'].font.color : "#000000";
+    },
+    rowHeaderFontSize() {
+      return this[".rowHeader"] && this[".rowHeader"].font && this['.rowHeader'].font.size ? this['.rowHeader'].font.size : 12;
+    },
+    rowHeaderBackgroundColor() {
+      return this[".rowHeader"] && this[".rowHeader"].background && this['.rowHeader'].background.color ? this['.rowHeader'].background.color : '#ffffff';
+    },
+    rowHeaderIndent() {
+      return this[".rowHeader"] && this[".rowHeader"].indent ? this[".rowHeader"].indent : 0;
+    },
+    columnHeaderBorderStyle() {
+      return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.style ? this['.columnHeader'].border.style : "solid";
+    },
+    columnHeaderBorderColor() {
+      return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.color ? this['.columnHeader'].border.color : "#000000";
+    },
+    columnHeaderBorderWidth() {
+      return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.width ? this['.columnHeader'].border.width : 1;
+    },
+    columnHeaderBorderPosition() {
+      return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.position ? this['.columnHeader'].border.position: 'All';
+    },
+    columnHeaderFontWeight() {
+      return this['.columnHeader'] && this[".columnHeader"].font && this['.columnHeader'].font.weight ? this['.columnHeader'].font.weight : "Regular";
+    },
+    columnHeaderFontColor() {
+      return this[".columnHeader"] && this[".columnHeader"].font && this['.columnHeader'].font.color ? this['.columnHeader'].font.color : "#000000";
+    },
+    columnHeaderFontSize() {
+      return this[".columnHeader"] && this[".columnHeader"].font && this['.columnHeader'].font.size ? this['.columnHeader'].font.size : 12;
+    },
+    columnHeaderBackgroundColor() {
+      return this[".columnHeader"] && this[".columnHeader"].background && this['.columnHeader'].background.color ? this['.columnHeader'].background.color : '#ffffff';
+    },
+    columnHeaderIndent() {
+      return this[".rowHeader"] && this[".rowHeader"].indent ? this[".rowHeader"].indent : 0;
+    },
+    cellBorderStyle() {
+      return this[".cell"] && this[".cell"].border && this['.cell'].border.style ? this['.cell'].border.style : "solid";
+    },
+    cellBorderColor() {
+      return this[".cell"] && this[".cell"].border && this['.cell'].border.color ? this['.cell'].border.color : "#000000";
+    },
+    cellBorderWidth() {
+      return this[".cell"] && this[".cell"].border && this['.cell'].border.width ? this['.cell'].border.width : 1;
+    },
+    cellBorderPosition() {
+      return this[".cell"] && this[".cell"].border && this['.cell'].border.position ? this['.cell'].border.position: 'All';
+    },
+    cellFontWeight() {
+      return this['.cell'] && this[".cell"].font && this['.cell'].font.weight ? this['.cell'].font.weight : "Regular";
+    },
+    cellFontColor() {
+      return this[".cell"] && this[".cell"].font && this['.cell'].font.color ? this['.cell'].font.color : "#000000";
+    },
+    cellFontSize() {
+      return this[".cell"] && this[".cell"].font && this['.cell'].font.size ? this['.cell'].font.size : 12;
+    },
+    cellBackgroundColor() {
+      return this[".cell"] && this[".cell"].background && this['.cell'].background.color ? this['.cell'].background.color : '#ffffff';
+    },
+    cellIndent() {
+      return this[".rowHeader"] && this[".rowHeader"].indent ? this[".rowHeader"].indent : 0;
     },
     // tab() {
     //   if(this.selectedBlock) return "attr"; 
@@ -798,6 +1198,40 @@ export default {
       styles[t] = undefined;
       this.$bus.emit('updateglobal', styles);
     },
+    applyChangesToHier(channel, isClear, color) {
+      let c = channel[0];
+      let levels = 4; //default
+      let styles = this.selectedTable;
+      if(isClear) {
+        for(let i = 1; i <= levels; i++) {
+          let cl =  "." + String(c) + "l" + String(i);
+          if(this[cl]) {
+            this[cl] = undefined;
+            styles[cl] = undefined;
+          }
+        }
+      } else {
+        let r = parseInt(`0x${color[1]}${color[2]}`, 16);
+        let g = parseInt(`0x${color[3]}${color[4]}`, 16);
+        let b = parseInt(`0x${color[5]}${color[6]}`, 16);
+        
+        for(let i = 1; i <= levels; i++) {
+          let cl =  '.' + String(c) + "l" + String(i); 
+          let lColor = (i == 1) ? color : `rgba(${r}, ${g}, ${b}, ${(0.66 ** (i-1)).toFixed(2)})`
+          this[cl] = {
+            background: {
+              color: lColor,
+            }
+          };
+          styles[cl] = {
+            background: {
+              color: lColor,
+            }
+          };
+        }
+      }
+      this.$bus.emit('updateglobal', styles);
+    },
     applyGlobalChanges(className, key1, key2, value) {
       console.log("global changes: ", className, key1, key2, value);
       // if(className == '.oddRows' || className == '.evenRows') {
@@ -814,7 +1248,7 @@ export default {
       if(key1) {
         if(!this[className][key1]) this[className][key1] = {};
         if(key2) this[className][key1][key2] = value;
-        else this[className][key1] = undefined;
+        else this[className][key1] = value;
       } else {
         this[className] = undefined;
       }
@@ -825,7 +1259,7 @@ export default {
       if(key1) {
         if(!styles[className][key1]) styles[className][key1] = {};
         if(key2) styles[className][key1][key2] = value;
-        else styles[className][key1] = undefined;
+        else styles[className][key1] = value;
       } else {
         styles[className] = undefined;
       }
@@ -853,6 +1287,7 @@ export default {
           color: '#000000',
           width: 1,
           position: "all",
+          style: "solid",
         };
         this.background = (val.style && val.style.background) ? val.style.background : {
           color: '#ffffff',
@@ -862,7 +1297,7 @@ export default {
           size: 12,
           weight: 'Regular'
         };
-        
+        this.indent = (val.style && val.style.indent) ? val.style.indent : 0;
       }
     },
     selectedTable(val, oldval) {
@@ -873,7 +1308,7 @@ export default {
         //   color: val['.oddRows'].background.color,
         // } : (typeof(val['.evenRows']) != 'undefined') ? {
         //   type: 'even',
-        //   color: val['.evenRows'].background.color,
+        //   color: val['.evenRows'].background.color,W
         // } : undefined;
         // this.colNoPattern = (typeof(val['.oddCols']) != 'undefined') ? {
         //   type: 'odd',
@@ -882,12 +1317,11 @@ export default {
         //   type: 'even',
         //   color: val['.evenCols'].background.color,
         // } : undefined;
-        this['.oddRows'] = val? val['.oddRows'] : undefined;
-        this['.oddCols'] = val? val['.oddCols'] : undefined;
-        this['.evenRows'] = val? val['.evenRows'] : undefined;
-        this['.evenCols'] = val? val['.evenCols'] : undefined;
-        this['.rowHeader'] = val? val['.rowHeader'] : undefined;
-        this['.colHeader'] = val? val['.colHeader'] : undefined;
+        let arr = ['.oddRows', '.oddCols', '.evenRows', '.evenCols', '.rowHeader', '.columnHeader', '.cell', '.rl1', '.rl2', '.rl3', '.rl4', '.cl1', '.cl2', '.cl3', '.cl4'];
+        arr.forEach(item => {
+          this[item] = val? val[item] : undefined;
+        })
+        
       }
     }
     // entityMerge(val, oldval) {
@@ -1462,5 +1896,12 @@ export default {
   display: inline-block;
   margin-right: 10px;
   font-weight: 5px;
+}
+
+.colorinput {
+  width: 25px; 
+  border: none; 
+  background-color: transparent;  
+  margin-left: 15px;
 }
 </style>
