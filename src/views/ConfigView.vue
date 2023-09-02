@@ -372,49 +372,46 @@
       <div v-if="tab != 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Style </div>
         <div v-if="background" class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Background </div> 
-          <div class="wrapper">
-            <!-- <div class="iconfont iconpaint"> &#xeb6e;</div>  -->
-            <input type="color" :value="background.color" style="width: 25px; border: none; background-color: transparent;" @input="e => {background.color = e.target.value; applyChangesToStyle('background', 'color', e.target.value)}"/>
-            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px; width: 70px;"> {{background.color}} </div>
-          </div>
+          <!-- <div class="configAttrSubpanelTitle"> Background </div>  -->
+          <div class="wrapper" style="flex-direction: column;">
+            <div v-if="background" class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe6f8; </div> 
+              <div style="display: inline-block" class="stylePropsText"> Background </div>
+              <input type="color" :value="background.color" style="width: 25px; border: none; background-color: transparent;" @input="e => {background.color = e.target.value; applyChangesToStyle('background', 'color', e.target.value)}"/>
+            </div>
+            <div v-if="font" class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe624; </div> 
+              <div style="display: inline-block" class="stylePropsText"> Font </div>
+              <input type="color" :value="font.color" style="width: 25px; border: none; background-color: transparent;" @input="e => {font.color = e.target.value; applyChangesToStyle('font', 'color', e.target.value)}"/>
+              <a-input-number v-model:value="font.size" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('font', 'size', value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
+              <a-select v-model:value="font.weight" style="width: 100px; margin-left: 30px" size="small" @change="(value) => {applyChangesToStyle('font', 'weight', value)}">
+                <a-select-option value="Bold"> Bold </a-select-option>
+                <a-select-option value="Semi Bold"> Semi Bold </a-select-option>
+                <a-select-option value="Regular"> Regular </a-select-option>
+              </a-select>
+            </div>
+            <div v-if="border" class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xeaff; </div> 
+              <div style="display: inline-block" class="stylePropsText"> Border </div>
+              <input type="color" :value="border.color" style="width: 25px; border: none; background-color: transparent;" @input="e => { border.color = e.target.value; applyChangesToStyle('border', 'color', e.target.value);}"/>
+              <a-input-number v-model:value="border.width" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('border', 'width', value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
+              <a-select v-model:value="border.position" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyChangesToStyle('border', 'position', value)">
+                <a-select-option value="All"> All </a-select-option>
+                <a-select-option value="Top"> Top </a-select-option>
+                <a-select-option value="Bottom"> Bottom </a-select-option>
+                <a-select-option value="Left"> Left </a-select-option>
+                <a-select-option value="Right"> Right </a-select-option>
+              </a-select>
+            </div>
+            <div v-if="typeof(indent) != 'undefined'" class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe7f3; </div> 
+              <div style="display: inline-block" class="stylePropsText"> Indent </div>
+              <a-input-number v-model:value="indent" size="small" :min="1" :max="100000" style="width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
+            </div>
         </div>
-        <div v-if="font" class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Font </div> 
-          <div class="wrapper"> 
-            <input type="color" :value="font.color" style="width: 25px; border: none; background-color: transparent;" @input="e => {font.color = e.target.value; applyChangesToStyle('font', 'color', e.target.value)}"/>
-            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px; width: 70px;"> {{font.color}} </div>
-            <a-input-number v-model:value="font.size" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('font', 'size', value)"/> 
-            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
-            <a-select v-model:value="font.weight" style="width: 100px; margin-left: 30px" size="small" @change="(value) => {applyChangesToStyle('font', 'weight', value)}">
-              <a-select-option value="Bold"> Bold </a-select-option>
-              <a-select-option value="Semi Bold"> Semi Bold </a-select-option>
-              <a-select-option value="Regular"> Regular </a-select-option>
-            </a-select>
-          </div>
-        </div>
-        <div v-if="border" class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Border </div> 
-          <div class="wrapper"> 
-            <input type="color" :value="border.color" style="width: 25px; border: none; background-color: transparent;" @input="e => { border.color = e.target.value; applyChangesToStyle('border', 'color', e.target.value);}"/>
-            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px; width: 70px;"> {{border.color}} </div>
-            <a-input-number v-model:value="border.width" size="small" :min="1" :max="100000" style="margin-left: 30px; width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('border', 'width', value)"/> 
-            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
-            <a-select v-model:value="border.position" style="width: 100px; margin-left: 30px" size="small" @change="(value) => applyChangesToStyle('border', 'position', value)">
-              <a-select-option value="All"> All </a-select-option>
-              <a-select-option value="Top"> Top </a-select-option>
-              <a-select-option value="Bottom"> Bottom </a-select-option>
-              <a-select-option value="Left"> Left </a-select-option>
-              <a-select-option value="Right"> Right </a-select-option>
-            </a-select>
-          </div>
-        </div>
-        <div v-if="border" class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Indent </div> 
-          <div class="wrapper"> 
-            <a-input-number v-model:value="indent" size="small" :min="1" :max="100000" style="width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('indent', undefined, value)"/> 
-            <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
-          </div>
         </div>
       </div>
       <div v-if="tab == 'table'" class="configAttrPanel">
@@ -1395,7 +1392,7 @@ export default {
       }
     },
     rowHeaderBorderStyle() {
-      return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.style ? this['.rowHeader'].border.style : "solid";
+      return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.style ? this['.rowHeader'].border.style : "none";
     },
     rowHeaderBorderColor() {
       return this[".rowHeader"] && this[".rowHeader"].border && this['.rowHeader'].border.color ? this['.rowHeader'].border.color : "#000000";
@@ -1413,7 +1410,7 @@ export default {
       return this[".rowHeader"] && this[".rowHeader"].font && this['.rowHeader'].font.color ? this['.rowHeader'].font.color : "#000000";
     },
     rowHeaderFontSize() {
-      return this[".rowHeader"] && this[".rowHeader"].font && this['.rowHeader'].font.size ? this['.rowHeader'].font.size : 12;
+      return this[".rowHeader"] && this[".rowHeader"].font && this['.rowHeader'].font.size ? this['.rowHeader'].font.size : 16;
     },
     rowHeaderBackgroundColor() {
       return this[".rowHeader"] && this[".rowHeader"].background && this['.rowHeader'].background.color ? this['.rowHeader'].background.color : '#ffffff';
@@ -1422,7 +1419,7 @@ export default {
       return this[".rowHeader"] && this[".rowHeader"].indent ? this[".rowHeader"].indent : 0;
     },
     columnHeaderBorderStyle() {
-      return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.style ? this['.columnHeader'].border.style : "solid";
+      return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.style ? this['.columnHeader'].border.style : "none";
     },
     columnHeaderBorderColor() {
       return this[".columnHeader"] && this[".columnHeader"].border && this['.columnHeader'].border.color ? this['.columnHeader'].border.color : "#000000";
@@ -1440,7 +1437,7 @@ export default {
       return this[".columnHeader"] && this[".columnHeader"].font && this['.columnHeader'].font.color ? this['.columnHeader'].font.color : "#000000";
     },
     columnHeaderFontSize() {
-      return this[".columnHeader"] && this[".columnHeader"].font && this['.columnHeader'].font.size ? this['.columnHeader'].font.size : 12;
+      return this[".columnHeader"] && this[".columnHeader"].font && this['.columnHeader'].font.size ? this['.columnHeader'].font.size : 16;
     },
     columnHeaderBackgroundColor() {
       return this[".columnHeader"] && this[".columnHeader"].background && this['.columnHeader'].background.color ? this['.columnHeader'].background.color : '#ffffff';
@@ -1449,7 +1446,7 @@ export default {
       return this[".columnHeader"] && this[".columnHeader"].indent ? this[".columnHeader"].indent : 0;
     },
     cellBorderStyle() {
-      return this[".cell"] && this[".cell"].border && this['.cell'].border.style ? this['.cell'].border.style : "solid";
+      return this[".cell"] && this[".cell"].border && this['.cell'].border.style ? this['.cell'].border.style : "none";
     },
     cellBorderColor() {
       return this[".cell"] && this[".cell"].border && this['.cell'].border.color ? this['.cell'].border.color : "#000000";
@@ -1467,7 +1464,7 @@ export default {
       return this[".cell"] && this[".cell"].font && this['.cell'].font.color ? this['.cell'].font.color : "#000000";
     },
     cellFontSize() {
-      return this[".cell"] && this[".cell"].font && this['.cell'].font.size ? this['.cell'].font.size : 12;
+      return this[".cell"] && this[".cell"].font && this['.cell'].font.size ? this['.cell'].font.size : 16;
     },
     cellBackgroundColor() {
       return this[".cell"] && this[".cell"].background && this['.cell'].background.color ? this['.cell'].background.color : '#ffffff';
@@ -1476,97 +1473,97 @@ export default {
       return this[".cell"] && this[".cell"].indent ? this[".cell"].indent : 0;
     },
     curRowBorderStyle() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "none";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
-      return this[cl] && this[cl].border && this[cl].border.style ? this[cl].border.style : "solid";
+      return this[cl] && this[cl].border && this[cl].border.style ? this[cl].border.style : "none";
     },
     curRowBorderColor() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "#000000";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].border && this[cl].border.color ? this[cl].border.color : "#000000";
     },
     curRowBorderWidth() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return 1;
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].border && this[cl].border.width ? this[cl].border.width : 1;
     },
     curRowBorderPosition() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "All";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].border && this[cl].border.position ? this[cl].border.position: 'All';
     },
     curRowFontWeight() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "Regular";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].font && this[cl].font.weight ? this[cl].font.weight : "Regular";
     },
     curRowFontColor() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "#000000";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].font && this[cl].font.color ? this[cl].font.color : "#000000";
     },
     curRowFontSize() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return 16;
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
-      return this[cl] && this[cl].font && this[cl].font.size ? this[cl].font.size : 12;
+      return this[cl] && this[cl].font && this[cl].font.size ? this[cl].font.size : 16;
     },
     curRowBackgroundColor() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "#ffffff";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].background && this[cl].background.color ? this[cl].background.color : '#ffffff';
     },
     curRowIndent() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return 0;
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
       return this[cl] && this[cl].indent ? this[cl].indent : 0;
     },
     curColBorderStyle() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "none";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
-      return this[cl] && this[cl].border && this[cl].border.style ? this[cl].border.style : "solid";
+      return this[cl] && this[cl].border && this[cl].border.style ? this[cl].border.style : "none";
     },
     curColBorderColor() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "#000000";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].border && this[cl].border.color ? this[cl].border.color : "#000000";
     },
     curColBorderWidth() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return 1;
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].border && this[cl].border.width ? this[cl].border.width : 1;
     },
     curColBorderPosition() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "All";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].border && this[cl].border.position ? this[cl].border.position: 'All';
     },
     curColFontWeight() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "Regular";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].font && this[cl].font.weight ? this[cl].font.weight : "Regular";
     },
     curColFontColor() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "#000000";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].font && this[cl].font.color ? this[cl].font.color : "#000000";
     },
     curColFontSize() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return 16;
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
-      return this[cl] && this[cl].font && this[cl].font.size ? this[cl].font.size : 12;
+      return this[cl] && this[cl].font && this[cl].font.size ? this[cl].font.size : 16;
     },
     curColBackgroundColor() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return "#ffffff";
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].background && this[cl].background.color ? this[cl].background.color : '#ffffff';
     },
     curColIndent() {
-      if(!this.selectedPos) return "solid";
+      if(!this.selectedPos) return 0;
       let cl = ".c" + String(Number(this.selectedPos.col) + 1); 
       return this[cl] && this[cl].indent ? this[cl].indent : 0;
     },
     aggBorderStyle() {
-      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.style ? this['.sumTitle'].border.style : "solid";
+      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.style ? this['.sumTitle'].border.style : "none";
     },
     aggBorderColor() {
       return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.color ? this['.sumTitle'].border.color : "#000000";
@@ -1584,7 +1581,7 @@ export default {
       return this[".sumTitle"] && this[".sumTitle"].font && this['.sumTitle'].font.color ? this['.sumTitle'].font.color : "#000000";
     },
     aggFontSize() {
-      return this[".sumTitle"] && this[".sumTitle"].font && this['.sumTitle'].font.size ? this['.sumTitle'].font.size : 12;
+      return this[".sumTitle"] && this[".sumTitle"].font && this['.sumTitle'].font.size ? this['.sumTitle'].font.size : 16;
     },
     aggBackgroundColor() {
       return this[".sumTitle"] && this[".sumTitle"].background && this['.sumTitle'].background.color ? this['.sumTitle'].background.color : '#ffffff';
@@ -1593,7 +1590,7 @@ export default {
       return this[".sumTitle"] && this[".sumTitle"].indent ? this[".sumTitle"].indent : 0;
     },
     aggCellBorderStyle() {
-      return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.style ? this['.sumCell'].border.style : "solid";
+      return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.style ? this['.sumCell'].border.style : "none";
     },
     aggCellBorderColor() {
       return this[".sumCell"] && this[".sumCell"].border && this['.sumCell'].border.color ? this['.sumCell'].border.color : "#000000";
@@ -1611,7 +1608,7 @@ export default {
       return this[".sumCell"] && this[".sumCell"].font && this['.sumCell'].font.color ? this['.sumCell'].font.color : "#000000";
     },
     aggCellFontSize() {
-      return this[".sumCell"] && this[".sumCell"].font && this['.sumCell'].font.size ? this['.sumCell'].font.size : 12;
+      return this[".sumCell"] && this[".sumCell"].font && this['.sumCell'].font.size ? this['.sumCell'].font.size : 16;
     },
     aggCellBackgroundColor() {
       return this[".sumCell"] && this[".sumCell"].background && this['.sumCell'].background.color ? this['.sumCell'].background.color : '#ffffff';
@@ -1815,14 +1812,14 @@ export default {
           color: '#000000',
           width: 1,
           position: "all",
-          style: "solid",
+          style: "none",
         };
         this.background = (val.style && val.style.background) ? val.style.background : {
           color: '#ffffff',
         };
         this.font = (val.style && val.style.font) ? val.style.font : {
           color: '#000000',
-          size: 12,
+          size: 16,
           weight: 'Regular'
         };
         this.indent = (val.style && val.style.indent) ? val.style.indent : 0;
@@ -2296,7 +2293,16 @@ export default {
 .keyPropsText {
   display: inline-block;
   font-size: 14px;
-  width: 70px;
+  width: 80px;
+  font-family: Inter-Medium-8, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.stylePropsText {
+  display: inline-block;
+  font-size: 14px;
+  width: 90px;
   font-family: Inter-Medium-8, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -2442,9 +2448,9 @@ export default {
 }
 
 .iconpaint {
-  font-size: 22px;
+  font-size: 20px;
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 5px;
   font-weight: 5px;
 }
 

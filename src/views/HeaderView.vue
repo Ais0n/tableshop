@@ -1,6 +1,6 @@
 <template>
   <div class="header-bar">
-    <div id="system-title">Tableshop</div>
+    <div id="system-title">Table Illustrator</div>
     <!-- <i class="iconData iconfont">&#xe685;</i> -->
     <i class="iconfont header-icon" @click="undo"> &#xebbd; </i>
     <i class="iconfont header-icon" @click="redo"> &#xeb83; </i>

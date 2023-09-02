@@ -1,13 +1,13 @@
 export const EXAMPLE_DATA = [
-  {
-    name: "crime", // 数据集的名称
-    values: [
-      { state: "Alabama", year: "2004", crime: 4029.3 },
-      { state: "Alabama", year: "2005", crime: 3900 },
-      { state: "Alaska", crime: 3370.9, year: "2004" },
-      { state: "Alaska", crime: 3615, year: "2005" },
-    ],
-  },
+  // {
+  //   name: "crime", // 数据集的名称
+  //   values: [
+  //     { state: "Alabama", year: "2004", crime: 4029.3 },
+  //     { state: "Alabama", year: "2005", crime: 3900 },
+  //     { state: "Alaska", crime: 3370.9, year: "2004" },
+  //     { state: "Alaska", crime: 3615, year: "2005" },
+  //   ],
+  // },
   {
     name: "sales",
     values: [
@@ -107,12 +107,14 @@ export const EXAMPLE_DATA = [
       { "Item": "Reserves", "Type": "Liabilities", "Amount": 50000 },
       { "Item": "Stock", "Type": "Assets", "Amount": 66000 },
       { "Item": "Profit and Loss A/c", "Type": "Liabilities", "Amount": 12750 },
+      { "Item": "Dividends", "Type": "Equity", "Amount": 20050 },
       { "Item": "Building", "Type": "Assets", "Amount": 120000 },
       { "Item": "Share capital", "Type": "Liabilities", "Amount": 200000 },
       { "Item": "Sales revenue", "Type": "Income", "Amount": 10550 },
       { "Item": "Research expenses", "Type": "Expenses", "Amount": 51000 },
       { "Item": "Royalty income", "Type": "Income", "Amount": 33100 },
       { "Item": "Advertising costs", "Type": "Expenses", "Amount": 30250 },
+      { "Item": "Retained earnings", "Type": "Equity", "Amount": 40000 },
       { "Item": "Rental income", "Type": "Income", "Amount": 23000 },
       { "Item": "Legal fees", "Type": "Expenses", "Amount": 11000 },
       { "Item": "Interest income", "Type": "Income", "Amount": 22000 },

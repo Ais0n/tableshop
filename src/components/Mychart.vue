@@ -16,16 +16,16 @@ export default {
     },
   },
   mounted() {
-    console.log(this.attr.values);
-    if (this.attr.values.length <= 1 || this.attr.dataType == 'categorical') {
-      this.drawLine_barchart(this.attr.values);
+    console.log(this.attr.fullValues);
+    if (this.attr.fullValues.length <= 1 || this.attr.dataType == 'categorical') {
+      this.drawLine_barchart(this.attr.fullValues);
     } else {
-      this.drawLine_histogram(this.attr.values);
+      this.drawLine_histogram(this.attr.fullValues);
     }
   },
   methods: {
     drawLine_barchart(valueList) {
-			let newList = valueList;
+			let newList = Array.from(new Set(valueList));
 			let len = 0;
 			newList.forEach(item => {
 				len += String(item).length
@@ -63,7 +63,7 @@ export default {
         },
         series: [
           {
-            name: "2011",
+            // name: "2011",
             type: "bar",
             data: tmp,
             barWidth: "35px",
@@ -93,6 +93,13 @@ export default {
           top: 10,
           bottom: 0,
           containLabel: true,
+          show: true,
+          splitLine: {
+            show: true,
+            lineStyle: {
+              type: 'solid'
+            }
+          },
         },
         xAxis: {
           // boundaryGap: '5%',

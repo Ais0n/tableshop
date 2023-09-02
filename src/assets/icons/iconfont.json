@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4767050",
+      "name": "indent",
+      "font_class": "indent",
+      "unicode": "e7f3",
+      "unicode_decimal": 59379
+    },
+    {
+      "icon_id": "7596473",
+      "name": "24gl-borderOutside",
+      "font_class": "24gl-borderOutside",
+      "unicode": "eaff",
+      "unicode_decimal": 60159
+    },
+    {
+      "icon_id": "1790495",
+      "name": "背景颜色",
+      "font_class": "beijingyanse",
+      "unicode": "e6f8",
+      "unicode_decimal": 59128
+    },
+    {
       "icon_id": "1614435",
       "name": "编辑",
       "font_class": "bianji",

@@ -166,12 +166,13 @@ export default {
           for(let i = 0; i < data.values.length; i++) {
             valueList.push(data.values[i][attr])
           }
-          valueList = Array.from(new Set(valueList));
+          let filteredValueList = Array.from(new Set(valueList));
           let dataType = typeof(valueList[0]) == "string" ? "categorical" : "numerical";
           attrInfo.push({
             "name": attr,
-            "values": valueList,
+            "values": filteredValueList,
             "dataType": dataType,
+            "fullValues": valueList,
           });
         }
         this.$store.commit("storeAttrInfo", attrInfo);
@@ -202,7 +203,22 @@ export default {
       console.log(name)
       let spec = await tableShop.default.utils.parseTable(rawData, this.tableType);
       console.log(spec)
-      
+      // let attrs = Object.keys(data.values[0]);
+      // let attrInfo = [];
+      // for(let j = 0; j < attrs.length; j++) {
+      //   let attr = attrs[j], valueList = [];
+      //   for(let i = 0; i < data.values.length; i++) {
+      //     valueList.push(data.values[i][attr])
+      //   }
+      //   let filteredValueList = Array.from(new Set(valueList));
+      //   let dataType = typeof(valueList[0]) == "string" ? "categorical" : "numerical";
+      //   attrInfo.push({
+      //     "name": attr,
+      //     "values": filteredValueList,
+      //     "dataType": dataType,
+      //     "fullValues": valueList,
+      //   });
+      // }
     },
     async selectData() {
       return new Promise((resolve, reject) => {
