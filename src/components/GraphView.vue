@@ -148,15 +148,15 @@ export default {
     }
   },
   methods: {
-    calcDepth(tree) {
-      if(!(tree instanceof Array) || tree.length == 0) return 0;
-      let depth = 0;
-      for(let i = 0; i < tree.length; i++) {
-        let d = this.calcDepth(tree[i].children) + this.checkInsertValid(tree[i], false) ? 0 : 1;
-        depth = depth > d ? depth: d;
-      }
-      return depth;
-    },
+    // calcDepth(tree) {
+    //   if(!(tree instanceof Array) || tree.length == 0) return 0;
+    //   let depth = 0;
+    //   for(let i = 0; i < tree.length; i++) {
+    //     let d = this.calcDepth(tree[i].children) + this.checkInsertValid(tree[i], false) ? 0 : 1;
+    //     depth = depth > d ? depth: d;
+    //   }
+    //   return depth;
+    // },
     calcHVLine(table) { // 计算水平和垂直参考线的位置
       // let rDepth = this.calcDepth(this.rowTree), cDepth = this.calcDepth(this.columnTree);
       // console.log(rDepth, cDepth)
@@ -234,15 +234,15 @@ export default {
           table[i][j].height = Graph_Block_Size.height * table[i][j].rowSpan;
           table[i][j].left = Graph_Block_Size.width * curColIndex + vlineLeft;
           table[i][j].top = Graph_Block_Size.height * i + hlineTop;
-          if(i >= cdim && curColIndex < rdim) {
+          if((i >= cdim && curColIndex < rdim) || table[i][j].type == 'row') {
             table[i][j].channel = 'row';
             // table[i][j].width -= table[i][j].indent;
             // table[i][j].left += table[i][j].indent;
-          } else if(i < cdim && curColIndex >= rdim) {
+          } else if((i < cdim && curColIndex >= rdim) || table[i][j].type == 'column') {
             // table[i][j].height -= table[i][j].indent;
             // table[i][j].top += table[i][j].indent;
             table[i][j].channel = 'column';
-          } else if(i >= cdim && curColIndex >= rdim) {
+          } else if((i >= cdim && curColIndex >= rdim) || table[i][j].type == 'cell') {
             table[i][j].channel = 'cell';
           }
           if(table[i][j].rowSpan > 1) {
@@ -456,6 +456,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -478,6 +479,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -492,6 +494,7 @@ export default {
             let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
             if(!this.checkInsertValid(parentBlock, dir == 'bottomchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -529,6 +532,7 @@ export default {
             let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
             if(!this.checkInsertValid(parentBlock, dir == 'bottomchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -560,6 +564,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -585,6 +590,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -689,6 +695,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -711,6 +718,7 @@ export default {
             if(!targetBlock) return
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             };
@@ -725,6 +733,7 @@ export default {
             let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
             if(!this.checkInsertValid(parentBlock, dir == 'rightchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -763,6 +772,7 @@ export default {
             let parentBlock = targetBlock.arr[targetBlock.index];
             // 检查插入是否合法
             if(!this.checkInsertValid(parentBlock, dir == 'rightchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -793,6 +803,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -819,6 +830,7 @@ export default {
             if(!targetBlock) return;
             // 检查插入是否合法
             if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
+              this.$message.error("Invalid insert!");
               throw new Error("Invalid insert");
               return;
             }
@@ -931,17 +943,18 @@ export default {
     },
     checkInsertValid(parentBlock, isInsertEntityMerge) {
       if(!parentBlock.children || !(parentBlock.children instanceof Array) || parentBlock.children.length == 0) return true;
-      let entityMerge = -1; // 1: true, 0: false, -1: any
-      for(let i = 0; i < parentBlock.children.length; i++) {
-        let cur = (parentBlock.children[i].entityMerge == true);
-        if(i == 0) {
-          entityMerge = cur;
-        } else if(cur != entityMerge) {
-          throw new Error("Illegal table!");
-        }
-        if(entityMerge != isInsertEntityMerge) return false;
-      }
-      return true;
+      // let entityMerge = -1; // 1: true, 0: false, -1: any
+      // for(let i = 0; i < parentBlock.children.length; i++) {
+      //   let cur = (parentBlock.children[i].entityMerge == true);
+      //   if(i == 0) {
+      //     entityMerge = cur;
+      //   } else if(cur != entityMerge) {
+      //     throw new Error("Illegal table!");
+      //   }
+      //   if(entityMerge != isInsertEntityMerge) return false;
+      // }
+      // return true;
+      return parentBlock.entityMerge == isInsertEntityMerge;
     },
     handleBlockClick(e) {
       console.log(e);
@@ -1207,50 +1220,50 @@ export default {
       e.target.classList.remove("tophover");
       e.target.classList.remove("lefthover");
     },
-    drawGraphCanvas(arr, dom) {
-      if(!(arr instanceof Array)) return;
-      for(let i = 0; i < arr.length; i++) {
-        let block = arr[i];
-        // let newDom = document.createElement("div");
-        let newDom = new Object();
-        newDom.className = (arr[i].blockId == '-1') ? 'placeholderBlock' : 'block';
-        newDom.style = {
-          position: 'absolute',
-          top: block.top,
-          left: block.left,
-          height: block.height,
-          width: block.width,
-        };
-        // newDom.style.position = 'absolute';
-        // newDom.style.top = block.top + 'px';
-        // newDom.style.left = block.left + 'px';
-        // newDom.style.height = block.height + 'px';
-        // newDom.style.width = block.width + 'px';
-        // newDom.style = `position: absolute; top: ${block.top}px; left: ${block.left}px; height: ${block.height}px; width: ${block.width}px`;
-        // newDom.dataset.bid = block.blockId;
-        // newDom.dataset.channel = channel;
-        newDom.dataset = {
-          bid: block.blockId,
-          channel: 'canvas',
-          rowSpan: 1,
-          colSpan: 1,
-        }
-        if(block.rowParentId) newDom.dataset.rowParentId = block.rowParentId;
-        if(block.colParentId) newDom.dataset.colParentId = block.colParentId;
-        let valueList = block.values ? block.values : block.function ? [block.function] : this.searchValueList(block.attrName);
-        newDom.innerText = valueList.length > 1 ? `${valueList[0]} ... ${valueList[valueList.length-1]}` : valueList[0];
-        newDom.draggable = (arr[i].blockId != -1);
-        newDom.ondragstart = this.handleBlockDragstart;
-        newDom.ondragover = this.handleBlockDragover;
-        newDom.ondrop = this.handleBlockDrop;
-        newDom.ondragleave = this.handleBlockDragleave;
-        newDom.ondragend = this.handleDragend;
-        newDom.oncontextmenu = this.openMenu;
-        newDom.onclick = this.handleBlockClick;
-        // dom.appendChild(newDom);
-        dom.push(newDom);
-      }
-    },
+    // drawGraphCanvas(arr, dom) {
+    //   if(!(arr instanceof Array)) return;
+    //   for(let i = 0; i < arr.length; i++) {
+    //     let block = arr[i];
+    //     // let newDom = document.createElement("div");
+    //     let newDom = new Object();
+    //     newDom.className = (arr[i].blockId == '-1') ? 'placeholderBlock' : 'block';
+    //     newDom.style = {
+    //       position: 'absolute',
+    //       top: block.top,
+    //       left: block.left,
+    //       height: block.height,
+    //       width: block.width,
+    //     };
+    //     // newDom.style.position = 'absolute';
+    //     // newDom.style.top = block.top + 'px';
+    //     // newDom.style.left = block.left + 'px';
+    //     // newDom.style.height = block.height + 'px';
+    //     // newDom.style.width = block.width + 'px';
+    //     // newDom.style = `position: absolute; top: ${block.top}px; left: ${block.left}px; height: ${block.height}px; width: ${block.width}px`;
+    //     // newDom.dataset.bid = block.blockId;
+    //     // newDom.dataset.channel = channel;
+    //     newDom.dataset = {
+    //       bid: block.blockId,
+    //       channel: 'canvas',
+    //       rowSpan: 1,
+    //       colSpan: 1,
+    //     }
+    //     if(block.rowParentId) newDom.dataset.rowParentId = block.rowParentId;
+    //     if(block.colParentId) newDom.dataset.colParentId = block.colParentId;
+    //     let valueList = block.values ? block.values : block.function ? [block.function] : this.searchValueList(block.attrName);
+    //     newDom.innerText = valueList.length > 1 ? `${valueList[0]} ... ${valueList[valueList.length-1]}` : valueList[0];
+    //     newDom.draggable = (arr[i].blockId != -1);
+    //     newDom.ondragstart = this.handleBlockDragstart;
+    //     newDom.ondragover = this.handleBlockDragover;
+    //     newDom.ondrop = this.handleBlockDrop;
+    //     newDom.ondragleave = this.handleBlockDragleave;
+    //     newDom.ondragend = this.handleDragend;
+    //     newDom.oncontextmenu = this.openMenu;
+    //     newDom.onclick = this.handleBlockClick;
+    //     // dom.appendChild(newDom);
+    //     dom.push(newDom);
+    //   }
+    // },
     drawTable(table, tableId, dom) {
       for(let i = table.length - 1; i >= 0; i--) {
         for(let j = 0; j < table[i].length; j++) {
