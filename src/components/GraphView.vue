@@ -236,11 +236,11 @@ export default {
           table[i][j].top = Graph_Block_Size.height * i + hlineTop;
           if(i >= cdim && curColIndex < rdim) {
             table[i][j].channel = 'row';
-            table[i][j].width -= table[i][j].indent;
-            table[i][j].left += table[i][j].indent;
+            // table[i][j].width -= table[i][j].indent;
+            // table[i][j].left += table[i][j].indent;
           } else if(i < cdim && curColIndex >= rdim) {
-            table[i][j].height -= table[i][j].indent;
-            table[i][j].top += table[i][j].indent;
+            // table[i][j].height -= table[i][j].indent;
+            // table[i][j].top += table[i][j].indent;
             table[i][j].channel = 'column';
           } else if(i >= cdim && curColIndex >= rdim) {
             table[i][j].channel = 'cell';
@@ -1620,26 +1620,37 @@ export default {
     },
     getTabledim(spec, table) {
       console.log(spec, table);
-      if(table[0] && !table[0][0].sourceBlockId) {
-        return({
-          cdim: table[0][0].rowSpan,
-          rdim: table[0][0].colSpan,
-        });
-      }
-      const getDepth = (spec_channel) => {
+      // if(table[0] && !table[0][0].sourceBlockId) {
+      //   return({
+      //     cdim: table[0][0].rowSpan,
+      //     rdim: table[0][0].colSpan,
+      //   });
+      // }
+      const getDepth = (spec_channel, index) => {
         let res = 0;
         if(!(spec_channel instanceof Array)) return res;
         for(let i = 0; i < spec_channel.length; i++) {
-          let tmp = getDepth(spec_channel[i].children) + ((spec_channel[i].entityMerge == true && spec_channel[i].children instanceof Array && spec_channel[i].children.length > 0) ? 0 : 1);
-          if(spec_channel[i].key && typeof(spec_channel[i].key.position) != 'undefined' && spec_channel[i].key.position != 'embedded') tmp++;
+          let cur = spec_channel[i];
+          let tmp = 0;
+          if(cur.key && typeof(cur.key.position) != 'undefined' && cur.key.position != 'embedded' && !index[cur.key.position]) {
+            tmp++;
+          }
+          if(cur.entityMerge == true && cur.key && typeof(cur.key.position) != 'undefined' && cur.key.position != 'embedded') {
+            let pos = cur.key.position;
+            index[pos] = true;
+          } else if (!cur.entityMerge) {
+            index = {};
+          }
+          tmp += getDepth(cur.children, index) + ((cur.entityMerge == true && cur.children instanceof Array && cur.children.length > 0) ? 0 : 1);
+          
           if(tmp > res) res = tmp;
         } 
         return res;
       }
       // 没找到，行表或列表
       return {
-        rdim: getDepth(spec.rowHeader),
-        cdim: getDepth(spec.columnHeader),
+        rdim: getDepth(spec.rowHeader, {}),
+        cdim: getDepth(spec.columnHeader, {}),
       }
     },
     foldTable(dim, fullTable) {
@@ -1690,13 +1701,23 @@ export default {
         }
         return cnt;
       }
+      const checkChildren = (id_a, id_b) => {
+        let block = this.findBlock(id_a);
+        if(!block) return false;
+        block = block.arr[block.index];
+        if(!(block.children instanceof Array)) return false;
+        for(let i = 0; i < block.children.length; i++) {
+          if(block.children[i].blockId == id_b) return true;
+        }
+        return false;
+      }
       // 遍历rowheader
       for(let i = cdim; i < fullTable.length; i++) {
         // if(isStackNotEmpty() && stack[0].count > max_visible_values) break;
         for(let j = 0; j < fullTable[i].length; j++) {
           if(fullTable[i][j].col >= rdim) break;
           let curId = fullTable[i][j].sourceBlockId;
-          if(!curId || curId == '@KEY') continue;
+          if(!curId || fullTable[i][j].type == 'key') continue;
           let curBlock = this.findBlock(curId);
           if(!curBlock) throw new Error("Unable to find block, id=" + String(curId));
           curBlock = curBlock.arr[curBlock.index];
@@ -1719,22 +1740,7 @@ export default {
               addByRange(rSet, i, i + fullTable[i][j].rowSpan);
               head.isInherited = true;
             }
-          } else if(getIndexInStack(curId) == -1){ // 子级
-            let indent = ((head && head.entityMerge) ? 10 : 0) + ((head && head.indent) ? head.indent : 0);
-            let entityMerge = curBlock.entityMerge;
-            console.log(indent, entityMerge)
-            stackInsert({
-              blockId: curId,
-              count: 1,
-              isInherited: head ? (head.isInherited) : false,
-              i,
-              j,
-              unfolded,
-              indent,
-              entityMerge,
-            });
-            fullTable[i][j].indent = (head && head.entityMerge) ? indent : 0;
-          } else { // 父级
+          } else if(getIndexInStack(curId) != -1) { // 父级
             while(isStackNotEmpty()) {
               head = getStackHead();
               if(head && head.blockId != curId) {
@@ -1762,6 +1768,50 @@ export default {
               addByRange(rSet, i, i + fullTable[i][j].rowSpan);
               head.isInherited = true;
             }
+          } else if(!head || checkChildren(head.blockId, curId)){ // 子级
+            // let indent = ((head && head.entityMerge) ? 10 : 0) + ((head && head.indent) ? head.indent : 0);
+            let entityMerge = curBlock.entityMerge;
+            // console.log(indent, entityMerge)
+            if(!unfolded && (head && head.isInherited)) {
+              addByRange(rSet, i, i + fullTable[i][j].rowSpan);
+            }
+            stackInsert({
+              blockId: curId,
+              count: 1,
+              isInherited: head ? (head.isInherited) : false,
+              i,
+              j,
+              unfolded,
+              // indent,
+              entityMerge,
+            });
+            // fullTable[i][j].indent = (head && head.entityMerge) ? indent : 0;
+          } else { // 非本子树
+            while(isStackNotEmpty()) {
+              head = getStackHead();
+              if(head && !checkChildren(head.blockId, curId)) {
+                if(head.unfolded && head.count > max_visible_values) {
+                  fullTable[head.i][head.j].unfoldbutton = true;
+                }
+                stackPop();
+              } else {
+                break;
+              }
+            }
+            
+            head = getStackHead();
+            if(!unfolded && (head && head.isInherited)) {
+              addByRange(rSet, i, i + fullTable[i][j].rowSpan);
+            }
+            stackInsert({
+              blockId: curId,
+              count: 1,
+              isInherited: head ? (head.isInherited) : false,
+              i,
+              j,
+              unfolded,
+              entityMerge: curBlock.entityMerge,
+            });
           }
         }
       }
@@ -1790,14 +1840,14 @@ export default {
       for(let i = 0; i < searchList.length; i++) {
         // if(isStackNotEmpty() && stack[0].count > max_visible_values) break;
         let curId = searchList[i].sourceBlockId;
-        if(!curId || curId == '@KEY') continue;
+        if(!curId || searchList[i].type == 'key') continue;
         let curBlock = this.findBlock(curId);
         if(!curBlock) throw new Error("Unable to find block, id=" + String(curId));
         curBlock = curBlock.arr[curBlock.index];
         // let valueList = curBlock.values ? curBlock.values : curBlock.function ? [curBlock.function] : this.searchValueList(curBlock.attrName);
         let unfolded = curBlock.unfolded ? true : false;
         let head = getStackHead();
-        if(head && head.blockId == curId) {
+        if(head && head.blockId == curId) { // 同级
           if(!unfolded && head.count == max_visible_values) {
             fullTable[head.i][head.j].unfoldbutton = true;
           }
@@ -1812,16 +1862,7 @@ export default {
             addByRange(cSet, searchList[i].col, searchList[i].col + searchList[i].colSpan);
             head.isInherited = true;
           }
-        } else if(getIndexInStack(curId) == -1){
-          stackInsert({
-            blockId: curId,
-            count: 1,
-            isInherited: head ? (head.isInherited) : false,
-            i: searchList[i].i,
-            j: searchList[i].j,
-            unfolded
-          });
-        } else {
+        } else if(getIndexInStack(curId) != -1) { // 父级
           while(isStackNotEmpty()) {
             head = getStackHead();
             if(head && head.blockId != curId) {
@@ -1848,6 +1889,43 @@ export default {
             addByRange(cSet, searchList[i].col, searchList[i].col + searchList[i].colSpan);
             head.isInherited = true;
           }
+        } else if(!head || checkChildren(head.blockId, curId)) { // 子级
+          if(!unfolded && (head && head.isInherited)) {
+            addByRange(cSet, searchList[i].col, searchList[i].col + searchList[i].colSpan);
+          }
+          stackInsert({
+            blockId: curId,
+            count: 1,
+            isInherited: head ? (head.isInherited) : false,
+            i: searchList[i].i,
+            j: searchList[i].j,
+            unfolded
+          });
+        } else { // 非本子树
+          while(isStackNotEmpty()) {
+              head = getStackHead();
+              if(head && !checkChildren(head.blockId, curId)) {
+                if(head.unfolded && head.count > max_visible_values) {
+                  fullTable[head.i][head.j].unfoldbutton = true;
+                }
+                stackPop();
+              } else {
+                break;
+              }
+          }
+            
+          head = getStackHead();
+          if(!unfolded && (head && head.isInherited)) {
+            addByRange(cSet, searchList[i].col, searchList[i].col + searchList[i].colSpan);
+          }
+          stackInsert({
+            blockId: curId,
+            count: 1,
+            isInherited: head ? (head.isInherited) : false,
+            i: searchList[i].i,
+            j: searchList[i].j,
+            unfolded,
+          });
         }
       }
       while(isStackNotEmpty()) {

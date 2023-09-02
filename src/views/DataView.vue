@@ -22,7 +22,15 @@
         </template>
         <a-button class="header-button"> Import Dataset </a-button>
       </a-popconfirm>
-      <a-button class="header-button"> Import Table </a-button>
+      <a-popconfirm title="Choose the table type" ok-text="Select File" cancel-text="Cancel" @confirm="importTable" placement="rightTop">
+        <template #description>
+          <a-radio-group v-model:value="tableType">
+            <a-radio value="crosstab"> Crosstab </a-radio>
+            <a-radio value="relational"> Relational table </a-radio>
+          </a-radio-group>
+        </template>
+        <a-button class="header-button"> Import Table </a-button>
+      </a-popconfirm>
       <div style="margin-top: 15px; background-color:white; border-radius: 5px; padding: 7px 7px;">
         <!-- <a-table v-if="data" :columns="headers"  :data-source="data.values" >
           <template #headerCell="{ column }">
@@ -81,6 +89,7 @@ import Mychart from '../components/Mychart.vue';
 import { EXAMPLE_DATA } from "../CONSTANT.js";
 import csvtojson from "csvtojson";
 import Spreadsheet from '../components/Spreadsheet/Index.vue';
+import * as tableShop from "../process/tableshop.js";
 export default {
   name: "DataView",
   data() {
@@ -89,6 +98,7 @@ export default {
       dataset: "",
       fileName: undefined,
       open: false,
+      tableType: "crosstab",
     });
   },
   computed: {
@@ -170,6 +180,47 @@ export default {
         this.$message.error("Unsupported File Type");
         return;
       }
+    },
+    async importTable() {
+      let rawData = await this.selectData();
+      let name = this.fileName;
+      // if(typeof this.fileName != "undefined") {
+      //   for(let i = 0; i < this.fileName.length; i++) {
+      //     if(this.fileName[i] == '.') {
+      //       name = this.fileName.slice(0, i);
+      //       break;
+      //     }
+      //   }
+      // } else {
+      //   this.$message.error("Please choose a file");
+      //   throw new Error("No file name");
+      // }
+      // this.importData({
+      //   name,
+      //   values: rawData
+      // });
+      console.log(name)
+      let spec = await tableShop.default.utils.parseTable(rawData, this.tableType);
+      console.log(spec)
+      
+    },
+    async selectData() {
+      return new Promise((resolve, reject) => {
+        let input = document.createElement("input");
+        input.value = "select file";
+        input.type = "file";
+        input.onchange = (event) => {
+          let file = event.target.files[0];
+          this.fileName = file.name;
+          let file_reader = new FileReader();
+          file_reader.onload = () => {
+            let fc = file_reader.result;
+            resolve(fc); // 返回文件文本内容到Promise
+          };
+          file_reader.readAsArrayBuffer(file);
+        };
+        input.click();
+      });
     },
     // viewDataset() {
     //   if(!this.data) {

@@ -140,7 +140,22 @@
         <div v-if="configEg" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Facet (in <a-input-number size="small" :value="facet" :min="1" style="width: 50px" @change="(val) => { applyChanges('facet', val)}"/> groups) </div>
           <div class="wrapper">
-            <div class="FglyphOption" :class="{'glyphSelected': facet == 1}" @click="applyChanges('facet', 1)">
+            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': facet == 1}" @click="applyChanges('facet', 1)">
+              <div class="configGlyph">
+                <div class="F1rowWrapper" style="width: 75%; padding-right: 2px"> 
+                  <div class="F1rowItem highlightCell" style="border-right: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
+                  <div class="F1rowItem highlightCell"> {{ Cparent2 }} </div>
+                  <div class="F1rowItem highlightCell"> {{ Cparent3 }} </div>
+                </div>
+                <div class="F1rowWrapper" style="width: 25%">
+                  <div class="F1rowItem" style="border-left: 1px solid #bbbbbb;"> ... </div>
+                  <div class="F1rowItem" style="border-left: 1px solid #bbbbbb;"> ... </div>
+                  <div class="F1rowItem" style="border-left: 1px solid #bbbbbb;"> ... </div>
+                </div>
+              </div>
+              <div class="entityMergeText"> Faceted in 1 group </div>
+            </div>
+            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': facet == 1}" @click="applyChanges('facet', 1)">
               <div class="configGlyph">
                 <div class="F1parentwrapper"> 
                   <div class="F1parent highlightCell" style="border-right: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
@@ -155,7 +170,22 @@
               </div>
               <div class="entityMergeText"> Faceted in 1 group </div>
             </div>
-            <div class="FglyphOption" :class="{'glyphSelected': facet == 2}" @click="applyChanges('facet', 2)">
+            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': facet == 2}" @click="applyChanges('facet', 2)">
+              <div class="configGlyph">
+                <div class="F1rowWrapper" style="width: 48%">
+                  <div class="F1rowItem highlightCell" style="border-right: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; height: 50%;"> {{ Cparent1 }} </div>
+                  <div class="F1rowItem highlightCell" style="border-right: 1px solid #bbbbbb; height: 50%; padding-right: 2px"> {{ Cparent3 }} </div>
+                </div>
+                <div class="F1rowWrapper" style="width: 2px; border-left: 1px solid #bbbbbb">
+                </div>
+                <div class="F1rowWrapper" style="width: 48%">
+                  <div class="F1rowItem" style="border-left: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; height: 50%;"> {{ Cparent2 }} </div>
+                  <div class="F1rowItem" style="border-left: 1px solid #bbbbbb; height: 50%;"> ... </div>
+                </div>
+              </div>
+              <div class="entityMergeText"> Faceted in 2 groups </div>
+            </div>
+            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': facet == 2}" @click="applyChanges('facet', 2)">
               <div class="configGlyph">
                 <div class="F2wrapper"> 
                   <div class="F2item highlightCell"> {{ Cparent1 }} </div>
@@ -176,7 +206,25 @@
               </div>
               <div class="entityMergeText"> Faceted in 2 groups </div>
             </div>
-            <div class="FglyphOption" :class="{'glyphSelected': facet >= 3}" @click="applyChanges('facet', facet < 3 ? 3 : facet)">
+            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': facet >= 3}" @click="applyChanges('facet', facet < 3 ? 3 : facet)">
+              <div class="configGlyph">
+                <div class="F1rowWrapper" style="width: 31%">
+                  <div class="F1rowItem highlightCell" style="border-right: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; height: 100%;"> {{ Cparent1 }} </div>
+                </div>
+                <div class="F1rowWrapper" style="width: 2px; border-left: 1px solid #bbbbbb">
+                </div>
+                <div class="F1rowWrapper" style="width: 31%">
+                  <div class="F1rowItem highlightCell" style="border-left: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; height: 100%;"> {{ Cparent2 }} </div>
+                </div>
+                <div class="F1rowWrapper" style="width: 2px; border-left: 1px solid #bbbbbb">
+                </div>
+                <div class="F1rowWrapper" style="width: 31%">
+                  <div class="F1rowItem highlightCell" style="border-left: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; height: 100%;"> {{ Cparent3 }} </div>
+                </div>
+              </div>
+              <div class="entityMergeText"> Faceted in ≥3 groups </div>
+            </div>
+            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': facet >= 3}" @click="applyChanges('facet', facet < 3 ? 3 : facet)">
               <div class="configGlyph">
                 <div class="F3item highlightCell"> {{ Cparent1 }} </div>
                 <div class="F3item" style="border-top: 1px solid #bbbbbb;"> ... </div>
@@ -364,7 +412,7 @@
         <div v-if="border" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Indent </div> 
           <div class="wrapper"> 
-            <a-input-number v-model:value="indent" size="small" :min="1" :max="100000" style="width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('indent', value)"/> 
+            <a-input-number v-model:value="indent" size="small" :min="1" :max="100000" style="width: 50px; height: 24px;" @change="(value) => applyChangesToStyle('indent', undefined, value)"/> 
             <div class="configAttrPanelText" style="margin-left: 5px; margin-top: 5px;"> px </div>
           </div>
         </div>
@@ -1614,14 +1662,19 @@ export default {
     },
     applyChangesToStyle(key1, key2, value) {
       console.log("style changes: ", key1, key2, value);
-      let oldValue = this.key1 ? this[key1][key2] : undefined;
+      let oldValue = this.key1 ? (key2 ? this[key1][key2] : this[key1]) : undefined;
       if(oldValue == value) return;
       if(!this[key1]) this[key1] = {};
-      this[key1][key2] = value;
+      if(key2) {
+        this[key1][key2] = value;
+      } else {
+        this[key1] = value;
+      }
       let block = this.selectedBlock;
       if(!block.style || typeof(block.style) != 'object') block.style = {};
       if(!block.style[key1]) block.style[key1] = {};
-      block.style[key1][key2] = value;
+      if(key2) block.style[key1][key2] = value;
+      else block.style[key1] = value;
       this.storeSelectedBlock(block);
       // 更新tree
       this.$bus.emit("update", block);
@@ -2157,6 +2210,23 @@ export default {
 
 .F3item {
   height: 16.6%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.F1rowWrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.F1rowItem {
+  height: 33.3%;
   width: 100%;
   display: flex;
   align-items: center;
