@@ -563,11 +563,11 @@ export default {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
-              this.$message.error("Invalid insert!");
-              throw new Error("Invalid insert");
-              return;
-            }
+            // if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'bottomchild')) {
+            //   this.$message.error("Invalid insert!");
+            //   throw new Error("Invalid insert");
+            //   return;
+            // }
             targetBlock.arr.splice(targetBlock.index + (dir == 'bottom' ? 1 : 0), 0,  this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: uuid(),
@@ -802,11 +802,11 @@ export default {
             let targetBlock = this.findBlock(bid);
             if(!targetBlock) return;
             // 检查插入是否合法
-            if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
-              this.$message.error("Invalid insert!");
-              throw new Error("Invalid insert");
-              return;
-            }
+            // if(!this.checkInsertValid(targetBlock.arr[targetBlock.index], dir == 'rightchild')) {
+            //   this.$message.error("Invalid insert!");
+            //   throw new Error("Invalid insert");
+            //   return;
+            // }
             targetBlock.arr.splice(targetBlock.index + (dir == 'right' ? 1 : 0), 0, this.draggedItemType == 'function' ? {
               function: 'sum',
               blockId: uuid(),
@@ -963,8 +963,8 @@ export default {
       console.log(block)
       if(!block) return;
       this.$store.commit("storeSelectedPos", {
-        row: e.target.dataset.row,
-        col: e.target.dataset.col,
+        row: e.target.dataset.fullrow,
+        col: e.target.dataset.fullcol,
         rowSpan: e.target.dataset.rowSpan,
         colSpan: e.target.dataset.colSpan,
       });
@@ -1084,7 +1084,7 @@ export default {
           let sourceTables = this.showCompleteTable ? this.fullTables : this.foldedTables;
           let {table, dim} = sourceTables[e.target.dataset.tableId];
           for(let j = 0; j < table[row].length; j++) {
-            if(table[row][j].col < dim.rdim) {
+            if(table[row][j].col < dim.rdim && table[row][j].sourceBlockId) {
               rowParentId = table[row][j].sourceBlockId;
             } else {
               break;
@@ -1092,7 +1092,7 @@ export default {
           }
           for(let i = 0; i < dim.cdim; i++) {
             for(let j = 0; j < table[i].length; j++) {
-              if(table[i][j].col == col) {
+              if(table[i][j].col == col  && table[i][j].sourceBlockId) {
                 colParentId = table[i][j].sourceBlockId;
               }
             }
@@ -1304,6 +1304,8 @@ export default {
             colSpan: cell.colSpan,
             row: cell.row,
             col: cell.col,
+            fullrow: cell.fullrow,
+            fullcol: cell.fullcol,
             tableId,
           }
           if(cell.channel == 'cell' && cell.sourceBlockId) {
@@ -1724,13 +1726,24 @@ export default {
         }
         return false;
       }
+      let cnt = 0;
       // 遍历rowheader
       for(let i = cdim; i < fullTable.length; i++) {
         // if(isStackNotEmpty() && stack[0].count > max_visible_values) break;
         for(let j = 0; j < fullTable[i].length; j++) {
           if(fullTable[i][j].col >= rdim) break;
           let curId = fullTable[i][j].sourceBlockId;
-          if(!curId || fullTable[i][j].type == 'key') continue;
+          if(fullTable[i][j].type == 'key' || !curId) continue;
+          // if(!curId) {
+          //   if(j==0 && i!=0) {
+          //     cnt++;
+          //     if(cnt>2) {
+          //       console.log(i)
+          //       addByRange(rSet, i, i+1)
+          //     }
+          //   }
+          //   continue;
+          // }
           let curBlock = this.findBlock(curId);
           if(!curBlock) throw new Error("Unable to find block, id=" + String(curId));
           curBlock = curBlock.arr[curBlock.index];
@@ -1966,6 +1979,8 @@ export default {
           newObj.colSpan -= queryByRange(cSet, fullTable[i][j].col, fullTable[i][j].col + fullTable[i][j].colSpan);
           newObj.row = newrow;
           newObj.col = fullTable[i][j].col - queryByRange(cSet, 0, fullTable[i][j].col);
+          newObj.fullrow = fullTable[i][j].row;
+          newObj.fullcol = fullTable[i][j].col;
           newTable[newrow].push(newObj);
         }
       }
@@ -2018,6 +2033,8 @@ export default {
           curColIndex = getNextIndex(curColIndex);
           table[i][j].row = i;
           table[i][j].col = curColIndex;
+          table[i][j].fullrow = i;
+          table[i][j].fullcol = curColIndex;
           addToSpanList({
             row: i,
             col: curColIndex,
@@ -2225,7 +2242,7 @@ export default {
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; */
   font-family: Inter-Regular-9;
   z-index: 3000;
-  box-shadow: 0 0 0 1px #cccccc;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   background-color: white;
   display: flex;
   align-items: center;

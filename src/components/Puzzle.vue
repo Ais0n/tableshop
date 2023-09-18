@@ -1,6 +1,6 @@
 <template>
   <div v-for="(dom, index) in domSource" :id="dom.id" :class="dom.className + ((dom.dataset.bid == highlightedBlockId ? ' highlightedBlock' : '') + ((dom.dataset.bid == highlightedBlockId && dom.dataset.row == highlightedPos.row && dom.dataset.col == highlightedPos.col) ? ' highlightedPos' : ''))" :style="`position: ${dom.style.position}; left: ${dom.style.left}px; top: ${dom.style.top}px; width: ${dom.style.width}px; height: ${dom.style.height}px; ${dom.style.computed}`" :data-bid="dom.dataset.bid"
-    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-table-id="dom.dataset.tableId" :data-row-span="dom.dataset.rowSpan" :data-col-span="dom.dataset.colSpan" :draggable="dom.draggable" @dragend="dom.ondragend"
+    :data-channel="dom.dataset.channel" :data-row-parent-id="dom.dataset.rowParentId" :data-col-parent-id="dom.dataset.colParentId" :data-row="dom.dataset.row" :data-col="dom.dataset.col" :data-fullrow="dom.dataset.fullrow" :data-fullcol="dom.dataset.fullcol" :data-table-id="dom.dataset.tableId" :data-row-span="dom.dataset.rowSpan" :data-col-span="dom.dataset.colSpan" :draggable="dom.draggable" @dragend="dom.ondragend"
     @dragover="(e) => {entered = index; dom.ondragover(e)}" @dragstart="dom.ondragstart" @dragleave="(e) => { entered = -1; dom.ondragleave(e)}" @drop="dropSelect($event, dom)" @click="dom.onclick" @contextmenu="dom.oncontextmenu"
   >
     <div class="puzzleText">{{dom.innerText}}</div>
@@ -378,8 +378,12 @@ export default {
       } else if(this.draggedItemType == 'block') {
         this.egValue = this.draggedBlock.innerText;
       } else {
-        this.egValue = "sum";
+        this.egValue = "Total";
       }
+
+      let tmp = String(this.egValue)
+      if(tmp.length > 5) tmp = tmp.slice(0, 5) + "...";
+      this.egValue = tmp;
 
       // if(dom.dataset.channel == 'row') {
       //   if(dir == 'right') this.selectedDir = 'right';

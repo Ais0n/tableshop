@@ -507,9 +507,9 @@
               <div class="glyphOption" :class="{'glyphSelected': rowHierType == 'Sequential'}" @click="applyChangesToHier('row', false, rowHierColor)"
               style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
                 <div class="configGlyph">
-                  <div class="SItem" style="background-color: #aaaaaa"> ... </div>
-                  <div class="SItem" style="background-color: #cccccc; border-top: 1px solid #bbbbbb;"> ... </div>
-                  <div class="SItem" style="background-color: #eeeeee; border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="F1son" style="background-color: #aaaaaa;"> ... </div>
+                  <div class="F1son" style="background-color: #cccccc; border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
+                  <div class="F1son" style="background-color: #eeeeee;"> ... </div>
                 </div>
                 <div class="entityMergeText"> Sequential </div>
               </div>
@@ -534,9 +534,9 @@
               <div class="glyphOption" :class="{'glyphSelected': colHierType == 'Sequential'}" @click="applyChangesToHier('column', false, colHierColor)"
               style="margin-left: calc(25% - 72px); margin-right: calc(25% - 72px)">
                 <div class="configGlyph">
-                  <div class="F1son" style="background-color: #aaaaaa;"> ... </div>
-                  <div class="F1son" style="background-color: #cccccc; border-left: 1px solid #bbbbbb; border-right: 1px solid #bbbbbb;"> ... </div>
-                  <div class="F1son" style="background-color: #eeeeee;"> ... </div>
+                  <div class="SItem" style="background-color: #aaaaaa"> ... </div>
+                  <div class="SItem" style="background-color: #cccccc; border-top: 1px solid #bbbbbb;"> ... </div>
+                  <div class="SItem" style="background-color: #eeeeee; border-top: 1px solid #bbbbbb;"> ... </div>
                 </div>
                 <div class="entityMergeText"> Sequential </div>
               </div>
@@ -802,7 +802,7 @@
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Total </div>
-                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Value </div>
                   </div>
                 </div>
                 <div class="entityMergeText"> Bold </div>
@@ -811,7 +811,7 @@
                 <div class="configGlyph">
                   <div class="posWrapper"> 
                     <div class="posItem highlightCell" > Total </div>
-                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Value </div>
                   </div>
                 </div>
                 <div class="entityMergeText"> Regular </div>
@@ -892,8 +892,8 @@
               <div class="inheritGlyphOption" :class="{'glyphSelected': aggCellFontWeight != 'Regular'}" @click="applyGlobalChanges('.sumCell', 'font', 'weight', 'Bold')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
-                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
-                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Total </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Value </div>
                   </div>
                 </div>
                 <div class="entityMergeText"> Bold </div>
@@ -901,8 +901,8 @@
               <div class="inheritGlyphOption" :class="{'glyphSelected': aggCellFontWeight == 'Regular'}" @click="applyGlobalChanges('.sumCell', 'font', 'weight', 'Regular')">
                 <div class="configGlyph">
                   <div class="posWrapper"> 
-                    <div class="posItem highlightCell" > Header </div>
-                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                    <div class="posItem highlightCell" > Total </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Value </div>
                   </div>
                 </div>
                 <div class="entityMergeText"> Regular </div>
@@ -1112,9 +1112,9 @@
                 <div style="width: 25px"> </div> 
                 <div style="display: inline-block" class="keyPropsText">  </div>
                 <a-select :value="columnHeaderBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'style', value)">
-                  <a-select-option value="Double"> double </a-select-option>
-                  <a-select-option value="Solid"> single </a-select-option>
-                  <a-select-option value="None"> none </a-select-option>
+                  <a-select-option value="double"> double </a-select-option>
+                  <a-select-option value="solid"> single </a-select-option>
+                  <a-select-option value="none"> none </a-select-option>
                 </a-select>
               </div>
             </div>
@@ -1219,9 +1219,9 @@
                 <div style="width: 25px">  </div> 
                 <div style="display: inline-block" class="keyPropsText">  </div>
                 <a-select :value="cellBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.cell', 'border', 'style', value)">
-                  <a-select-option value="Double"> double </a-select-option>
-                  <a-select-option value="Solid"> single </a-select-option>
-                  <a-select-option value="None"> none </a-select-option>
+                  <a-select-option value="double"> double </a-select-option>
+                  <a-select-option value="solid"> single </a-select-option>
+                  <a-select-option value="none"> none </a-select-option>
                 </a-select>
               </div>
             </div>
@@ -1237,6 +1237,81 @@
               <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
             </div>
             <div class="templateDropdown" @click="this.cellCustomize = !this.cellCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> The whole table </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe624; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': tableFontWeight != 'Regular'}" @click="applyGlobalChanges('.table', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2  highlightCell"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': tableFontWeight == 'Regular'}" @click="applyGlobalChanges('.table', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem" > Header </div>
+                    <div class="posItem2 highlightCell"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="tableCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block; width: 25px">  </div>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="tableFontColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'font', 'color', e.target.value)"/>
+                <a-input-number v-model:value="tableFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="tableCustomize"> 
+              <div class="keyPropsWrapper">
+                <div class="iconfont iconpaint"> &#xeaff; </div> 
+                <div style="display: inline-block" class="keyPropsText"> Border </div>
+                <input type="color" :value="tableBorderColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="tableBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select :value="tableBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.table', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+              <div class="keyPropsWrapper">
+                <div style="width: 25px">  </div> 
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <a-select :value="tableBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.table', 'border', 'style', value)">
+                  <a-select-option value="double"> double </a-select-option>
+                  <a-select-option value="solid"> single </a-select-option>
+                  <a-select-option value="none"> none </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="tableCustomize">
+              <div class="iconfont iconpaint"> &#xe6f8; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="tableBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="tableCustomize">
+              <div class="iconfont iconpaint"> &#xe7f3; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="tableIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.tableCustomize = !this.tableCustomize">
               <i class='iconfont'> &#xeb10; </i>
             </div>
           </div>
@@ -1272,6 +1347,7 @@ export default {
       '.rowHeader': undefined,
       '.columnHeader': undefined,
       '.cell': undefined,
+      '.table': undefined,
       '.sumCell': undefined,
       '.sumTitle': undefined,
       '.rl1': undefined,
@@ -1302,6 +1378,16 @@ export default {
       '.r18': undefined,
       '.r19': undefined,
       '.r20': undefined,
+      '.r21': undefined,
+      '.r22': undefined,
+      '.r23': undefined,
+      '.r24': undefined,
+      '.r25': undefined,
+      '.r26': undefined,
+      '.r27': undefined,
+      '.r28': undefined,
+      '.r29': undefined,
+      '.r30': undefined,
       '.c1': undefined,
       '.c2': undefined,
       '.c3': undefined,
@@ -1329,6 +1415,7 @@ export default {
       rowHeaderCustomize: false,
       columnHeaderCustomize: false,
       cellCustomize: false,
+      tableCustomize: false,
       hierarchyCustomize: false,
       curRowCustomize: false,
       curColCustomize: false,
@@ -1517,6 +1604,33 @@ export default {
     cellIndent() {
       return this[".cell"] && this[".cell"].indent ? this[".cell"].indent : 0;
     },
+    tableBorderStyle() {
+      return this[".table"] && this[".table"].border && this['.table'].border.style ? this['.table'].border.style : "none";
+    },
+    tableBorderColor() {
+      return this[".table"] && this[".table"].border && this['.table'].border.color ? this['.table'].border.color : "#000000";
+    },
+    tableBorderWidth() {
+      return this[".table"] && this[".table"].border && this['.table'].border.width ? this['.table'].border.width : 1;
+    },
+    tableBorderPosition() {
+      return this[".table"] && this[".table"].border && this['.table'].border.position ? this['.table'].border.position: 'All';
+    },
+    tableFontWeight() {
+      return this['.table'] && this[".table"].font && this['.table'].font.weight ? this['.table'].font.weight : "Regular";
+    },
+    tableFontColor() {
+      return this[".table"] && this[".table"].font && this['.table'].font.color ? this['.table'].font.color : "#000000";
+    },
+    tableFontSize() {
+      return this[".table"] && this[".table"].font && this['.table'].font.size ? this['.table'].font.size : 16;
+    },
+    tableBackgroundColor() {
+      return this[".table"] && this[".table"].background && this['.table'].background.color ? this['.table'].background.color : '#ffffff';
+    },
+    tableIndent() {
+      return this[".table"] && this[".table"].indent ? this[".table"].indent : 0;
+    },
     curRowBorderStyle() {
       if(!this.selectedPos) return "none";
       let cl = ".r" + String(Number(this.selectedPos.row) + 1); 
@@ -1617,7 +1731,7 @@ export default {
       return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.width ? this['.sumTitle'].border.width : 1;
     },
     aggBorderPosition() {
-      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.position ? this['.sumTitle'].border.position: 'Top';
+      return this[".sumTitle"] && this[".sumTitle"].border && this['.sumTitle'].border.position ? this['.sumTitle'].border.position: 'All';
     },
     aggFontWeight() {
       return this['.sumTitle'] && this[".sumTitle"].font && this['.sumTitle'].font.weight ? this['.sumTitle'].font.weight : "Regular";
@@ -1787,7 +1901,7 @@ export default {
         
         for(let i = 1; i <= levels; i++) {
           let cl =  '.' + String(c) + "l" + String(i); 
-          let lColor = (i == 1) ? color : `rgba(${r}, ${g}, ${b}, ${(0.66 ** (i-1)).toFixed(2)})`
+          let lColor = (i == 1) ? color : `rgba(${r}, ${g}, ${b}, ${(0.6 ** (i-1)).toFixed(2)})`
           this[cl] = {
             background: {
               color: lColor,
