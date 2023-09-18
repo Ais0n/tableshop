@@ -60,9 +60,9 @@
         </div>
         <div v-if="configEg && configEg.son1" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Grid Merge </div> 
-          <div class="wrapper">
-            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'unmerged-first')">
-              <div class="configGlyph">
+          <div class="wrapper" style="padding-top: 13px">
+            <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'unmerged-first')">
+              <!-- <div class="configGlyph">
                 <div class="EUMsonwrapper"> 
                   <div class="EUMson highlightCell" style="border-bottom: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
                   <div class="EUMson highlightCell"> </div>
@@ -71,8 +71,13 @@
                   <div class="EUMson" style="border-bottom: 1px solid #bbbbbb"> {{ Cson1 }} </div>
                   <div class="EUMson"> {{ Cson2 }} </div>
                 </div>
+              </div> -->
+              <div class="configGlyph">
+                <div class="EMparent highlightCell"> {{ Cparent1 }} </div>
+                <div class="EMson" style="padding-left: 32.5px"> {{ Cson1 }} </div>
+                <div class="EMson" style="padding-left: 32.5px"> {{ Cson2 }} </div>
               </div>
-              <div class="entityMergeText"> Unmerged with first value </div>
+              <div class="entityMergeText"> Cellular parent </div>
             </div>
             <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'unmerged-first')">
               <div class="configGlyph">
@@ -87,7 +92,7 @@
               </div>
               <div class="entityMergeText"> Unmerged with first value</div>
             </div>
-            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
+            <!-- <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
               <div class="configGlyph">
                 <div class="EUMsonwrapper"> 
                   <div class="EUMson highlightCell" style="border-bottom: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
@@ -99,7 +104,7 @@
                 </div>
               </div>
               <div class="entityMergeText"> Unmerged with all values </div>
-            </div>
+            </div> -->
             <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
               <div class="configGlyph">
                 <div class="GUMparentwrapper"> 
@@ -113,15 +118,26 @@
               </div>
               <div class="entityMergeText"> Unmerged with all values </div>
             </div>
-            <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'merged')">
-              <div class="configGlyph">
+            <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'merged')">
+              <!-- <div class="configGlyph">
                 <div class="EUMparent highlightCell"> {{ Cparent1 }} </div>
                 <div class="EUMsonwrapper">
                   <div class="EUMson" style="border-bottom: 1px solid #bbbbbb"> {{ Cson1 }} </div>
                   <div class="EUMson"> {{ Cson2 }} </div>
                 </div>
+              </div> -->
+              <div class="configGlyph">
+                <div class="EMparent highlightCell" style="text-align: center; padding-left: 32.5px;"> {{ Cparent1 }} </div>
+                <div class="EMson" style="padding: 0 0">
+                  <div style="width: 50%; border-right: 1px solid #cccccc; text-align: center"> {{ Cson1 }} </div> 
+                  <div style="width: 50%"> </div>
+                </div>
+                <div class="EMson" style="padding: 0 0">
+                  <div style="width: 50%; border-right: 1px solid #cccccc; text-align: center"> {{ Cson2 }} </div> 
+                  <div style="width: 50%"> </div>
+                </div>
               </div>
-              <div class="entityMergeText"> Merged </div>
+              <div class="entityMergeText"> Spanned parent </div>
             </div>
             <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'merged')">
               <div class="configGlyph">
