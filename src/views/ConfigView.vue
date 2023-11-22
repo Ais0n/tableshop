@@ -61,25 +61,7 @@
         <div v-if="configEg && configEg.son1" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Grid Merge </div> 
           <div class="wrapper" style="padding-top: 13px">
-            <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'unmerged-first')">
-              <!-- <div class="configGlyph">
-                <div class="EUMsonwrapper"> 
-                  <div class="EUMson highlightCell" style="border-bottom: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
-                  <div class="EUMson highlightCell"> </div>
-                </div>
-                <div class="EUMsonwrapper">
-                  <div class="EUMson" style="border-bottom: 1px solid #bbbbbb"> {{ Cson1 }} </div>
-                  <div class="EUMson"> {{ Cson2 }} </div>
-                </div>
-              </div> -->
-              <div class="configGlyph">
-                <div class="EMparent highlightCell"> {{ Cparent1 }} </div>
-                <div class="EMson" style="padding-left: 32.5px"> {{ Cson1 }} </div>
-                <div class="EMson" style="padding-left: 32.5px"> {{ Cson2 }} </div>
-              </div>
-              <div class="entityMergeText"> Cellular parent </div>
-            </div>
-            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'unmerged-first')">
+            <div class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'unmerged-first')">
               <div class="configGlyph">
                 <div class="GUMparentwrapper"> 
                   <div class="GUMparent highlightCell" style="border-right: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
@@ -105,7 +87,7 @@
               </div>
               <div class="entityMergeText"> Unmerged with all values </div>
             </div> -->
-            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
+            <div class="FglyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-all'}" @click="applyChanges('gridMerge', 'unmerged-all')">
               <div class="configGlyph">
                 <div class="GUMparentwrapper"> 
                   <div class="GUMparent highlightCell" style="border-right: 1px solid #bbbbbb;"> {{ Cparent1 }} </div>
@@ -118,28 +100,7 @@
               </div>
               <div class="entityMergeText"> Unmerged with all values </div>
             </div>
-            <div v-if="Cchannel == 'row'" class="glyphOption" :class="{'glyphSelected': gridMerge == 'unmerged-first'}" @click="applyChanges('gridMerge', 'merged')">
-              <!-- <div class="configGlyph">
-                <div class="EUMparent highlightCell"> {{ Cparent1 }} </div>
-                <div class="EUMsonwrapper">
-                  <div class="EUMson" style="border-bottom: 1px solid #bbbbbb"> {{ Cson1 }} </div>
-                  <div class="EUMson"> {{ Cson2 }} </div>
-                </div>
-              </div> -->
-              <div class="configGlyph">
-                <div class="EMparent highlightCell" style="text-align: center; padding-left: 32.5px;"> {{ Cparent1 }} </div>
-                <div class="EMson" style="padding: 0 0">
-                  <div style="width: 50%; border-right: 1px solid #cccccc; text-align: center"> {{ Cson1 }} </div> 
-                  <div style="width: 50%"> </div>
-                </div>
-                <div class="EMson" style="padding: 0 0">
-                  <div style="width: 50%; border-right: 1px solid #cccccc; text-align: center"> {{ Cson2 }} </div> 
-                  <div style="width: 50%"> </div>
-                </div>
-              </div>
-              <div class="entityMergeText"> Spanned parent </div>
-            </div>
-            <div v-if="Cchannel == 'column'" class="FglyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'merged')">
+            <div class="FglyphOption" :class="{'glyphSelected': gridMerge == 'merged'}" @click="applyChanges('gridMerge', 'merged')">
               <div class="configGlyph">
                 <div class="GUMparentwrapper"> 
                   <div class="GUMparent highlightCell"> {{ Cparent1 }} </div>
@@ -441,416 +402,6 @@
       </div>
       <div v-if="tab == 'table'" class="configAttrPanel">
         <div class="configAttrPanelTitle"> Templates </div>
-        <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Row Header </div> 
-          <div class="wrapper" style="flex-direction: column">
-            <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xeaff; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'double')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
-                    <div class="RHitem"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Double </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'solid')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Single </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'none')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> None </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
-              <div class="keyPropsWrapper">
-                <div style="display: inline-block; width: 25px">  </div>
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="rowHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'border', 'color', e.target.value)"/>
-                <a-input-number :value="rowHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'width', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-                <a-select :value="rowHeaderBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'position', value)">
-                  <a-select-option value="All"> All </a-select-option>
-                  <a-select-option value="Top"> Top </a-select-option>
-                  <a-select-option value="Bottom"> Bottom </a-select-option>
-                  <a-select-option value="Left"> Left </a-select-option>
-                  <a-select-option value="Right"> Right </a-select-option>
-                </a-select>
-              </div>
-            </div>
-            <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xe624; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Font</div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Bold')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
-                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Bold </div>
-              </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Regular')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="posItem highlightCell" > Header </div>
-                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Regular </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
-              <div class="keyPropsWrapper">
-                <div style="display: inline-block; width: 25px">  </div>
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="rowHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'font', 'color', e.target.value)"/>
-                <a-input-number :value="rowHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'font', 'size', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-              </div>
-            </div>
-            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
-              <div class="iconfont iconpaint"> &#xe6f8; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Background</div>
-              <input type="color" :value="rowHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'background', 'color', e.target.value)"/>
-            </div>
-            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
-              <div class="iconfont iconpaint"> &#xe7f3; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Indent</div>
-              <a-input-number :value="rowHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'indent', undefined, value)"/> 
-              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-            </div>
-            <div class="templateDropdown" @click="this.rowHeaderCustomize = !this.rowHeaderCustomize">
-              <i class='iconfont'> &#xeb10; </i>
-            </div>
-          </div>
-        </div>
-        <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Column Header </div> 
-          <div class="wrapper" style="flex-direction: column">
-            <!-- <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xeaff; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'double')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
-                    <div class="RHitem"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Double </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'solid')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Single </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'none')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> None </div>
-              </div>
-            </div> -->
-            <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xeaff; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'double')">
-                <div class="configGlyph" style="height: 50px">
-                  <div class="curColItem highlightCell"> Header </div>
-                  <div class="curColItem" style="height: 5px; width: 100%; border-top: 2px solid #bbb; border-bottom: 2px solid #bbb;"/>
-                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
-                </div>
-                <div class="entityMergeText"> Double </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'solid')">
-                <div class="configGlyph" style="height: 50px">
-                  <div class="curColItem highlightCell"> Header </div>
-                  <div class="curColItem" style="height: 3px; width: 100%; border-top: 2px solid #bbb;"/>
-                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
-                </div>
-                <div class="entityMergeText"> Single </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'none')">
-                <div class="configGlyph" style="height: 50px">
-                  <div class="curColItem highlightCell"> Header </div>
-                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
-                </div>
-                <div class="entityMergeText"> None </div>
-              </div>
-            </div>
-            <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xe624; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Font</div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': columnHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.columnHeader', 'font', 'weight', 'Bold')">
-                <div class="configGlyph" style="height: 50px">
-                  <div class="curColItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
-                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
-                </div>
-                <div class="entityMergeText"> Bold </div>
-              </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': columnHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.columnHeader', 'font', 'weight', 'Regular')">
-                <div class="configGlyph" style="height: 50px">
-                  <div class="curColItem highlightCell" > Header </div>
-                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
-                </div>
-                <div class="entityMergeText"> Regular </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="columnHeaderCustomize"> 
-              <div class="keyPropsWrapper">
-                <div style="display: inline-block; width: 25px">  </div>
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="columnHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'font', 'color', e.target.value)"/>
-                <a-input-number v-model:value="columnHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'font', 'size', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="columnHeaderCustomize"> 
-              <div class="keyPropsWrapper">
-                <div class="iconfont iconpaint"> &#xeaff; </div> 
-                <div style="display: inline-block" class="keyPropsText"> Border </div>
-                <input type="color" :value="columnHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'border', 'color', e.target.value)"/>
-                <a-input-number :value="columnHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'width', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-                <a-select :value="columnHeaderBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'position', value)">
-                  <a-select-option value="All"> All </a-select-option>
-                  <a-select-option value="Top"> Top </a-select-option>
-                  <a-select-option value="Bottom"> Bottom </a-select-option>
-                  <a-select-option value="Left"> Left </a-select-option>
-                  <a-select-option value="Right"> Right </a-select-option>
-                </a-select>
-              </div>
-              <div class="keyPropsWrapper">
-                <div style="width: 25px"> </div> 
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <a-select :value="columnHeaderBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'style', value)">
-                  <a-select-option value="double"> double </a-select-option>
-                  <a-select-option value="solid"> single </a-select-option>
-                  <a-select-option value="none"> none </a-select-option>
-                </a-select>
-              </div>
-            </div>
-            <div class="keyPropsWrapper" v-if="columnHeaderCustomize">
-              <div class="iconfont iconpaint"> &#xe6f8; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Background</div>
-              <input type="color" :value="columnHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'background', 'color', e.target.value)"/>
-            </div>
-            <div class="keyPropsWrapper" v-if="columnHeaderCustomize">
-              <div class="iconfont iconpaint"> &#xe7f3; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Indent</div>
-              <a-input-number :value="columnHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'indent', undefined, value)"/> 
-              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-            </div>
-            <div class="templateDropdown" @click="this.columnHeaderCustomize = !this.columnHeaderCustomize">
-              <i class='iconfont'> &#xeb10; </i>
-            </div>
-          </div>
-        </div>
-        <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> Body Cells </div> 
-          <div class="wrapper" style="flex-direction: column">
-            <!-- <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xeaff; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Border </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'double'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'double')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
-                    <div class="RHitem"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Double </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'solid'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'solid')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Single </div>
-              </div>
-              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'none'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'none')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="RHitem  highlightCell"> ... </div>
-                    <div class="RHitem"> ... </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> None </div>
-              </div>
-            </div> -->
-            <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xe624; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Font</div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': cellFontWeight != 'Regular'}" @click="applyGlobalChanges('.cell', 'font', 'weight', 'Bold')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="posItem" style="font-family: Inter-Bold-4" > Header </div>
-                    <div class="posItem2  highlightCell"> Cell </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Bold </div>
-              </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': cellFontWeight == 'Regular'}" @click="applyGlobalChanges('.cell', 'font', 'weight', 'Regular')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="posItem" > Header </div>
-                    <div class="posItem2 highlightCell"> Cell </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Regular </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="cellCustomize"> 
-              <div class="keyPropsWrapper">
-                <div style="display: inline-block; width: 25px">  </div>
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="cellFontColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'font', 'color', e.target.value)"/>
-                <a-input-number v-model:value="cellFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'font', 'size', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="cellCustomize"> 
-              <div class="keyPropsWrapper">
-                <div class="iconfont iconpaint"> &#xeaff; </div> 
-                <div style="display: inline-block" class="keyPropsText"> Border </div>
-                <input type="color" :value="cellBorderColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'border', 'color', e.target.value)"/>
-                <a-input-number :value="cellBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'border', 'width', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-                <a-select :value="cellBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.cell', 'border', 'position', value)">
-                  <a-select-option value="All"> All </a-select-option>
-                  <a-select-option value="Top"> Top </a-select-option>
-                  <a-select-option value="Bottom"> Bottom </a-select-option>
-                  <a-select-option value="Left"> Left </a-select-option>
-                  <a-select-option value="Right"> Right </a-select-option>
-                </a-select>
-              </div>
-              <div class="keyPropsWrapper">
-                <div style="width: 25px">  </div> 
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <a-select :value="cellBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.cell', 'border', 'style', value)">
-                  <a-select-option value="double"> double </a-select-option>
-                  <a-select-option value="solid"> single </a-select-option>
-                  <a-select-option value="none"> none </a-select-option>
-                </a-select>
-              </div>
-            </div>
-            <div class="keyPropsWrapper" v-if="cellCustomize">
-              <div class="iconfont iconpaint"> &#xe6f8; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Background</div>
-              <input type="color" :value="cellBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'background', 'color', e.target.value)"/>
-            </div>
-            <div class="keyPropsWrapper" v-if="cellCustomize">
-              <div class="iconfont iconpaint"> &#xe7f3; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Indent</div>
-              <a-input-number :value="cellIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'indent', undefined, value)"/> 
-              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-            </div>
-            <div class="templateDropdown" @click="this.cellCustomize = !this.cellCustomize">
-              <i class='iconfont'> &#xeb10; </i>
-            </div>
-          </div>
-        </div>
-        <div class="configAttrSubpanel">
-          <div class="configAttrSubpanelTitle"> The whole table </div> 
-          <div class="wrapper" style="flex-direction: column">
-            <div class="keyPropsWrapper">
-              <div class="iconfont iconpaint"> &#xe624; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Font</div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': tableFontWeight != 'Regular'}" @click="applyGlobalChanges('.table', 'font', 'weight', 'Bold')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="posItem" style="font-family: Inter-Bold-4" > Header </div>
-                    <div class="posItem2  highlightCell"> Cell </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Bold </div>
-              </div>
-              <div class="inheritGlyphOption" :class="{'glyphSelected': tableFontWeight == 'Regular'}" @click="applyGlobalChanges('.table', 'font', 'weight', 'Regular')">
-                <div class="configGlyph">
-                  <div class="posWrapper"> 
-                    <div class="posItem" > Header </div>
-                    <div class="posItem2 highlightCell"> Cell </div>
-                  </div>
-                </div>
-                <div class="entityMergeText"> Regular </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="tableCustomize"> 
-              <div class="keyPropsWrapper">
-                <div style="display: inline-block; width: 25px">  </div>
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <input type="color" :value="tableFontColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'font', 'color', e.target.value)"/>
-                <a-input-number v-model:value="tableFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'font', 'size', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-              </div>
-            </div>
-            <div style="margin-top: 5px;" v-if="tableCustomize"> 
-              <div class="keyPropsWrapper">
-                <div class="iconfont iconpaint"> &#xeaff; </div> 
-                <div style="display: inline-block" class="keyPropsText"> Border </div>
-                <input type="color" :value="tableBorderColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'border', 'color', e.target.value)"/>
-                <a-input-number :value="tableBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'border', 'width', value)"/> 
-                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-                <a-select :value="tableBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.table', 'border', 'position', value)">
-                  <a-select-option value="All"> All </a-select-option>
-                  <a-select-option value="Top"> Top </a-select-option>
-                  <a-select-option value="Bottom"> Bottom </a-select-option>
-                  <a-select-option value="Left"> Left </a-select-option>
-                  <a-select-option value="Right"> Right </a-select-option>
-                </a-select>
-              </div>
-              <div class="keyPropsWrapper">
-                <div style="width: 25px">  </div> 
-                <div style="display: inline-block" class="keyPropsText">  </div>
-                <a-select :value="tableBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.table', 'border', 'style', value)">
-                  <a-select-option value="double"> double </a-select-option>
-                  <a-select-option value="solid"> single </a-select-option>
-                  <a-select-option value="none"> none </a-select-option>
-                </a-select>
-              </div>
-            </div>
-            <div class="keyPropsWrapper" v-if="tableCustomize">
-              <div class="iconfont iconpaint"> &#xe6f8; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Background</div>
-              <input type="color" :value="tableBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'background', 'color', e.target.value)"/>
-            </div>
-            <div class="keyPropsWrapper" v-if="tableCustomize">
-              <div class="iconfont iconpaint"> &#xe7f3; </div> 
-              <div style="display: inline-block" class="keyPropsText"> Indent</div>
-              <a-input-number :value="tableIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'indent', undefined, value)"/> 
-              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
-            </div>
-            <div class="templateDropdown" @click="this.tableCustomize = !this.tableCustomize">
-              <i class='iconfont'> &#xeb10; </i>
-            </div>
-          </div>
-        </div>
         <div class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Row/Column No. </div> 
           <div class="wrapper" style="flex-direction: column">
@@ -1359,7 +910,416 @@
             </div>
           </div>
         </div>
-
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Row Header </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xeaff; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': rowHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.rowHeader', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block; width: 25px">  </div>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="rowHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="rowHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select :value="rowHeaderBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.rowHeader', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe624; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': rowHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.rowHeader', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem highlightCell" > Header </div>
+                    <div class="posItem2" style="border-left: 2px solid #bbbbbb"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="rowHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block; width: 25px">  </div>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="rowHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'font', 'color', e.target.value)"/>
+                <a-input-number :value="rowHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+              <div class="iconfont iconpaint"> &#xe6f8; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="rowHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.rowHeader', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="rowHeaderCustomize">
+              <div class="iconfont iconpaint"> &#xe7f3; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="rowHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.rowHeader', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.rowHeaderCustomize = !this.rowHeaderCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Column Header </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <!-- <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xeaff; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div> -->
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xeaff; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'double'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'double')">
+                <div class="configGlyph" style="height: 50px">
+                  <div class="curColItem highlightCell"> Header </div>
+                  <div class="curColItem" style="height: 5px; width: 100%; border-top: 2px solid #bbb; border-bottom: 2px solid #bbb;"/>
+                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'solid'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'solid')">
+                <div class="configGlyph" style="height: 50px">
+                  <div class="curColItem highlightCell"> Header </div>
+                  <div class="curColItem" style="height: 3px; width: 100%; border-top: 2px solid #bbb;"/>
+                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': columnHeaderBorderStyle == 'none'}" @click="applyGlobalChanges('.columnHeader', 'border', 'style', 'none')">
+                <div class="configGlyph" style="height: 50px">
+                  <div class="curColItem highlightCell"> Header </div>
+                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div>
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe624; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': columnHeaderFontWeight != 'Regular'}" @click="applyGlobalChanges('.columnHeader', 'font', 'weight', 'Bold')">
+                <div class="configGlyph" style="height: 50px">
+                  <div class="curColItem highlightCell" style="font-family: Inter-Bold-4" > Header </div>
+                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': columnHeaderFontWeight == 'Regular'}" @click="applyGlobalChanges('.columnHeader', 'font', 'weight', 'Regular')">
+                <div class="configGlyph" style="height: 50px">
+                  <div class="curColItem highlightCell" > Header </div>
+                  <div class="curColItem" style="padding-top: 2px"> Cell </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="columnHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block; width: 25px">  </div>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="columnHeaderFontColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'font', 'color', e.target.value)"/>
+                <a-input-number v-model:value="columnHeaderFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="columnHeaderCustomize"> 
+              <div class="keyPropsWrapper">
+                <div class="iconfont iconpaint"> &#xeaff; </div> 
+                <div style="display: inline-block" class="keyPropsText"> Border </div>
+                <input type="color" :value="columnHeaderBorderColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="columnHeaderBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select :value="columnHeaderBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+              <div class="keyPropsWrapper">
+                <div style="width: 25px"> </div> 
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <a-select :value="columnHeaderBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.columnHeader', 'border', 'style', value)">
+                  <a-select-option value="double"> double </a-select-option>
+                  <a-select-option value="solid"> single </a-select-option>
+                  <a-select-option value="none"> none </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="columnHeaderCustomize">
+              <div class="iconfont iconpaint"> &#xe6f8; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="columnHeaderBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.columnHeader', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="columnHeaderCustomize">
+              <div class="iconfont iconpaint"> &#xe7f3; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="columnHeaderIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.columnHeader', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.columnHeaderCustomize = !this.columnHeaderCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> Body Cells </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <!-- <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xeaff; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Border </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'double'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'double')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="width: 5px; border-left: 2px solid #bbbbbb;  border-right: 2px solid #bbbbbb; margin-left: 1px;"> &nbsp; </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Double </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'solid'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'solid')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem" style="border-left: 3px solid #bbbbbb"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Single </div>
+              </div>
+              <div class="posGlyphOption" :class="{'glyphSelected': cellBorderStyle == 'none'}" @click="applyGlobalChanges('.cell', 'border', 'style', 'none')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="RHitem  highlightCell"> ... </div>
+                    <div class="RHitem"> ... </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> None </div>
+              </div>
+            </div> -->
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe624; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': cellFontWeight != 'Regular'}" @click="applyGlobalChanges('.cell', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2  highlightCell"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': cellFontWeight == 'Regular'}" @click="applyGlobalChanges('.cell', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem" > Header </div>
+                    <div class="posItem2 highlightCell"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="cellCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block; width: 25px">  </div>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="cellFontColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'font', 'color', e.target.value)"/>
+                <a-input-number v-model:value="cellFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="cellCustomize"> 
+              <div class="keyPropsWrapper">
+                <div class="iconfont iconpaint"> &#xeaff; </div> 
+                <div style="display: inline-block" class="keyPropsText"> Border </div>
+                <input type="color" :value="cellBorderColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="cellBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select :value="cellBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.cell', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+              <div class="keyPropsWrapper">
+                <div style="width: 25px">  </div> 
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <a-select :value="cellBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.cell', 'border', 'style', value)">
+                  <a-select-option value="double"> double </a-select-option>
+                  <a-select-option value="solid"> single </a-select-option>
+                  <a-select-option value="none"> none </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="cellCustomize">
+              <div class="iconfont iconpaint"> &#xe6f8; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="cellBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.cell', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="cellCustomize">
+              <div class="iconfont iconpaint"> &#xe7f3; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="cellIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.cell', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.cellCustomize = !this.cellCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
+        <div class="configAttrSubpanel">
+          <div class="configAttrSubpanelTitle"> The whole table </div> 
+          <div class="wrapper" style="flex-direction: column">
+            <div class="keyPropsWrapper">
+              <div class="iconfont iconpaint"> &#xe624; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Font</div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': tableFontWeight != 'Regular'}" @click="applyGlobalChanges('.table', 'font', 'weight', 'Bold')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem" style="font-family: Inter-Bold-4" > Header </div>
+                    <div class="posItem2  highlightCell"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Bold </div>
+              </div>
+              <div class="inheritGlyphOption" :class="{'glyphSelected': tableFontWeight == 'Regular'}" @click="applyGlobalChanges('.table', 'font', 'weight', 'Regular')">
+                <div class="configGlyph">
+                  <div class="posWrapper"> 
+                    <div class="posItem" > Header </div>
+                    <div class="posItem2 highlightCell"> Cell </div>
+                  </div>
+                </div>
+                <div class="entityMergeText"> Regular </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="tableCustomize"> 
+              <div class="keyPropsWrapper">
+                <div style="display: inline-block; width: 25px">  </div>
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <input type="color" :value="tableFontColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'font', 'color', e.target.value)"/>
+                <a-input-number v-model:value="tableFontSize" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'font', 'size', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+              </div>
+            </div>
+            <div style="margin-top: 5px;" v-if="tableCustomize"> 
+              <div class="keyPropsWrapper">
+                <div class="iconfont iconpaint"> &#xeaff; </div> 
+                <div style="display: inline-block" class="keyPropsText"> Border </div>
+                <input type="color" :value="tableBorderColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'border', 'color', e.target.value)"/>
+                <a-input-number :value="tableBorderWidth" size="small" :min="1" :max="100000" style="margin-left: 20px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'border', 'width', value)"/> 
+                <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+                <a-select :value="tableBorderPosition" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.table', 'border', 'position', value)">
+                  <a-select-option value="All"> All </a-select-option>
+                  <a-select-option value="Top"> Top </a-select-option>
+                  <a-select-option value="Bottom"> Bottom </a-select-option>
+                  <a-select-option value="Left"> Left </a-select-option>
+                  <a-select-option value="Right"> Right </a-select-option>
+                </a-select>
+              </div>
+              <div class="keyPropsWrapper">
+                <div style="width: 25px">  </div> 
+                <div style="display: inline-block" class="keyPropsText">  </div>
+                <a-select :value="tableBorderStyle" style="width: 100px; margin-left: 20px" size="small" @change="(value) => applyGlobalChanges('.table', 'border', 'style', value)">
+                  <a-select-option value="double"> double </a-select-option>
+                  <a-select-option value="solid"> single </a-select-option>
+                  <a-select-option value="none"> none </a-select-option>
+                </a-select>
+              </div>
+            </div>
+            <div class="keyPropsWrapper" v-if="tableCustomize">
+              <div class="iconfont iconpaint"> &#xe6f8; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Background</div>
+              <input type="color" :value="tableBackgroundColor" class="colorinput" @input="e => applyGlobalChanges('.table', 'background', 'color', e.target.value)"/>
+            </div>
+            <div class="keyPropsWrapper" v-if="tableCustomize">
+              <div class="iconfont iconpaint"> &#xe7f3; </div> 
+              <div style="display: inline-block" class="keyPropsText"> Indent</div>
+              <a-input-number :value="tableIndent" size="small" :min="1" :max="100000" style="margin-left: 15px; width: 50px; height: 24px;" @change="(value) => applyGlobalChanges('.table', 'indent', undefined, value)"/> 
+              <div class="configAttrPanelText" style="margin-left: 5px;"> px </div>
+            </div>
+            <div class="templateDropdown" @click="this.tableCustomize = !this.tableCustomize">
+              <i class='iconfont'> &#xeb10; </i>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
