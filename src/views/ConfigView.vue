@@ -153,7 +153,7 @@
             </div>
           </div>
         </div>
-        <div v-if="configEg" class="configAttrSubpanel">
+        <div v-if="configEg && Cchannel != 'cell'" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Facet (in <a-input-number size="small" :value="facet" :min="1" style="width: 50px" @change="(val) => { applyChanges('facet', val)}"/> groups) </div>
           <div class="wrapper">
             <div v-if="Cchannel == 'row'" class="FglyphOption" :class="{'glyphSelected': facet == 1}" @click="applyChanges('facet', 1)">
@@ -253,7 +253,7 @@
             </div>
           </div>
         </div>
-        <div v-if="configEg" class="configAttrSubpanel">
+        <div v-if="configEg  && Cchannel != 'cell'" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Key </div>
           <a-switch size="small" :checked="typeof(key) != 'undefined'" style="display: inline-block; margin-left: 10px;" @change="changeKey"> </a-switch>
           <div v-if="typeof(key) != 'undefined'" class="wrapper" style="flex-direction: column;">
@@ -345,7 +345,7 @@
             </div>
           </div>
         </div>
-        <div v-if="configEg" class="configAttrSubpanel">
+        <div v-if="configEg  && Cchannel != 'cell'" class="configAttrSubpanel">
           <div class="configAttrSubpanelTitle"> Spacing Row/Column </div> 
           <div class="wrapper" style="flex-direction: column;">
             <div class="wrapper">

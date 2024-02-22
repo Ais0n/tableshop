@@ -434,8 +434,8 @@ export default {
 }
 
 .highlightedPos {
-  border: 1px solid black;
-  border-top: 3px solid;
+  border: 1px solid black !important;
+  border-top: 3px solid !important;
 }
 
 .highlightedPos .verticalSemiCircle {
